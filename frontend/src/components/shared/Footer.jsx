@@ -1,5 +1,5 @@
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
-import dunpslogo from '../../assets/dumplogo.webp';
+import dunpslogo from '../../assets/landingassets/dumplogo.webp';
 export default function Footer() {
   return (
     <footer className="bg-[#1E1E24] text-white text-sm px-6 py-10 md:px-20">

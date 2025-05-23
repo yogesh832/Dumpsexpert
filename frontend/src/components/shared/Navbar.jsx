@@ -7,8 +7,7 @@ import {
   FaUser,
 } from "react-icons/fa";
 
-import dumplogo from "../../assets/dumplogo.webp"
-
+import dumplogo from "../../assets/landingassets/dumplogo.webp";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -31,9 +30,9 @@ const Navbar = () => {
     <nav className="bg-white shadow-md z-50 px-6">
       <div className=" mx-auto px-12     py-5 flex justify-between items-center">
         {/* Logo */}
-        <div className="flex items-center space-x-4">
+        <a href="/" className="flex items-center cursor-pointer space-x-4">
           <img src={dumplogo} alt="DumpsXpert Logo" className="h-18  w-48" />
-        </div>
+        </a>
 
         {/* Search for md+ */}
         <div className="flex gap-6 items-center">
