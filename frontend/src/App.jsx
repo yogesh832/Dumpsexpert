@@ -1,3 +1,5 @@
+import Footer from "./components/shared/Footer"
+import Navbar from "./components/shared/Navbar"
 import BlogCard from "./components/ui/BlogCard"
 import Button from "./components/ui/Button"
 import CarouselCard from "./components/ui/CarouselCard"
@@ -10,6 +12,7 @@ function App() {
 
   return (
     <>
+    <Navbar></Navbar>
      <h1 className=" font-bold   text-red-500 ">
     Hello world!
   </h1>
@@ -33,7 +36,7 @@ function App() {
   buttonText="Explore Article"
   onClick={() => alert("Navigating to article...")}
 />
-
+<Footer></Footer>
     </>
   )
 }
