@@ -15,14 +15,22 @@ exports.signup = async(req,res) =>{
         await newUser.save();
 
         const token = newUser.generateJWT();
-        res.status(201).json({
-      message: "User registered successfully",
-      token,
-      user: {
-        email: newUser.email,
-        role: newUser.role,
-      },
-    });
+       // Set JWT in cookie
+    res
+      .status(201)
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      })
+      .json({
+        message: "User registered successfully",
+        user: {
+          email: newUser.email,
+          role: newUser.role,
+        },
+      });
 
     }catch(error){
     res.status(500).json({error: 'Server error during signup'});
@@ -42,8 +50,33 @@ exports.signin = async(req,res) =>{
 
         const token = user.generateJWT();
 
-        res.status(200).json({ token, user: { email: user.email, role: user.role } });
+        // Set JWT in cookie
+    res
+      .status(200)
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      })
+      .json({
+        message: "User signed in successfully",
+        user: {
+          email: user.email,
+          role: user.role,
+        },
+      });
     }catch(error){
          res.status(500).json({ error: "Server error during signin" });
     }
+};
+
+//controller logic for logout
+exports.logout = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
+  res.status(200).json({ message: "Logged out successfully" });
 };
