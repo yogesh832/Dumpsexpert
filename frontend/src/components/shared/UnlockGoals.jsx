@@ -68,13 +68,12 @@ const UnlockGoals = () => {
           Unlock your IT certification goals with Dumps Xpert
         </h1>
         <p className="text-gray-600 text-lg mt-4">
-          Benefits of IT Certification Dumps, Practice Exams and Study Materials
-          With dumpsxpert
+          Benefits of IT Certification Dumps, Practice Exams and Study Materials With dumpsxpert
         </p>
       </header>
 
-      <main className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <main className="max-w-7xl mx-auto px-4">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {cardData.map((card, index) => (
             <InfoCard
               key={index}
