@@ -6,8 +6,8 @@ import moneyBack from "../../assets/landingassets/moneyBack.webp";
 import support from "../../assets/landingassets/support.jpg";
 import freesample from "../../assets/landingassets/freesample.webp";
 import validDumps from "../../assets/landingassets/validDumps.webp";
-import specialdiscount from "../../assets/landingassets/specialdiscount.webp";
-import freeupdates from "../../assets/landingassets/freeupdate.webp";
+import specialdiscount from "../../assets/landingassets/specialDiscount.webp";
+import freeupdates from "../../assets/landingassets/freeUpdate.webp";
 
 const UnlockGoals = () => {
   const cardData = [
