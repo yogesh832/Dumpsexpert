@@ -29,8 +29,8 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-md z-50 px-4 md:px-6">
-  <div className="max-w-7xl mx-auto py-4 flex justify-between items-center">
+<nav className="fixed top-0 mb-20 left-0 w-full bg-white shadow-md z-50 text-lg md:px-6">
+  <div className="max-w-9xl mx-20 py-4 flex justify-between">
     {/* Logo */}
     <a href="/" className="flex items-center cursor-pointer space-x-4">
       <img src={dumplogo} alt="DumpsXpert Logo" className="h-12 w-auto" />
@@ -41,9 +41,9 @@ const Navbar = () => {
       <Input
         type="text"
         placeholder="Search"
-        className="outline-none px-4 py-2 w-72 text-lg rounded-xl border border-gray-300"
+        className="outline-none px-4 py-2 w-72 text-xl rounded-xl border border-gray-300"
       />
-      <Button className="text-white bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition text-lg">
+      <Button className="text-white bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition text-xl">
         <FaSearch size={20} />
       </Button>
     </div>
@@ -54,12 +54,15 @@ const Navbar = () => {
         className="text-blue-600 text-2xl cursor-pointer"
         onClick={toggleSearch}
       />
-      <Button
-        onClick={toggleMenu}
-        className="text-blue-600 text-3xl focus:outline-none"
-      >
-        {menuOpen ? <FaTimes /> : <FaBars />}
-      </Button>
+ <button
+  onClick={toggleMenu}
+  className="text-blue-600 text-3xl focus:outline-none"
+>
+  {menuOpen ? <FaTimes /> : <FaBars />}
+</button>
+
+
+
     </div>
 
     {/* Desktop Nav Links */}
@@ -67,7 +70,7 @@ const Navbar = () => {
       {navLinks.map((item, index) => (
         <li
           key={index}
-          className="flex items-center gap-2 hover:text-blue-700 cursor-pointer transition"
+          className="flex items-center text-lg gap-2 hover:text-blue-700 cursor-pointer transition"
         >
           {item.icon}
           <span>{item.label}</span>

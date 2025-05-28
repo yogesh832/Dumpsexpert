@@ -2,7 +2,7 @@ import { Route,Routes } from "react-router";
 import PublicLayout from "./layout/publicLayout";
 import PrivateLayout from "./layout/privateLayout";
 
-import Home from "./pages/Home"
+import Home from "./pages/Home";
 import Dashboard from "./features/guest/pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import Contact from "./pages/Contact";
@@ -22,15 +22,15 @@ const App = () =>{
         <Route path="/register" element={<Register />} />
         </Route>
 
-        {/* private routes  */}
-        <Route element={<PrivateLayout/>}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* private routes */}
+        <Route element={<PrivateLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
-  )
-}
+  );
+};
 
 export default App;

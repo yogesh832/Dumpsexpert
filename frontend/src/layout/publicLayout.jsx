@@ -7,15 +7,15 @@ import Footer from "../components/shared/Footer";
 const PublicLayout = () => {
   return (
     <div>
-      <header className="bg-blue-100 p-4">
+      <header className="">
              <Navbar />
       </header>
 
-      <main className="p-4 bg-[#f9f9f9]">
+      <main className="">
         <Outlet />
       </main>
 
-      <footer className="bg-gray-200 p-4 text-center">
+      <footer className="">
       <Footer />
       </footer>
     </div>

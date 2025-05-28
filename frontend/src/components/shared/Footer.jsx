@@ -2,12 +2,14 @@ import { FaFacebookF, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import dunpslogo from "../../assets/landingassets/dumplogo.webp";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
+
 export default function Footer() {
   return (
-    <footer className="bg-[#1E1E24] text-white text-sm px-6 py-10 md:px-20">
-      <div className="flex flex-col md:flex-row justify-between gap-10 border-b border-gray-600 pb-8">
-        {/* Left Column */}
-        <div className="md:w-1/4">
+    <footer className="bg-[#1E1E24] text-white text-sm px-4 sm:px-6 lg:px-20 py-10">
+      {/* Top Grid Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 border-b border-gray-600 pb-8">
+        {/* Disclaimer */}
+        <div>
           <p className="font-semibold">Disclaimer :</p>
           <p className="mt-2">
             We provide top-quality dumps, practice exams, and study materials
@@ -63,20 +65,11 @@ export default function Footer() {
         {/* Newsletter */}
         <div>
           <h3 className="font-semibold mb-2">Subscribe to Our Newsletter</h3>
-          {/* <input
-            type="email"
-            placeholder="Enter your email"
-            className="w-full px-3 py-2 rounded text-black placeholder-gray-500 bg-white"
-          /> */}
           <Input
             type="email"
             placeholder="Enter your email"
             className="w-full px-3 py-2 rounded text-black placeholder-gray-700 bg-white"
           />
-
-          {/* <button className="bg-blue-600 text-white w-full mt-2 py-2 rounded hover:bg-blue-700">
-            Subscribe
-          </button> */}
           <Button className="bg-blue-600 text-white h-10 w-full mt-2 py-2 rounded hover:bg-blue-700">
             Subscribe
           </Button>
@@ -84,8 +77,8 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="text-center text-gray-400 text-xs pt-4 flex flex-col md:flex-row justify-between mt-4 border-t border-gray-600 pt-4">
-        <div className="mb-2 md:mb-0">
+      <div className="flex flex-col md:flex-row justify-between items-center text-center text-gray-400 text-xs mt-4 border-t border-gray-600 pt-4 gap-2">
+        <div>
           © 2025 Exam Dump. All Rights Reserved. Designed By Dumpsxpert.Com
         </div>
         <div className="space-x-4">

@@ -4,26 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  padding: 0px;
-  margin: 0px;
-  box-sizing: border-box;
+
+html {
+  scroll-behavior: smooth;
 }
 
-:root{
-    /* Primary */
-  --color-primary: #007bff;       
-  --color-primary-hover: #0d6efd; 
-
-  /* Secondary */
-  --color-secondary: #f57c00;       
-  --color-secondary-hover: #fd7e14; 
-
-  /* Red */
-  /* --color-red: #dc2626; */
-  /* --color-red-hover: #b91c1c; */
-
-  /* Green */
-  /* --color-green: #16a34a; */
-  /* --color-green-hover: #15803d; */
-}
