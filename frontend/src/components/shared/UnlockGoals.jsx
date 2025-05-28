@@ -2,7 +2,7 @@ import React from "react";
 import InfoCard from "../ui/InfoCard";
 import affordable from "../../assets/landingassets/affordable.webp";
 import downloadable from "../../assets/landingassets/downloadable.jpg";
-import moneyback from "../../assets/landingassets/moneyback.webp";
+import moneyBack from "../../assets/landingassets/moneyback.webp";
 import support from "../../assets/landingassets/support.jpg";
 import freesample from "../../assets/landingassets/freesample.webp";
 import validDumps from "../../assets/landingassets/validDumps.webp";
@@ -24,7 +24,7 @@ const UnlockGoals = () => {
         "You will never have to pay much for these real exam questions. Our prices are very reasonable and affordable.",
     },
     {
-      icon: moneyback,
+      icon: moneyBack,
       title: "100% Money Back Guarantee",
       description:
         "We provide exact IT exam questions & answers at no risk to you. If our resources do not live up to expectations, you can claim a refund.",
@@ -68,16 +68,19 @@ const UnlockGoals = () => {
           Unlock your IT certification goals with Dumps Xpert
         </h1>
         <p className="text-gray-600 text-lg mt-4">
-          Benefits of IT Certification Dumps, Practice Exams and Study Materials With dumpsxpert
+          Benefits of IT Certification Dumps, Practice Exams and Study Materials
+          With dumpsxpert
         </p>
       </header>
 
       <main className="max-w-7xl mx-auto px-4">
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {cardData.map((card, index) => (
             <InfoCard
               key={index}
-              icon={<img src={card.icon} alt={card.title} className="w-12 h-12" />}
+              icon={
+                <img src={card.icon} alt={card.title} className="w-12 h-12" />
+              }
               title={card.title}
               description={card.description}
             />
