@@ -1,5 +1,10 @@
+import AboutUs from "./components/shared/AboutUs"
+import AllDumps from "./components/shared/AllDumps"
 import Footer from "./components/shared/Footer"
+import HeroSection from "./components/shared/HeroSection"
 import Navbar from "./components/shared/Navbar"
+import PopularDumps from "./components/shared/PopularDumps"
+import UnlockGoals from "./components/shared/UnlockGoals"
 import BlogCard from "./components/ui/BlogCard"
 import Button from "./components/ui/Button"
 import CarouselCard from "./components/ui/CarouselCard"
@@ -13,10 +18,19 @@ function App() {
   return (
     <>
     <Navbar></Navbar>
-     <h1 className=" font-bold   text-red-500 ">
+    {/* <HeroSection></HeroSection>
+    <AboutUs></AboutUs> */}
+
+{/* <AllDumps></AllDumps> */}
+
+<PopularDumps></PopularDumps>
+<UnlockGoals></UnlockGoals>
+
+
+     {/* <h1 className=" font-bold   text-red-500 ">
     Hello world!
-  </h1>
-    <Button>Hello</Button>
+  </h1> */}
+    {/* {/* <Button>Hello</Button>
     <Input placeholder="Enter Name"/>
     <CarouselCard
   title="Card Title"
@@ -35,7 +49,7 @@ function App() {
   date="2025-09-05 10:00:00"
   buttonText="Explore Article"
   onClick={() => alert("Navigating to article...")}
-/>
+/> */}
 <Footer></Footer>
     </>
   )

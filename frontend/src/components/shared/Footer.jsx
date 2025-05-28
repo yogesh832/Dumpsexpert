@@ -1,5 +1,7 @@
-import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
-import dunpslogo from '../../assets/landingassets/dumplogo.webp';
+import { FaFacebookF, FaLinkedinIn, FaYoutube } from "react-icons/fa";
+import dunpslogo from "../../assets/landingassets/dumplogo.webp";
+import Button from "../ui/Button";
+import Input from "../ui/Input";
 export default function Footer() {
   return (
     <footer className="bg-[#1E1E24] text-white text-sm px-6 py-10 md:px-20">
@@ -8,23 +10,37 @@ export default function Footer() {
         <div className="md:w-1/4">
           <p className="font-semibold">Disclaimer :</p>
           <p className="mt-2">
-            We provide top-quality dumps, practice exams, and study materials for various certifications. Join us to ensure success in your IT career!
+            We provide top-quality dumps, practice exams, and study materials
+            for various certifications. Join us to ensure success in your IT
+            career!
           </p>
-          <img
-            src={dunpslogo}
-            alt="DumpsXpert Logo"
-            className="mt-4 w-32"
-          />
+          <img src={dunpslogo} alt="DumpsXpert Logo" className="mt-4 w-32" />
         </div>
 
         {/* Quick Links */}
         <div>
           <h3 className="font-semibold mb-2">Quick Links</h3>
           <ul className="space-y-1">
-            <li><a href="#" className="hover:underline">Home</a></li>
-            <li><a href="#" className="hover:underline">SAP Dumps</a></li>
-            <li><a href="#" className="hover:underline">About Us</a></li>
-            <li><a href="#" className="hover:underline">Link Name</a></li>
+            <li>
+              <a href="#" className="hover:underline">
+                Home
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                SAP Dumps
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                About Us
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Link Name
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -32,24 +48,38 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-2">Follow Us</h3>
           <ul className="space-y-1">
-            <li className="flex items-center gap-2"><FaFacebookF /> Facebook</li>
-            <li className="flex items-center gap-2"><FaLinkedinIn /> Linkedin</li>
-            <li className="flex items-center gap-2"><FaYoutube /> Youtube-play</li>
+            <li className="flex items-center gap-2">
+              <FaFacebookF /> Facebook
+            </li>
+            <li className="flex items-center gap-2">
+              <FaLinkedinIn /> Linkedin
+            </li>
+            <li className="flex items-center gap-2">
+              <FaYoutube /> Youtube-play
+            </li>
           </ul>
         </div>
 
         {/* Newsletter */}
         <div>
           <h3 className="font-semibold mb-2">Subscribe to Our Newsletter</h3>
-        <input
-  type="email"
-  placeholder="Enter your email"
-  className="w-full px-3 py-2 rounded text-black placeholder-gray-500 bg-white"
-/>
+          {/* <input
+            type="email"
+            placeholder="Enter your email"
+            className="w-full px-3 py-2 rounded text-black placeholder-gray-500 bg-white"
+          /> */}
+          <Input
+            type="email"
+            placeholder="Enter your email"
+            className="w-full px-3 py-2 rounded text-black placeholder-gray-700 bg-white"
+          />
 
-          <button className="bg-blue-600 text-white w-full mt-2 py-2 rounded hover:bg-blue-700">
+          {/* <button className="bg-blue-600 text-white w-full mt-2 py-2 rounded hover:bg-blue-700">
             Subscribe
-          </button>
+          </button> */}
+          <Button className="bg-blue-600 text-white h-10 w-full mt-2 py-2 rounded hover:bg-blue-700">
+            Subscribe
+          </Button>
         </div>
       </div>
 
@@ -59,10 +89,18 @@ export default function Footer() {
           © 2025 Exam Dump. All Rights Reserved. Designed By Dumpsxpert.Com
         </div>
         <div className="space-x-4">
-          <a href="#" className="hover:underline">Guarantee</a>
-          <a href="#" className="hover:underline">Terms & Condition</a>
-          <a href="#" className="hover:underline">Privacy Policy</a>
-          <a href="#" className="hover:underline">Refund Policy</a>
+          <a href="#" className="hover:underline">
+            Guarantee
+          </a>
+          <a href="#" className="hover:underline">
+            Terms & Condition
+          </a>
+          <a href="#" className="hover:underline">
+            Privacy Policy
+          </a>
+          <a href="#" className="hover:underline">
+            Refund Policy
+          </a>
         </div>
       </div>
     </footer>
