@@ -2,7 +2,7 @@ import React from "react";
 import InfoCard from "../ui/InfoCard";
 import affordable from "../../assets/landingassets/affordable.webp";
 import downloadable from "../../assets/landingassets/downloadable.jpg";
-import moneyBack from "../../assets/landingassets/moneyback.webp";
+import moneyBack from "../../assets/landingassets/moneyBack.webp";
 import support from "../../assets/landingassets/support.jpg";
 import freesample from "../../assets/landingassets/freesample.webp";
 import validDumps from "../../assets/landingassets/validDumps.webp";
