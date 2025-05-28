@@ -43,10 +43,10 @@ exports.signin = async(req,res) =>{
         const {email, password} = req.body;
 
         const user = await User.findOne({email});
-        if(!user) return res.status(401).json({error: "Invalid credentials"});
+        if(!user) return res.status(401).json({error: "Invalid credentials users"});
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if(!isMatch) return res.status(401).json({error: "Invalid credentials"});
+        if(!isMatch) return res.status(401).json({error: "Invalid credentials bycrypt"});
 
         const token = user.generateJWT();
 
