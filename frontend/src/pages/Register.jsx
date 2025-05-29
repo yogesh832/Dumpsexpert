@@ -12,7 +12,7 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const res = await instance.post('/api/auth/signup', { email, password });
+            const res = await instance.post('http://localhost:8000/api/auth/signup', { email, password });
             console.log('Registration success:', res.data);
             navigate('/dashboard'); 
         } catch (err) {
