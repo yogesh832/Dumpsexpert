@@ -4,7 +4,8 @@ const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 export const instance = axios.create({
     baseURL: apiUrl,
-    withCredentials: true
+    withCredentials: true,
+    headers: { 'Content-Type': 'application/json' }
 });
 
 instance.interceptors.response.use(

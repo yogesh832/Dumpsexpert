@@ -10,8 +10,10 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        const cleanedEmail = email.trim().toLowerCase();
+        // console.log('Sending payload:', { email: cleanedEmail, password });
         try {
-            const res = await instance.post('/api/auth/signin', { email, password });
+            const res = await instance.post('/api/auth/signin', { email: cleanedEmail, password });
             console.log('Login success:', res.data);
             navigate('/dashboard'); 
         } catch (err) {
