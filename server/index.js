@@ -12,13 +12,15 @@ dotenv.config();
 const PORT = process.env.PORT || 8000;
 
 const app = express();
-app.use(cors({
-    origin: ['http://localhost:5173', 'https://dumpsexpert.vercel.app/'], 
-    credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-//thi is test
+const corsOptions = {
+  origin: ['http://localhost:5174', 'https://dumpsexpert.vercel.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); 
 
 app.use(express.json());
 app.use(cookieParser());
