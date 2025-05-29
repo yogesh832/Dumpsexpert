@@ -1,6 +1,12 @@
 import React, { useState } from "react";
-import { FaBars, FaTimes, FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import {
+  FaBars,
+  FaTimes,
+  FaSearch,
+  FaShoppingCart,
+  FaUser,
+} from "react-icons/fa";
+import { Link } from "react-router";
 import dumplogo from "../../assets/landingassets/dumplogo.webp";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
