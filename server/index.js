@@ -20,7 +20,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); 
+
+// Optional: Handle preflight requests (important for cookies/auth headers)
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
