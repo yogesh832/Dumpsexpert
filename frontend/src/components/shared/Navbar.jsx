@@ -27,6 +27,7 @@ const Navbar = () => {
     { label: "Cart", icon: <FaShoppingCart size={22} /> },
     { label: "Login/Register", icon: <FaUser size={22} /> },
   ];
+  //this is for test
 
   return (
 <nav className="fixed top-0 mb-20 left-0 w-full bg-white shadow-md z-50 text-lg md:px-6">
