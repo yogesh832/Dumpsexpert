@@ -12,7 +12,6 @@ dotenv.config();
 const PORT = process.env.PORT || 8000;
 const cors = require("cors");
 
-<<<<<<< HEAD
 const allowedOrigins = [
   "http://localhost:5174",
   "https://dumpsexpert.vercel.app"
@@ -36,14 +35,6 @@ app.use(cors({
 app.options("*", cors({
   origin: true,
   credentials: true
-=======
-const app = express();
-app.use(cors({
-    origin: 'http://localhost:5173', 
-    credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
->>>>>>> 4818b383eef458aadb42a833cf408253807abe34
 }));
 
 app.use(express.json());
