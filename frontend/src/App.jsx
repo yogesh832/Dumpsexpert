@@ -16,6 +16,7 @@ import PrivateRoute from "./routes/PrivateRoutes";
 import StudentDashboard from "./features/student/pages/StudentDashboard";
 import GuestDashboard from "./features/guest/pages/GuestDashboard";
 import AdminDashboard from "./features/admin/pages/AdminDashboard";
+import AboutUs from "./components/shared/AboutUs";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
       {/* Public routes */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />

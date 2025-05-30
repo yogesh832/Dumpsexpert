@@ -10,7 +10,7 @@ import { Link } from "react-router";
 
 const Contact = () => {
   return (
-    <div className="max-h-screen flex items-center justify-center p-6">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="flex flex-col md:flex-row w-full max-w-5xl gap-10">
         <div className="flex flex-col flex-1 justify-center ">
 <h2 className="text-4xl font-bold mb-2">Contact Us</h2>
