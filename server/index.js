@@ -30,7 +30,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
-
+// this is important for cookies to work with CORS
 // Optional: Preflight handling
 app.options('*', cors({
   origin: allowedOrigins,
