@@ -1,21 +1,25 @@
+// index.js (or server.js)
+
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 
-const authRoutes = require("./routes/authRoutes");
-const dbConnection = require("./config/dbConnection");
+const authRoutes = require("./routes/authRoutes"); // Your auth routes
+const dbConnection = require("./config/dbConnection"); // Your DB connection
 
 dotenv.config();
 
-const app = express(); // ✅ YOU FORGOT THIS LINE
+const app = express();
 const PORT = process.env.PORT || 8000;
 
 const allowedOrigins = [
+  "http://localhost:5173",
   "http://localhost:5174",
   "https://dumpsexpert.vercel.app"
 ];
 
+// CORS middleware
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ''))) {
@@ -30,26 +34,31 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// Handle preflight
+// Handle preflight requests
 app.options("*", cors({
   origin: true,
   credentials: true
 }));
 
+// Body parser
 app.use(express.json());
+
+// Cookie parser
 app.use(cookieParser());
 
-// Connect DB
+// Connect to database
 dbConnection();
 
-// Routes
+// Basic root route to test API
 app.get("/", (req, res) => {
   res.json({ message: "API is running..." });
 });
 
+// IMPORTANT: Use a route **path**, NOT a full URL
+// Correct usage: '/api/auth' (not 'https://someurl/api/auth')
 app.use("/api/auth", authRoutes);
 
-// Start Server
+// Start server
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });

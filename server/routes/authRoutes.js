@@ -1,4 +1,3 @@
-// server/routes/authRoutes.js
 const express = require("express");
 const router = express.Router();
 
@@ -6,11 +5,11 @@ const { validateSignup, validateSignin } = require("../middlewares/validationMid
 const { signup, signin, logout } = require("../controllers/authController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
-// Public
+// Public routes
 router.post("/signup", validateSignup, signup);
 router.post("/signin", validateSignin, signin);
 
-// Protected
+// Protected routes
 router.get("/dashboard", authMiddleware, (req, res) => {
   res.json({ message: `Welcome ${req.user.email}`, role: req.user.role });
 });
