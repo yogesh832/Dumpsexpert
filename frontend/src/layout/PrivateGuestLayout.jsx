@@ -1,10 +1,9 @@
 import React from "react";
 import { Outlet, Link } from "react-router";
 
-const PrivateLayout = () => {
+const PrivateGuestLayout = () => {
   return (
     <div>
-      
 
       <main className="p-4">
         <Outlet />
@@ -15,4 +14,4 @@ const PrivateLayout = () => {
   );
 };
 
-export default PrivateLayout;
+export default PrivateGuestLayout;
