@@ -1,44 +1,58 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const authRoutes = require("./routes/authRoutes");
-const dbConnection = require("./config/dbConnection");
 const cookieParser = require("cookie-parser");
 
-
+const authRoutes = require("./routes/authRoutes");
+const dbConnection = require("./config/dbConnection");
 
 dotenv.config();
 
+const app = express();
 const PORT = process.env.PORT || 8000;
 
-const app = express();
-const corsOptions = {
-  origin: ['http://localhost:5174', 'https://dumpsexpert.vercel.app'],
+// Allowed frontend origins
+const allowedOrigins = [
+  "http://localhost:5174",
+  "https://dumpsexpert.vercel.app"
+];
+
+// CORS configuration
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
-};
+}));
 
-app.use(cors(corsOptions));
+// Optional: Preflight handling
+app.options('*', cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 
-// Optional: Handle preflight requests (important for cookies/auth headers)
-app.options('*', cors(corsOptions));
-
+// Middlewares
 app.use(express.json());
 app.use(cookieParser());
-//calling db
+
+// Connect DB
 dbConnection();
 
-//normal testing for api
-app.get("/", (req,res)=>{
-    res.json({
-        message: "api is running..."
-    })
+// Test route
+app.get("/", (req, res) => {
+  res.json({ message: "API is running..." });
 });
 
-//for auth routes
+// Auth routes
 app.use("/api/auth", authRoutes);
 
-app.listen(PORT, ()=>{
-    console.log(`Server is running at http://localhost:${PORT}`);
-})
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running at http://localhost:${PORT}`);
+});
