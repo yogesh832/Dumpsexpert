@@ -1,1 +1,59 @@
-paddin: 0px;
+/* for sidebar custom css animation logic  */
+
+/* Smooth toggle rotation */
+/* .toggle-animation {
+  transition: transform 0.4s ease-in-out;
+}
+
+.toggle-animation.open {
+  transform: rotate(0deg);
+}
+
+.toggle-animation.closed {
+  transform: rotate(180deg);
+} */
+
+
+/* Sidebar slide animation */
+.sidebar-open {
+  animation: slideIn 0.4s ease forwards;
+}
+
+.sidebar-close {
+  animation: slideOut 0.4s ease forwards;
+}
+
+@keyframes slideIn {
+  0% {
+    width: 4rem;
+    opacity: 0.5;
+  }
+  100% {
+    width: 16rem;
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    width: 16rem;
+    opacity: 1;
+  }
+  100% {
+    width: 4rem;
+    opacity: 1;
+  }
+}
+
+/* Icon rotate animation */
+.toggle-animation {
+  transition: transform 0.4s ease-in-out;
+}
+
+.toggle-animation.open {
+  transform: rotate(0deg);
+}
+
+.toggle-animation.closed {
+  transform: rotate(180deg);
+}
