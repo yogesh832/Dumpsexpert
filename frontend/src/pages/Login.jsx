@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { instance } from '../lib/axios';
-import useAuthStore from '../store/index';  
+import useAuthStore from '../store/index';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const [error, setError] = useState('');
-  const setUser = useAuthStore((state) => state.setUser);  
+  const setUser = useAuthStore((state) => state.setUser);
 
   const handleLogin = async (e) => {
     e.preventDefault();

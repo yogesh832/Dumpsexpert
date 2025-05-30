@@ -1,27 +1,23 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { instance } from '../lib/axios';
-import useAuthStore from '../store/index';
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
+import { instance } from "../lib/axios";
+import useAuthStore from "../store/index";
 
 const Register = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const setUser = useAuthStore((state) => state.setUser);
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await instance.post('/api/auth/signup', { email, password });
-
+      const res = await instance.post("/api/auth/signup", { email, password });
       setUser(res.data.user);
-
-      // Redirect all new users to guest dashboard
-      navigate('/guest/dashboard');
+      navigate("/guest/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
