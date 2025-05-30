@@ -13,10 +13,10 @@ const Home = () =>{
     return (
         <div>
             <HeroSection />
-        <AllDumps></AllDumps>
+<AllOtherDumps/>
+        {/* <AllDumps></AllDumps> */}
         <PopularDumps></PopularDumps>
         <UnlockGoals></UnlockGoals>
-<AllOtherDumps/>
 <Testimonials/>
            {/* <Contact /> */}
            {/* <Login /> */}
