@@ -1,16 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const authRoutes = require("./routes/authRoutes");
-const dbConnection = require("./config/dbConnection");
 const cookieParser = require("cookie-parser");
 
-
+const authRoutes = require("./routes/authRoutes");
+const dbConnection = require("./config/dbConnection");
 
 dotenv.config();
 
+const app = express(); // ✅ YOU FORGOT THIS LINE
 const PORT = process.env.PORT || 8000;
-const cors = require("cors");
 
 const allowedOrigins = [
   "http://localhost:5174",
@@ -39,19 +38,18 @@ app.options("*", cors({
 
 app.use(express.json());
 app.use(cookieParser());
-//calling db
+
+// Connect DB
 dbConnection();
 
-//normal testing for api
-app.get("/", (req,res)=>{
-    res.json({
-        message: "api is running..."
-    })
+// Routes
+app.get("/", (req, res) => {
+  res.json({ message: "API is running..." });
 });
 
-//for auth routes
 app.use("/api/auth", authRoutes);
 
-app.listen(PORT, ()=>{
-    console.log(`Server is running at http://localhost:${PORT}`);
-})
+// Start Server
+app.listen(PORT, () => {
+  console.log(`Server is running at http://localhost:${PORT}`);
+});
