@@ -10,30 +10,30 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+const cors = require("cors");
 
-// Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5174",
   "https://dumpsexpert.vercel.app"
 ];
 
-// CORS configuration
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ''))) {
       callback(null, true);
     } else {
+      console.log("Blocked by CORS:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
-// this is important for cookies to work with CORS
-// Optional: Preflight handling
-app.options('*', cors({
-  origin: allowedOrigins,
+
+// Handle preflight
+app.options("*", cors({
+  origin: true,
   credentials: true
 }));
 
