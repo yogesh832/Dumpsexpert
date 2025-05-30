@@ -1,72 +1,71 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { instance } from '../lib/axios';
-import useAuthStore from '../store/index';
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
+import { instance } from "../lib/axios";
+import useAuthStore from "../store/index";
 
 const Register = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const setUser = useAuthStore((state) => state.setUser);
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await instance.post('/api/auth/signup', { email, password });
-
+      const res = await instance.post("/api/auth/signup", { email, password });
       setUser(res.data.user);
-
-      // Redirect all new users to guest dashboard
-      navigate('/guest/dashboard');
+      navigate("/guest/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 shadow-lg rounded-lg border">
-      <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
-      <form onSubmit={handleRegister} className="space-y-4">
-        <div>
-          <label className="block mb-1">Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-3 py-2 border rounded"
-          />
-        </div>
-        <div>
-          <label className="block mb-1">Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-3 py-2 border rounded"
-          />
-        </div>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-        >
+    <div className="flex items-center justify-center pt-10 min-h-screen bg-gray-100 px-4">
+      <div className="w-full max-w-md  sm:max-w-lg md:max-w-xl p-6 sm:p-8 sm:m-10 md:p-10 shadow-xl rounded-xl border bg-white">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
           Register
-        </button>
-      </form>
-
-      <p className="mt-4 text-center text-sm">
-        Already have an account?{' '}
-        <span
-          onClick={() => navigate('/login')}
-          className="text-blue-600 cursor-pointer underline"
-        >
-          Login
-        </span>
-      </p>
+        </h2>
+        <form onSubmit={handleRegister} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium mb-1">Email:</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition duration-200"
+          >
+            Register
+          </button>
+        </form>
+        <p className="mt-5 text-center text-sm">
+          Already have an account?{" "}
+          <span
+            onClick={() => navigate("/login")}
+            className="text-blue-600 cursor-pointer underline"
+          >
+            Login
+          </span>
+        </p>
+      </div>
     </div>
   );
 };
