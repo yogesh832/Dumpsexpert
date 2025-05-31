@@ -43,10 +43,8 @@ app.options("*", cors({
 // Body parser
 app.use(express.json());
 
-// Cookie parser
 app.use(cookieParser());
 
-// Connect to database
 dbConnection();
 
 // Basic root route to test API
