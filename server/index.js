@@ -5,8 +5,8 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 
-const authRoutes = require("./routes/authRoutes"); // Your auth routes
-const dbConnection = require("./config/dbConnection"); // Your DB connection
+const authRoutes = require("./routes/authRoutes"); 
+const dbConnection = require("./config/dbConnection"); 
 
 dotenv.config();
 
@@ -54,8 +54,7 @@ app.get("/", (req, res) => {
   res.json({ message: "API is running..." });
 });
 
-// IMPORTANT: Use a route **path**, NOT a full URL
-// Correct usage: '/api/auth' (not 'https://someurl/api/auth')
+
 app.use("/api/auth", authRoutes);
 
 // Start server
