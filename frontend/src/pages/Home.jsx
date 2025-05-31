@@ -16,7 +16,6 @@ const Home = () => {
       <PopularDumps />
       <UnlockGoals />
       <Testimonials />
-      <AdminSidebar />
     </div>
   );
 };

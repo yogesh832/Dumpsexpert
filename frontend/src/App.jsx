@@ -17,9 +17,12 @@ import StudentDashboard from "./features/student/pages/StudentDashboard";
 import GuestDashboard from "./features/guest/pages/GuestDashboard";
 import AdminDashboard from "./features/admin/pages/AdminDashboard";
 import AboutUs from "./components/shared/AboutUs";
+import AuthProvider from "./layout/AuthProvider";
 
 const App = () => {
   return (
+    <AuthProvider>
+
     <Routes>
       {/* Public routes */}
       <Route element={<PublicLayout />}>
@@ -55,6 +58,7 @@ const App = () => {
       {/* 404 fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </AuthProvider>
   );
 };
 

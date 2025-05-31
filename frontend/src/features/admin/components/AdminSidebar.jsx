@@ -148,7 +148,7 @@ const Sidebar = ({
       <div className="flex-1 p-4">{/* your main content */}</div>
     </div>
   );
-};
+}
 
 
 
@@ -186,7 +186,7 @@ const sidebarItems = [
       },
     ],
   },
-];
+]
 
 
 const AdminSidebar = ()=>{
@@ -197,4 +197,4 @@ const AdminSidebar = ()=>{
     )
 }
 
-export default AdminSidebar;
+export default AdminSidebar
