@@ -4,7 +4,7 @@ import Sidebar from "../../../components/ui/Sidebar";
 const AdminDashboard = () =>{
     return(
         <div>
-   admin page
+   this is admin dashboard
         </div>
     )
 }

@@ -1,5 +1,6 @@
 import React from "react";
-import banner from "../../assets/landingassets/banner.webp"; // Adjust the path as necessary
+import banner from "../assets/landingassets/banner.webp"; 
+
 
 const AboutUs = () => {
   return (

@@ -15,7 +15,7 @@ const PrivateAdminLayout = () => {
   }
 
   return (
-    <div>
+    <div className="flex">
       <AdminSidebar />
       <main className="p-4">
         <Outlet />
