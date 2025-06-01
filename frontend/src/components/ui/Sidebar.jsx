@@ -121,7 +121,6 @@ const Sidebar = ({
                           </button>
                         )}
                       </div>
-                      {/* add chages in frontend */}
 
                       {hasChildren && isOpen && isMenuOpen && (
                         <ul className="ml-4 mt-1 space-y-1">
