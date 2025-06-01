@@ -2,7 +2,7 @@ import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
 
-const PublicLayout         = lazy(() => import("./layout/PublicLayout.jsx"));
+import PublicLayout from "./layout/PublicLayout.jsx";
 const PrivateAdminLayout   = lazy(() => import("./layout/PrivateAdminLayout.jsx"));
 const PrivateStudentLayout = lazy(() => import("./layout/PrivateStudentLayout.jsx"));
 const PrivateGuestLayout   = lazy(() => import("./layout/PrivateGuestLayout.jsx"));
