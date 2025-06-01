@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet, Navigate } from "react-router"; 
 import useAuthStore from "../store/index";
+import AdminSidebar from "../features/admin/components/AdminSidebar";
 
 const PrivateAdminLayout = () => {
   const user = useAuthStore((state) => state.user);
@@ -14,7 +15,8 @@ const PrivateAdminLayout = () => {
   }
 
   return (
-    <div>
+    <div className="flex">
+      <AdminSidebar />
       <main className="p-4">
         <Outlet />
       </main>

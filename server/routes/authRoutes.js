@@ -13,4 +13,9 @@ router.get("/dashboard", authMiddleware, (req, res) => {
   res.json({ message: `Welcome ${req.user.email}`, role: req.user.role });
 });
 
+// ✅ New route for frontend state restoration
+router.get("/me", authMiddleware, (req, res) => {
+  res.json({ user: req.user });
+});
+
 module.exports = router;

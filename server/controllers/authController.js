@@ -9,7 +9,8 @@ exports.signup = async (req, res) => {
     if (existingUser)
       return res.status(409).json({ error: "Email already exists" });
 
-    const newUser = new User({ email, password });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
 
     const token = newUser.generateJWT();
@@ -19,8 +20,8 @@ exports.signup = async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        sameSite: "None",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .json({
         message: "User registered successfully",
@@ -50,8 +51,8 @@ exports.signin = async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        sameSite: "None",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .json({
         message: "User signed in successfully",
@@ -66,7 +67,7 @@ exports.logout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict",
+    sameSite: "None",
   });
   res.status(200).json({ message: "Logged out successfully" });
 };
