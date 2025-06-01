@@ -1,5 +1,6 @@
-const PaymentSettings = ()=> {
-  return <div>PaymentSettings</div>;
-}
+import React from "react"
 
-export default PaymentSettings;
+const PaymentSettings = () => {
+  return <div>PaymentSettings</div>
+}
+export default PaymentSettings
