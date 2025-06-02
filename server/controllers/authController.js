@@ -9,8 +9,7 @@ exports.signup = async (req, res) => {
     if (existingUser)
       return res.status(409).json({ error: "Email already exists" });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashedPassword });
+    const newUser = new User({ email, password });
     await newUser.save();
 
     const token = newUser.generateJWT();
@@ -37,12 +36,10 @@ exports.signin = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(401).json({ error: "Invalid credentials" });
+    if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(401).json({ error: "Invalid credentials" });
+    if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
 
     const token = user.generateJWT();
 
