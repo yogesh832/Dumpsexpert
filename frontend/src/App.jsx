@@ -84,6 +84,7 @@ import BlogSection from "./components/shared/BlogSection";
 import AllDumps from "./components/shared/AllDumps";
 import AllOtherDumps from "./components/shared/AllOtherDumps";
 import DownloadedSamples from "./features/admin/pages/DownloadedSamples";
+import PublicLayout from "./layout/PublicLayout";
 
 
 
@@ -93,7 +94,7 @@ const App = () => {
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Public routes */}
-          <Route element={<PrivateGuestLayout />}>
+          <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<Contact />} />
