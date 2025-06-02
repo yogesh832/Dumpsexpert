@@ -64,6 +64,10 @@ const SubscribersList = lazy(() => import("./features/admin/pages/SubscribersLis
 const MailToSubscribers = lazy(() => import("./features/admin/pages/MailToSubscribers"));
 const SettingsPage = lazy(() => import("./features/admin/pages/SettingsPage"));
 const DownloadedSamples = lazy(() => import("./features/admin/pages/DownloadedSamples"));
+const SEOMetaInfo = lazy(() => import("./features/admin/pages/SEOMetaInfo"));
+const SEOSiteMap = lazy(() => import("./features/admin/pages/SEOSiteMap"));
+const Permalink = lazy(()=>import("./features/admin/pages/Permalink"));
+
 
 import AuthProvider from "./layout/AuthProvider";
 
@@ -96,9 +100,10 @@ const App = () => {
                   <Route path="social-links" element={<SocialLinks />} />
                   <Route path="seo">
                     <Route index element={<SEOSettings />} />
-                    <Route path="test" element={<SEOSettings />} />
+                    <Route path="meta-info" element={<SEOMetaInfo />} />
+                    <Route path="site-map" element={<SEOSiteMap />} />
                   </Route>
-                  <Route path="permalink" element={<SettingsPage />} />
+                  <Route path="permalink" element={<Permalink />} />
                   <Route path="maintenance" element={<MaintenanceMode />} />
                   <Route path="announcement" element={<Announcement />} />
                   <Route path="preloader" element={<PreloaderSettings />} />

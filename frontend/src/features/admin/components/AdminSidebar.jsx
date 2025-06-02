@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Link } from "react-router"
+import { useState } from "react";
+import { Link } from "react-router";
 import {
   FaChevronDown,
   FaChevronRight,
@@ -22,9 +22,9 @@ import {
   FaEnvelope,
   FaDownload,
   FaTools,
-} from "react-icons/fa"
-import { FiToggleRight, FiToggleLeft } from "react-icons/fi"
-import "../../../styles/custom.css"
+} from "react-icons/fa";
+import { FiToggleRight, FiToggleLeft } from "react-icons/fi";
+import "../../../styles/custom.css";
 
 // Icon mapping for all menu items
 const iconMap = {
@@ -35,7 +35,8 @@ const iconMap = {
   "Menu Builder": <FaList size={20} />,
   "Social Links": <FaPeopleArrows size={20} />,
   SEO: <FaTags size={20} />,
-  "SEO Test": <FaTags size={20} />,
+  "SEO Meta Info": <FaTags size={20} />,
+  "SEO Site Map": <FaTags size={20} />,
   Permalink: <FaList size={20} />,
   "Maintenance Mode": <FaTools size={20} />,
   Announcement: <FaBlog size={20} />,
@@ -57,6 +58,7 @@ const iconMap = {
   "Shipping Method": <FaBoxOpen size={20} />,
   Products: <FaBoxOpen size={20} />,
   "Product Categories": <FaTags size={20} />,
+  "Product List": <FaBoxOpen size={20} />,
   "Product Reviews": <FaClipboardList size={20} />,
   Coupons: <FaGift size={20} />,
   "Coupon List": <FaGift size={20} />,
@@ -80,32 +82,28 @@ const iconMap = {
   Subscribers: <FaPeopleArrows size={20} />,
   "Subscribers List": <FaPeopleArrows size={20} />,
   "Mail to Subscribers": <FaEnvelope size={20} />,
-  "Sample Downloads": <FaDownload size={20} />,
+  Downloads: <FaDownload size={20} />,
   "Downloaded Samples": <FaDownload size={20} />,
   Settings: <FaCogs size={20} />,
-  General: <FaList size={20} />,
-  Advanced: <FaCogs size={20} />,
-  Roles: <FaUser size={20} />,
-  Permissions: <FaIdBadge size={20} />,
-}
+};
 
 // Recursive SubMenu Renderer with toggle functionality
 const SubMenu = ({ items, level = 0 }) => {
-  const [openSubMenus, setOpenSubMenus] = useState({})
+  const [openSubMenus, setOpenSubMenus] = useState({});
 
   const toggleSubMenu = (key) => {
     setOpenSubMenus((prev) => ({
       ...prev,
       [key]: !prev[key],
-    }))
-  }
+    }));
+  };
 
   return (
     <ul className={`ml-4 mt-1 space-y-1`}>
       {items.map((child, idx) => {
-        const hasChildren = Array.isArray(child.children) && child.children.length > 0
-        const subMenuKey = `${level}-${idx}`
-        const isSubMenuOpen = openSubMenus[subMenuKey] || false
+        const hasChildren = Array.isArray(child.children) && child.children.length > 0;
+        const subMenuKey = `${level}-${idx}`;
+        const isSubMenuOpen = openSubMenus[subMenuKey] || false;
 
         return (
           <li key={idx}>
@@ -136,37 +134,37 @@ const SubMenu = ({ items, level = 0 }) => {
 
             {hasChildren && isSubMenuOpen && <SubMenu items={child.children} level={level + 1} />}
           </li>
-        )
+        );
       })}
     </ul>
-  )
-}
+  );
+};
 
 const Sidebar = ({ title = "Sidebar Title", items = [], className = "", variant = "default" }) => {
-  const [isOpen, setIsOpen] = useState(true)
-  const [openMenus, setOpenMenus] = useState({})
+  const [isOpen, setIsOpen] = useState(true);
+  const [openMenus, setOpenMenus] = useState({});
 
   const toggleSidebar = () => {
     setIsOpen((prev) => {
-      if (prev) setOpenMenus({})
-      return !prev
-    })
-  }
+      if (prev) setOpenMenus({});
+      return !prev;
+    });
+  };
 
   const toggleMenu = (key) => {
     setOpenMenus((prev) => ({
       ...prev,
       [key]: !prev[key],
-    }))
-  }
+    }));
+  };
 
-  const baseStyles = "h-screen transition-all duration-300"
+  const baseStyles = "h-screen transition-all duration-300";
   const variants = {
     default: "bg-white text-gray-800",
     dark: "bg-gray-800 text-white",
     blue: "bg-blue-50 text-blue-900",
     outline: "border border-gray-300",
-  }
+  };
 
   return (
     <div className="flex h-[100vh]">
@@ -196,9 +194,9 @@ const Sidebar = ({ title = "Sidebar Title", items = [], className = "", variant 
               )}
               <ul className="pl-1 space-y-1">
                 {section.links.map((linkItem, idx) => {
-                  const hasChildren = Array.isArray(linkItem.children) && linkItem.children.length > 0
-                  const menuKey = `${index}-${idx}`
-                  const isMenuOpen = openMenus[menuKey] || false
+                  const hasChildren = Array.isArray(linkItem.children) && linkItem.children.length > 0;
+                  const menuKey = `${index}-${idx}`;
+                  const isMenuOpen = openMenus[menuKey] || false;
 
                   return (
                     <li key={idx}>
@@ -240,18 +238,16 @@ const Sidebar = ({ title = "Sidebar Title", items = [], className = "", variant 
 
                       {hasChildren && isOpen && isMenuOpen && <SubMenu items={linkItem.children} />}
                     </li>
-                  )
+                  );
                 })}
               </ul>
             </li>
           ))}
         </ul>
       </aside>
-
-      {/* <div className="flex-1 p-4">Main Content Area</div> */}
     </div>
-  )
-}
+  );
+};
 
 const sidebarItems = [
   {
@@ -269,7 +265,10 @@ const sidebarItems = [
           {
             label: "SEO",
             to: "/admin/web-customization/seo",
-            children: [{ label: "SEO Test", to: "/admin/web-customization/seo/test" }],
+            children: [
+              { label: "SEO Meta Info", to: "/admin/web-customization/seo/meta-info" },
+              { label: "SEO Site Map", to: "/admin/web-customization/seo/site-map" },
+            ],
           },
           { label: "Permalink", to: "/admin/web-customization/permalink" },
           { label: "Maintenance Mode", to: "/admin/web-customization/maintenance" },
@@ -280,28 +279,30 @@ const sidebarItems = [
         ],
       },
       {
-        label: "General Settings",
-        to: "/admin/settings/general",
+        label: "Settings",
+        to: "/admin/settings",
         children: [
-          { label: "Email Configuration", to: "/admin/settings/email-config" },
-          { label: "Scripts", to: "/admin/settings/scripts" },
-          { label: "Cookie Alert", to: "/admin/settings/cookie-alert" },
-          { label: "Custom CSS", to: "/admin/settings/custom-css" },
+          { label: "General Settings", to: "/admin/settings/general" },
           {
-            label: "Advanced Email",
-            to: "/admin/settings/email-config/advanced",
+            label: "Email Configuration",
+            to: "/admin/settings/email-config",
             children: [
               { label: "Mail From Admin", to: "/admin/settings/email-config/from-admin" },
               { label: "Mail To Admin", to: "/admin/settings/email-config/to-admin" },
               { label: "Follow Up Admin", to: "/admin/settings/email-config/follow-up" },
+              { label: "Advanced Email", to: "/admin/settings/email-config/advanced" },
             ],
           },
+          { label: "Scripts", to: "/admin/settings/scripts" },
+          { label: "Cookie Alert", to: "/admin/settings/cookie-alert" },
+          { label: "Custom CSS", to: "/admin/settings/custom-css" },
         ],
       },
       {
-        label: "Payment Settings",
-        to: "/admin/settings/payment",
+        label: "Payment",
+        to: "/admin/payment",
         children: [
+          { label: "Payment Settings", to: "/admin/payment" },
           { label: "Currencies", to: "/admin/payment/currencies" },
           { label: "Payment Gateway", to: "/admin/payment/gateway" },
           { label: "Shipping Method", to: "/admin/payment/shipping" },
@@ -312,7 +313,7 @@ const sidebarItems = [
         to: "/admin/products",
         children: [
           { label: "Product Categories", to: "/admin/products/categories" },
-          { label: "Products", to: "/admin/products/list" },
+          { label: "Product List", to: "/admin/products/list" },
           { label: "Product Reviews", to: "/admin/products/reviews" },
         ],
       },
@@ -339,10 +340,7 @@ const sidebarItems = [
           { label: "Product Sale Report", to: "/admin/order-reports/sale" },
         ],
       },
-      {
-        label: "Customers",
-        to: "/admin/customers",
-      },
+      { label: "Customers", to: "/admin/customers" },
       {
         label: "Exam",
         to: "/admin/exam",
@@ -371,10 +369,11 @@ const sidebarItems = [
         ],
       },
       {
-        label: "Sample Downloads",
+        label: "Downloads",
         to: "/admin/downloads",
         children: [{ label: "Downloaded Samples", to: "/admin/downloads/samples" }],
       },
+      { label: "Settings", to: "/admin/settings" },
     ],
   },
 ];
@@ -382,9 +381,9 @@ const sidebarItems = [
 const AdminSidebar = () => {
   return (
     <div>
-      <Sidebar title="My Admin" items={sidebarItems} variant="blue"  />
+      <Sidebar title="My Admin" items={sidebarItems} variant="blue" />
     </div>
-  )
-}
+  );
+};
 
-export default AdminSidebar
+export default AdminSidebar;
