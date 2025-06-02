@@ -1,25 +1,18 @@
+// components/BlogCard.jsx
 import React from "react";
-import { MdArrowRightAlt } from "react-icons/md";
 
-const BlogCard = ({ title, date = "2025-01-27 16:14:21", buttonText = "Read More", onClick }) => {
+const BlogCard = ({ title, description, date, link }) => {
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm max-w-sm w-full overflow-hidden">
-      <img
-        src="https://images.unsplash.com/photo-1746483966259-0baccf56ec97?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Blog cover"
-        className="w-full h-48 object-cover rounded-t-lg"
-      />
-      <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-1">{title}</h3>
-        <p className="text-sm text-gray-500 mb-4">{date}</p>
-        <button
-          onClick={onClick}
-          className="flex items-center gap-1 text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-semibold transition duration-200 cursor-pointer"
-        >
-          {buttonText}
-          <MdArrowRightAlt size={20} />
-        </button>
+    <div className=" bg-gray-100 h-full flex flex-col justify-between rounded-xl shadow-md p-4">
+      <img src="" alt="" className="w-full h-60 mb-10" />
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+        <p className="text-sm text-gray-500 mt-1">{date}</p>
+        <p className="text-gray-600 mt-2 text-sm">{description}</p>
       </div>
+      <a href={link} className="text-blue-600 mt-4 text-sm font-medium hover:underline">
+        Read More →
+      </a>
     </div>
   );
 };

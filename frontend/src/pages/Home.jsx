@@ -5,6 +5,7 @@ import UnlockGoals from "../components/shared/UnlockGoals";
 import AllOtherDumps from "../components/shared/AllOtherDumps";
 import Testimonials from "../components/shared/Testimonials";
 import AdminSidebar from "../features/admin/components/AdminSidebar";
+import BlogSection from "../components/shared/BlogSection";
 
 
 const Home = () => {
@@ -12,6 +13,7 @@ const Home = () => {
     <div>
       <HeroSection />
       <AllOtherDumps />
+      <BlogSection />
       <AllDumps />
       <PopularDumps />
       <UnlockGoals />

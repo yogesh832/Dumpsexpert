@@ -93,27 +93,30 @@ const Navbar = () => {
           </div>
         </div>
       )}
-
+ 
       {/* Mobile Menu */}
-      <div
-        className={`md:hidden transition-all duration-300 ease-in-out bg-white shadow-md overflow-hidden ${
-          menuOpen ? "max-h-[400px] py-6" : "max-h-0"
-        }`}
-      >
-        <ul className="flex flex-col items-center space-y-5 text-black font-medium text-sm sm:text-base">
-          {navLinks.map((item, index) => (
-            <li key={index}>
-              <Link
-                to={item.path}
-                className="flex items-center gap-3 hover:text-blue-700 cursor-pointer transition"
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+  {/* Mobile Menu */}
+<div
+  className={`md:hidden transition-all duration-300 ease-in-out bg-white shadow-md overflow-hidden ${
+    menuOpen ? "max-h-[400px] py-6" : "max-h-0"
+  }`}
+>
+  <ul className="flex flex-col items-center space-y-5 text-black font-medium text-sm sm:text-base">
+    {navLinks.map((item, index) => (
+      <li key={index}>
+        <Link
+          to={item.path}
+          onClick={() => setMenuOpen(false)} // <-- ADD THIS LINE
+          className="flex items-center gap-3 hover:text-blue-700 cursor-pointer transition"
+        >
+          {item.icon}
+          <span>{item.label}</span>
+        </Link>
+      </li>
+    ))}
+  </ul>
+</div>
+
     </nav>
   );
 };

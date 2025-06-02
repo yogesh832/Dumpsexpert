@@ -2,10 +2,10 @@ import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
 
-import PublicLayout from "./layout/PublicLayout.jsx";
-const PrivateAdminLayout   = lazy(() => import("./layout/PrivateAdminLayout.jsx"));
-const PrivateStudentLayout = lazy(() => import("./layout/PrivateStudentLayout.jsx"));
-const PrivateGuestLayout   = lazy(() => import("./layout/PrivateGuestLayout.jsx"));
+const PublicLayout         = lazy(() => import("./layout/PublicLayout"));
+const PrivateAdminLayout   = lazy(() => import("./layout/PrivateAdminLayout"));
+const PrivateStudentLayout = lazy(() => import("./layout/PrivateStudentLayout"));
+const PrivateGuestLayout   = lazy(() => import("./layout/PrivateGuestLayout"));
 
 const Home                 = lazy(() => import("./pages/Home"));
 const NotFound             = lazy(() => import("./pages/NotFound"));
@@ -47,6 +47,9 @@ const SubscribersManagement= lazy(() => import("./features/admin/pages/Subscribe
 const SettingsPage         = lazy(() => import("./features/admin/pages/SettingsPage"));
 
 import AuthProvider from "./layout/AuthProvider";
+import BlogSection from "./components/shared/BlogSection";
+import AllDumps from "./components/shared/AllDumps";
+import AllOtherDumps from "./components/shared/AllOtherDumps";
 
 
 
@@ -63,6 +66,8 @@ const App = () => {
             <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/blogs" element={<BlogSection />} />
+            <Route path="/dumps" element={<AllOtherDumps />} />
           </Route>
 
           {/* Admin routes */}
