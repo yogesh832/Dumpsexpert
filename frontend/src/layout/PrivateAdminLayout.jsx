@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet, Navigate } from "react-router"; 
 import useAuthStore from "../store/index";
 import AdminSidebar from "../features/admin/components/AdminSidebar";
+import Navbar from "../components/shared/Navbar";
 
 const PrivateAdminLayout = () => {
   const user = useAuthStore((state) => state.user);
@@ -16,6 +17,7 @@ const PrivateAdminLayout = () => {
 
   return (
     <div className="flex">
+      <Navbar />
       <AdminSidebar />
       <main className="p-4">
         <Outlet />

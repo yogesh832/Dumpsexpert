@@ -2,19 +2,10 @@ import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
 
-<<<<<<< HEAD
 const PublicLayout         = lazy(() => import("./layout/PublicLayout"));
 const PrivateAdminLayout   = lazy(() => import("./layout/PrivateAdminLayout"));
 const PrivateStudentLayout = lazy(() => import("./layout/PrivateStudentLayout"));
 const PrivateGuestLayout   = lazy(() => import("./layout/PrivateGuestLayout"));
-=======
-const PublicLayout = lazy(() => import("./layout/PublicLayout"));
-const PrivateAdminLayout = lazy(() => import("./layout/PrivateAdminLayout"));
-const PrivateStudentLayout = lazy(() =>
-  import("./layout/PrivateStudentLayout")
-);
-const PrivateGuestLayout = lazy(() => import("./layout/PrivateGuestLayout"));
->>>>>>> 06cc8dc662732e7c41a873444b8fb4268004e8b5
 
 const Home = lazy(() => import("./pages/Home"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -90,37 +81,12 @@ const SubscribersManagement = lazy(() =>
 const SettingsPage = lazy(() => import("./features/admin/pages/SettingsPage"));
 
 import AuthProvider from "./layout/AuthProvider";
-<<<<<<< HEAD
 import BlogSection from "./components/shared/BlogSection";
 import AllDumps from "./components/shared/AllDumps";
 import AllOtherDumps from "./components/shared/AllOtherDumps";
-
-
-=======
-import FooterLink from "./features/admin/pages/FooterLink";
-import PaymentCurrencies from "./features/admin/pages/PaymentCurrencies";
-import PaymentGateway from "./features/admin/pages/PaymentGateway";
-import PaymentShipping from "./features/admin/pages/PaymentShipping";
-import EmailConfigFromAdmin from "./features/admin/pages/EmailConfigFromAdmin";
-import EmailConfigToAdmin from "./features/admin/pages/EmailConfigToAdmin";
-import EmailConfigFollowUp from "./features/admin/pages/EmailConfigFollowUp";
-import EmailConfigAdvanced from "./features/admin/pages/EmailConfigAdvanced";
-import ProductCategories from "./features/admin/pages/ProductCategories";
-import ProductList from "./features/admin/pages/ProductList";
-import ProductReviews from "./features/admin/pages/ProductReviews";
-import Coupons from "./features/admin/pages/Coupons";
-import OrdersAll from "./features/admin/pages/OrdersAll";
-import OrdersPending from "./features/admin/pages/OrdersPending";
-import OrdersCompleted from "./features/admin/pages/OrdersCompleted";
-import OrdersRejected from "./features/admin/pages/OrdersRejected";
-import MonthlyOrderAll from "./features/admin/pages/MonthlyOrderAll";
-import BlogCategory from "./features/admin/pages/BlogCategory";
-import BlogArchive from "./features/admin/pages/BlogArchive";
-import BlogPosts from "./features/admin/pages/BlogPosts";
-import SubscribersList from "./features/admin/pages/SubscribersList";
-import MailToSubscribers from "./features/admin/pages/MailToSubscribers";
 import DownloadedSamples from "./features/admin/pages/DownloadedSamples";
->>>>>>> 06cc8dc662732e7c41a873444b8fb4268004e8b5
+
+
 
 const App = () => {
   return (
@@ -162,48 +128,48 @@ const App = () => {
                   <Route path="announcement" element={<Announcement />} />
                   <Route path="preloader" element={<PreloaderSettings />} />
                   <Route path="footer-info" element={<FooterInfo />} />
-                  <Route path="footer-link" element={<FooterLink />} />
+                  {/* <Route path="footer-link" element={<FooterLink />} /> */}
                 </Route>
                 <Route path="settings">
                   <Route path="general" element={<GeneralSettings />} />
                   <Route path="email-config">
                     <Route index element={<EmailConfiguration />} />
-                    <Route path="from-admin" element={<EmailConfigFromAdmin />} />
-                    <Route path="to-admin" element={<EmailConfigToAdmin />} />
-                    <Route path="follow-up" element={<EmailConfigFollowUp />} />
-                    <Route path="advanced" element={<EmailConfigAdvanced />} />
+                    {/* <Route path="from-admin" element={<EmailConfigFromAdmin />} /> */}
+                    {/* <Route path="to-admin" element={<EmailConfigToAdmin />} /> */}
+                    {/* <Route path="follow-up" element={<EmailConfigFollowUp />} /> */}
+                    {/* <Route path="advanced" element={<EmailConfigAdvanced />} /> */}
                   </Route>
-                  <Route path="scripts" element={<ScriptsPage />} />
+                  {/* <Route path="scripts" element={<ScriptsPage />} />
                   <Route path="cookie-alert" element={<CookieAlert />} />
-                  <Route path="custom-css" element={<CustomCSS />} />
+                  <Route path="custom-css" element={<CustomCSS />} /> */}
                 </Route>
                 <Route path="payment">
-                  <Route index element={<PaymentSettings />} />
+                  {/* <Route index element={<PaymentSettings />} />
                   <Route path="currencies" element={<PaymentCurrencies />} />
                   <Route path="gateway" element={<PaymentGateway />} />
-                  <Route path="shipping" element={<PaymentShipping />} />
+                  <Route path="shipping" element={<PaymentShipping />} /> */}
                 </Route>
                 <Route path="products">
-                  <Route index element={<ProductManagement />} />
+                  {/* <Route index element={<ProductManagement />} />
                   <Route path="categories" element={<ProductCategories />} />
                   <Route path="list" element={<ProductList />} />
-                  <Route path="reviews" element={<ProductReviews />} />
+                  <Route path="reviews" element={<ProductReviews />} /> */}
                 </Route>
                 <Route path="coupons">
                   <Route index element={<ProductManagement />} />
-                  <Route path="list" element={<Coupons />} />
+                  {/* <Route path="list" element={<Coupons />} /> */}
                 </Route>
                 <Route path="orders">
                   <Route index element={<OrdersManagement />} />
-                  <Route path="all" element={<OrdersAll />} />
+                  {/* <Route path="all" element={<OrdersAll />} />
                   <Route path="pending" element={<OrdersPending />} />
                   <Route path="completed" element={<OrdersCompleted />} />
-                  <Route path="rejected" element={<OrdersRejected />} />
+                  <Route path="rejected" element={<OrdersRejected />} /> */}
                 </Route>
                 <Route path="order-reports">
-                  <Route index element={<MonthlySaleReport />} />
+                  {/* <Route index element={<MonthlySaleReport />} />
                   <Route path="all" element={<MonthlyOrderAll />} />
-                  <Route path="sale" element={<MonthlySaleReport />} />
+                  <Route path="sale" element={<MonthlySaleReport />} /> */}
                 </Route>
                 <Route path="customers" element={<CustomersManagement />} />
                 <Route path="exam">
@@ -215,15 +181,15 @@ const App = () => {
                   <Route path="list" element={<MediaManagement />} />
                 </Route>
                 <Route path="blog">
-                  <Route index element={<BlogManagement />} />
+                  {/* <Route index element={<BlogManagement />} />
                   <Route path="category" element={<BlogCategory />} />
                   <Route path="archive" element={<BlogArchive />} />
-                  <Route path="posts" element={<BlogPosts />} />
+                  <Route path="posts" element={<BlogPosts />} /> */}
                 </Route>
                 <Route path="subscribers">
-                  <Route index element={<SubscribersManagement />} />
+                  {/* <Route index element={<SubscribersManagement />} />
                   <Route path="list" element={<SubscribersList />} />
-                  <Route path="mail" element={<MailToSubscribers />} />
+                  <Route path="mail" element={<MailToSubscribers />} /> */}
                 </Route>
                 <Route path="downloads">
                   <Route index element={<SettingsPage />} />
@@ -240,6 +206,7 @@ const App = () => {
               <Route path="/student/dashboard" element={<StudentDashboard />} />
             </Route>
           </Route>
+
 
           {/* Guest routes */}
           <Route element={<PrivateRoute />}>

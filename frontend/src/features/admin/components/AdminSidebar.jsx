@@ -382,7 +382,7 @@ const sidebarItems = [
 const AdminSidebar = () => {
   return (
     <div>
-      <Sidebar title="My Admin" items={sidebarItems} variant="blue" />
+      <Sidebar title="My Admin" items={sidebarItems} variant="blue" className="mt-20" />
     </div>
   )
 }

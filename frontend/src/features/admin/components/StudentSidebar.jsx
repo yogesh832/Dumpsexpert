@@ -1,12 +1,33 @@
 import React from "react";
-import { FaUser, FaSignOutAlt, FaShoppingCart, FaFileAlt } from "react-icons/fa";
-import { NavLink } from "react-router";
+import {
+  FaUser,
+  FaSignOutAlt,
+  FaShoppingCart,
+  FaFileAlt,
+} from "react-icons/fa";
+import { NavLink } from "react-router"; // ✅ fix import from react-router-dom
 
 const menuItems = [
-  { name: "My Account", path: "/student/account", icon: <FaUser /> },
-  { name: "My Orders", path: "/student/orders", icon: <FaShoppingCart /> },
-  { name: "Exam Dashboard", path: "/student/exam-dashboard", icon: <FaFileAlt /> },
-  { name: "Logout", path: "/logout", icon: <FaSignOutAlt /> },
+  {
+    name: "My Account",
+    to: "/student/account",
+    icon: <FaUser />,
+  },
+  {
+    name: "My Orders",
+    to: "/student/orders",
+    icon: <FaShoppingCart />,
+  },
+  {
+    name: "Exam Dashboard",
+    to: "/student/exam-dashboard",
+    icon: <FaFileAlt />,
+  },
+  {
+    name: "Logout",
+    to: "/logout",
+    icon: <FaSignOutAlt />,
+  },
 ];
 
 const StudentSidebar = () => {
@@ -16,7 +37,7 @@ const StudentSidebar = () => {
       <nav className="flex flex-col gap-2">
         {menuItems.map((item, index) => (
           <NavLink
-            to={item.path}
+            to={item.to}
             key={index}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
