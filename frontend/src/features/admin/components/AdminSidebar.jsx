@@ -302,9 +302,9 @@ const sidebarItems = [
         label: "Payment Settings",
         to: "/admin/settings/payment",
         children: [
-          { label: "Currencies", to: "/admin/settings/payment/currencies" },
-          { label: "Payment Gateway", to: "/admin/settings/payment/gateway" },
-          { label: "Shipping Method", to: "/admin/settings/payment/shipping" },
+          { label: "Currencies", to: "/admin/payment/currencies" },
+          { label: "Payment Gateway", to: "/admin/payment/gateway" },
+          { label: "Shipping Method", to: "/admin/payment/shipping" },
         ],
       },
       {
