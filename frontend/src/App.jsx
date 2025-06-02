@@ -5,7 +5,6 @@ import LoadingSpinner from "./components/ui/LoadingSpinner";
 const PrivateAdminLayout   = lazy(() => import("./layout/PrivateAdminLayout"));
 const PrivateStudentLayout = lazy(() => import("./layout/PrivateStudentLayout"));
 const PrivateGuestLayout   = lazy(() => import("./layout/PrivateGuestLayout"));
-const PublicLayout = lazy(() => import("./layout/PublicLayout.jsx"));
 
 const Home = lazy(() => import("./pages/Home"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -94,7 +93,7 @@ const App = () => {
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Public routes */}
-          <Route element={<PublicLayout />}>
+          <Route element={<PrivateGuestLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<Contact />} />
