@@ -16,12 +16,14 @@ const PrivateAdminLayout = () => {
   }
 
   return (
-    <div className="flex">
-      <Navbar />
-      <AdminSidebar />
-      <main className="p-4">
-        <Outlet />
-      </main>
+    <div className="flex flex-col min-h-screen">
+      {/* <Navbar /> */}
+      <div className="flex flex-1">
+        <AdminSidebar className="w-64 flex-shrink-0" />
+        <main className="flex-1 p-4">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };

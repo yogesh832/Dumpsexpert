@@ -248,7 +248,7 @@ const Sidebar = ({ title = "Sidebar Title", items = [], className = "", variant 
         </ul>
       </aside>
 
-      <div className="flex-1 p-4">{/* Main Content Area */}</div>
+      {/* <div className="flex-1 p-4">Main Content Area</div> */}
     </div>
   )
 }
@@ -382,7 +382,7 @@ const sidebarItems = [
 const AdminSidebar = () => {
   return (
     <div>
-      <Sidebar title="My Admin" items={sidebarItems} variant="blue" className="mt-20" />
+      <Sidebar title="My Admin" items={sidebarItems} variant="blue"  />
     </div>
   )
 }
