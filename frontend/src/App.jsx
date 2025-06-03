@@ -70,6 +70,13 @@ const Permalink = lazy(()=>import("./features/admin/pages/Permalink"));
 
 
 import AuthProvider from "./layout/AuthProvider";
+import StudentOrders from "./features/student/pages/StudentOrders";
+import PdfCoursesPage from "./features/student/pages/PdfCoursesPage";
+import ExamCoursesPage from "./features/student/pages/ExamCoursesPage";
+import ResultHistoryPage from "./features/student/pages/ResultHistoryPage";
+import EditProfile from "./features/student/pages/EditProfile";
+import ChangePassword from "./features/student/pages/ChangePassword";
+import Logout from "./features/student/pages/Logout";
 
 const App = () => {
   return (
@@ -197,6 +204,13 @@ const App = () => {
           <Route element={<PrivateRoute />}>
             <Route element={<PrivateStudentLayout />}>
               <Route path="/student/dashboard" element={<StudentDashboard />} />
+              <Route path="/student/orders" element={<StudentOrders />} />
+              <Route path="/student/courses-pdf" element={<PdfCoursesPage />} />
+              <Route path="/student/courses-exam" element={<ExamCoursesPage />} />
+              <Route path="/student/results" element={<ResultHistoryPage />} />
+              <Route path="/student/edit-profile" element={<EditProfile />} />
+              <Route path="/student/change-password" element={<ChangePassword />} />
+              <Route path="/logout" element={<Logout />} />
             </Route>
           </Route>
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router";
-import StudentSidebar from "../features/admin/components/StudentSidebar";
 import Navbar from "../components/shared/Navbar";
+import StudentSidebar from "../features/student/components/StudentSidebar";
 
 const PrivateStudentLayout = () => {
   return (
