@@ -58,7 +58,6 @@ const MediaManagement = lazy(() => import("./features/admin/pages/MediaManagemen
 const BlogManagement = lazy(() => import("./features/admin/pages/BlogManagement"));
 const BlogCategory = lazy(() => import("./features/admin/pages/BlogCategory"));
 const BlogArchive = lazy(() => import("./features/admin/pages/BlogArchive"));
-const BlogPosts = lazy(() => import("./features/admin/pages/BlogPosts"));
 const SubscribersManagement = lazy(() => import("./features/admin/pages/SubscribersManagement"));
 const SubscribersList = lazy(() => import("./features/admin/pages/SubscribersList"));
 const MailToSubscribers = lazy(() => import("./features/admin/pages/MailToSubscribers"));
@@ -77,6 +76,9 @@ import ResultHistoryPage from "./features/student/pages/ResultHistoryPage";
 import EditProfile from "./features/student/pages/EditProfile";
 import ChangePassword from "./features/student/pages/ChangePassword";
 import Logout from "./features/student/pages/Logout";
+import BlogPosts from "./features/admin/pages/BlogPosts";
+import BlogList from "./features/admin/pages/BlogList";
+import EditBlog from "./features/admin/pages/EditBlog";
 
 const App = () => {
   return (
@@ -182,6 +184,8 @@ const App = () => {
                   <Route path="category" element={<BlogCategory />} />
                   <Route path="archive" element={<BlogArchive />} />
                   <Route path="posts" element={<BlogPosts />} />
+                  <Route path="list" element={<BlogList />} />
+                  <Route path="edit" element={<EditBlog />} />
                 </Route>
 
                 <Route path="subscribers">
