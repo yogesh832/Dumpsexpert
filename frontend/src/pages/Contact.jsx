@@ -42,7 +42,7 @@ const Contact = () => {
         </div>
         </div>
         
-     <div className="flex-1 bg-white p-6 shadow-lg rounded-lg ">
+     <div className="flex-1 bg-white p-6 mt-20 shadow-lg rounded-lg ">
           <form className="flex flex-col gap-4">
             <div>
               <label className="block mb-1 font-medium">Full Name</label>

@@ -81,8 +81,8 @@ const StudentDashboard = () => {
             alt="profile"
             className="w-32 h-32 rounded-full border-4 border-indigo-500 mb-4"
           />
-          <h3 className="font-bold text-xl mb-1">Yagyesh Upadhyay</h3>
-          <p className="text-gray-500 mb-4">BCA Student</p>
+          <h3 className="font-bold text-xl mb-1">lorem epsum</h3>
+          <p className="text-gray-500 mb-4">google</p>
           <div className="flex gap-4 flex-wrap justify-center">
             <button
               onClick={() => navigate("/student/edit-profile")}

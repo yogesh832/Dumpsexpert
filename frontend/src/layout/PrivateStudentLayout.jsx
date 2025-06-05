@@ -5,16 +5,18 @@ import StudentSidebar from "../features/student/components/StudentSidebar";
 
 const PrivateStudentLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="flex flex-col h-screen">
+      {/* Fixed Navbar */}
       <Navbar />
-      <div className="flex">
-        {/* Sidebar - Fixed Width */}
-        <div className="w-64 bg-white shadow-md min-h-screen">
+
+      <div className="flex flex-1 overflow-hidden pt-16">
+        {/* Fixed Sidebar */}
+        <div className="w-64 fixed top-16 left-0 h-full bg-white shadow-md overflow-y-auto z-10">
           <StudentSidebar />
         </div>
 
-        {/* Main Content Area */}
-        <main className="flex-1 p-6 mt-20">
+        {/* Scrollable Main Content Area */}
+        <main className="ml-64 flex-1 overflow-y-auto p-6 bg-gray-100">
           <Outlet />
         </main>
       </div>
