@@ -19,7 +19,7 @@ const menuItems = [
 ];
 
 const StudentSidebar = () => (
-  <div className="w-64 mt-20 min-h-screen bg-white  p-4">
+  <div className="w-64 mt-4 min-h-screen bg-white  p-2">
     <h2 className="text-2xl font-bold text-center mb-6">🎓 Student Panel</h2>
     <nav className="flex flex-col gap-2">
       {menuItems.map((item, i) => (
