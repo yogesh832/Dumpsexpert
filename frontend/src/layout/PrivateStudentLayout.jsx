@@ -11,12 +11,12 @@ const PrivateStudentLayout = () => {
 
       <div className="flex flex-1 overflow-hidden pt-16">
         {/* Fixed Sidebar */}
-        <div className="w-64 fixed top-16 left-0 h-full bg-white shadow-md overflow-y-auto z-10">
+        <div className="w-70 fixed  left-0 h-full bg-white shadow-md overflow-y-auto z-10">
           <StudentSidebar />
         </div>
 
         {/* Scrollable Main Content Area */}
-        <main className="ml-64 flex-1 overflow-y-auto p-6 bg-gray-100">
+        <main className="ml-72 flex-1 overflow-y-auto p-6 bg-gray-100">
           <Outlet />
         </main>
       </div>
