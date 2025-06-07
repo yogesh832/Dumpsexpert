@@ -2,9 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
+const passport = require("passport");
 
 const authRoutes = require("./routes/authRoutes");
 const dbConnection = require("./config/dbConnection");
+
+require("./utils/passport");
 
 dotenv.config();
 
@@ -14,7 +17,7 @@ const PORT = process.env.PORT || 8000;
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "http://localhost:4173/",
+  "http://localhost:4173",
   "https://dumpsexpert.vercel.app",
 ];
 
@@ -34,6 +37,8 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(passport.initialize());
 
 dbConnection();
 
