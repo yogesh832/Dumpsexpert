@@ -199,7 +199,17 @@ const App = () => {
                   <Route path="samples" element={<DownloadedSamples />} />
                 </Route>
 
+
+
+             
+
+
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="email-config/to-admin" element={<EmailConfigToAdmin />} />
+                <Route path="email-config/from-admin" element={<EmailConfigFromAdmin />} />
+             
+             
+             
               </Route>
             </Route>
           </Route>
