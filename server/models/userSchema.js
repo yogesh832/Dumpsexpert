@@ -7,6 +7,10 @@ dotenv.config();
 
 //user schema
 const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    default: null,
+  },
   email: {
     type: String,
     required: true,
@@ -16,14 +20,30 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+  },
+  provider: {
+    type: String,
+    enum: ["email", "google", "facebook"],
+    default: "email",
+  },
+  providerId: {
+    type: String,
+    required: false,
+  },
+  profileImage: {
+    type: String,
+    default: "",
   },
   role: {
     type: String,
     enum: ["guest", "student", "admin"],
     default: "guest",
   },
-  createAt: {
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  createdAt: {
     type: Date,
     default: Date.now,
   },
@@ -40,6 +60,9 @@ userSchema.pre("save", async function (next) {
 //generating the JWT here
 
 userSchema.methods.generateJWT = function () {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not configured");
+  }
   return jwt.sign(
     {
       _id: this._id,
