@@ -527,7 +527,7 @@ const sidebarItems = [
 
 const AdminSidebar = () => {
   return (
-    <div>
+    <div className="pb-20">
       <Sidebar title="My Admin" items={sidebarItems} variant="blue" />
     </div>
   );

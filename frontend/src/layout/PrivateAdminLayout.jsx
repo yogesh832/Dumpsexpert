@@ -23,7 +23,7 @@ const PrivateAdminLayout = () => {
       {/* Sidebar and main layout */}
       <div className="flex flex-1 overflow-hidden pt-16">
         {/* Fixed Sidebar */}
-        <div className="w-64 h-full fixed top-16 left-0 bg-white shadow z-10 overflow-y-auto">
+        <div className="w-64 h-full fixed top-16 bottom-10 left-0 bg-white shadow z-10  overflow-y-auto">
           <AdminSidebar />
         </div>
 
