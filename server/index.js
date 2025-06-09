@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 
 const authRoutes = require("./routes/authRoutes");
+const passportAuthRoutes = require("./routes/passportAuthRoutes");
 const dbConnection = require("./config/dbConnection");
 
 require("./utils/passport");
@@ -47,6 +48,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", passportAuthRoutes);
 
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);

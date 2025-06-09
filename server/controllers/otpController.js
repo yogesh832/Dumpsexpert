@@ -23,7 +23,11 @@ exports.sendOTPToUser = async (req, res) => {
 exports.verifyOTP = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const match = await OTP.findOne({ email, otp });
+    const match = await OTP.findOne({ 
+      email, 
+      otp,
+      createdAt: { $gt: new Date(Date.now() - 10 * 60 * 1000) } // 10 minutes expiry
+    });
     if (!match) {
       return res.status(400).json({ error: "Invalid or expired OTP" });
     }

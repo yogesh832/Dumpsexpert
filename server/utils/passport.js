@@ -7,36 +7,48 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT,
       clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: "/auth/google/callback",
+      callbackURL: "http://localhost:8000/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
-      const existingUser = await User.findOne({
-        email: profile.emails[0].value,
-      });
-      if (existingUser) return done(null, existingUser);
-
-      const newUser = await User.create({
-        name: profile.displayName,
-        email: profile.emails[0].value,
-        provider: "google",
-        isVerified: true,
-      });
-      done(null, newUser);
+      try {
+        let user = await User.findOne({ email: profile.emails[0].value });
+        if (!user) {
+          user = await User.create({
+            name: profile.displayName,
+            email: profile.emails[0].value,
+            provider: "google",
+            isVerified: true,
+          });
+        }
+        return done(null, user);
+      } catch (err) {
+        return done(err, null);
+      }
     }
   )
 );
+
+// Optional: serialize/deserialize if using session
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+passport.deserializeUser(async (id, done) => {
+  const user = await User.findById(id);
+  done(null, user);
+});
 
 passport.use(
   new FacebookStrategy(
     {
       clientID: process.env.FACEBOOK_CLIENT,
       clientSecret: process.env.FACEBOOK_SECRET,
-      callbackURL: "/auth/facebook/callback",
+      callbackURL: "/facebook/callback",
       profileFields: ["id", "emails", "name"],
     },
     async (accessToken, refreshToken, profile, done) => {
