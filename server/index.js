@@ -4,8 +4,14 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 
+//routes path
 const authRoutes = require("./routes/authRoutes");
 const passportAuthRoutes = require("./routes/passportAuthRoutes");
+const basicInfoRoutes = require("./routes/basicInfoRoutes");
+const menuBuilderRoutes = require("./routes/menuBuilderRoutes");
+const socialLinkRoutes = require("./routes/socialLinkRoutes");
+
+
 const dbConnection = require("./config/dbConnection");
 
 require("./utils/passport");
@@ -49,6 +55,10 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", passportAuthRoutes);
+app.use('/api/basic-info', basicInfoRoutes);
+app.use('/api/menu-builder', menuBuilderRoutes);
+app.use('/api/social-links', socialLinkRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);

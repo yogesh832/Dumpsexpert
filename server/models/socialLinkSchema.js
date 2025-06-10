@@ -4,21 +4,12 @@ const socialLinkSchema = new mongoose.Schema({
   socialIcon: {
     type: String,
     required: true,
-    trim: true
+    trim: true // Stores Cloudinary URL of the icon image
   },
   socialURL: {
     type: String,
     required: true,
     trim: true
-  },
-  faviconUrl: {
-    type: String,
-    trim: true
-  },
-  lastUpdatedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
   }
 }, { timestamps: true });
 
