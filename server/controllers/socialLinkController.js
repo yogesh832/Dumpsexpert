@@ -1,4 +1,4 @@
-const SocialLink = require('../models/SocialLink');
+const SocialLink = require('../models/socialLinkSchema');
 const { cloudinary } = require('../utils/cloudinary');
 
 // Get all SocialLinks
