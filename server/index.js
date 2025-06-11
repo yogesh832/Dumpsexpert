@@ -11,6 +11,7 @@ const basicInfoRoutes = require("./routes/basicInfoRoutes");
 const menuBuilderRoutes = require("./routes/menuBuilderRoutes");
 const socialLinkRoutes = require("./routes/socialLinkRoutes");
 
+const blogRoutes = require('./routes/blogRoutes');
 
 const dbConnection = require("./config/dbConnection");
 
@@ -58,6 +59,7 @@ app.use("/api/auth", passportAuthRoutes);
 app.use('/api/basic-info', basicInfoRoutes);
 app.use('/api/menu-builder', menuBuilderRoutes);
 app.use('/api/social-links', socialLinkRoutes);
+app.use('/api/blog-category', blogRoutes);
 
 
 app.listen(PORT, () => {
