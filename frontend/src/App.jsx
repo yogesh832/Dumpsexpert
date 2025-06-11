@@ -169,7 +169,7 @@ const App = () => {
 
                 <Route path="customers" element={<CustomersManagement />} />
 
-                <Route path="exam">
+            <Route path="exam">
                   <Route index element={<ExamManagement />} />
                   <Route path="code" element={<ExamManagement />} />
                 </Route>
