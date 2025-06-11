@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const { signup, signin, logout,forgotPassword, resetPassword } = require("../controllers/authController");
+const { signup, signin, logout, forgotPassword, resetPassword } = require("../controllers/authController");
+const { sendOTPToUser, verifyOTP } = require("../controllers/otpController");
 const {authMiddleware} = require("../middlewares/authMiddleware");
 const { validateSignup, validateSignin, validateResetPassword} = require("../middlewares/validationMiddleware");
 
@@ -12,6 +13,9 @@ router.post("/logout", authMiddleware, logout);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", validateResetPassword, resetPassword);
 
+// Add these new routes
+router.post("/email/send-otp", sendOTPToUser);
+router.post("/email/verify-otp", verifyOTP);
 
 router.get("/dashboard", authMiddleware, (req, res) => {
   res.json({ message: `Welcome ${req.user.email}`, role: req.user.role });
