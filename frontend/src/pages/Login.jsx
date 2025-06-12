@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import { instance } from '../lib/axios';
 import useAuthStore from '../store/index';
 import { FcGoogle } from 'react-icons/fc';
@@ -11,7 +11,18 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   const setUser = useAuthStore((state) => state.setUser);
+  
+  // Check for error parameters in URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const errorParam = params.get('error');
+    
+    if (errorParam === 'auth_failed') {
+      setError('Authentication failed. Please try again.');
+    }
+  }, [location]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
