@@ -79,6 +79,7 @@ import Logout from "./features/student/pages/Logout";
 import BlogPosts from "./features/admin/pages/BlogPosts";
 import BlogList from "./features/admin/pages/BlogList";
 import EditBlog from "./features/admin/pages/EditBlog";
+import AddBlogCategory from "./features/admin/pages/AddBlogCategory";
 
 const App = () => {
   return (
@@ -169,7 +170,7 @@ const App = () => {
 
                 <Route path="customers" element={<CustomersManagement />} />
 
-                <Route path="exam">
+            <Route path="exam">
                   <Route index element={<ExamManagement />} />
                   <Route path="code" element={<ExamManagement />} />
                 </Route>
@@ -182,6 +183,7 @@ const App = () => {
                 <Route path="blog">
                   <Route index element={<BlogManagement />} />
                   <Route path="category" element={<BlogCategory />} />
+                  <Route path="category/add" element={<AddBlogCategory />} />
                   <Route path="archive" element={<BlogArchive />} />
                   <Route path="posts" element={<BlogPosts />} />
                   <Route path="list" element={<BlogList />} />

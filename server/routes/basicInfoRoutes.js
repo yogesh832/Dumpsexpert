@@ -1,7 +1,10 @@
-// routes/basicInfoRoutes.js
 const express = require('express');
 const router = express.Router();
-const basicInfoController = require('../controllers/basicInfoController');
+const {
+  getSettings,
+  updateSettings,
+  uploadFiles
+} = require('../controllers/basicInfoController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
 router.get('/', basicInfoController.getSettings);
@@ -11,5 +14,7 @@ router.get('/', basicInfoController.getSettings);
 //   basicInfoController.uploadFiles,
 //   basicInfoController.updateSettings
 // );
+
+// router.put('/', authMiddleware, uploadFiles, updateSettings);
 
 module.exports = router;

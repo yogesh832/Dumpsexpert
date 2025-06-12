@@ -39,7 +39,7 @@ const BlogCategory = () => {
               <option>Hindi</option>
             </select>
             <button className="bg-red-500 text-white px-3 py-1 rounded text-sm">Bulk Delete</button>
-          <Link to={"/admin/blog/posts"}>  <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm">+ Add</button></Link>
+          <Link to={"/admin/blog/category/add"}>  <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm">+ Add</button></Link>
           <Link to={"/admin/blog/list"}>  <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm">Blog List</button></Link>
           </div>
         </div>

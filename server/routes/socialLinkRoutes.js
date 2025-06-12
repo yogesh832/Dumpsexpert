@@ -7,8 +7,8 @@ const auth = require('../middlewares/authMiddleware');
 
 // const upload = multer({ storage: storage.params({ folder: 'social_links' }) });
 
-// GET all SocialLinks
-router.get('/', getSocialLinks);
+// // GET all SocialLinks
+// router.get('/', getSocialLinks);
 
 // CREATE a SocialLink
 // router.post('/', auth, upload.single('socialIcon'), createSocialLink);

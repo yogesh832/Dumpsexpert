@@ -1,4 +1,3 @@
-// utils/cloudinary.js
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
@@ -18,7 +17,7 @@ const storage = new CloudinaryStorage({
   }
 });
 
-const parser = multer({ storage: storage });
+const parser = multer({ storage });
 
 const deleteFromCloudinary = async (public_id) => {
   try {

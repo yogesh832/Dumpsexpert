@@ -2,10 +2,9 @@
 const BasicInfo = require('../models/basicInfoSchema');
 const { parser, deleteFromCloudinary } = require('../utils/cloudinary');
 
-// Helper function to handle image updates
+// Helper function
 const handleImageUpdate = async (existing, newImage, field) => {
   if (newImage) {
-    // Delete old image if exists
     if (existing && existing[field] && existing[field].public_id) {
       await deleteFromCloudinary(existing[field].public_id);
     }
@@ -17,7 +16,7 @@ const handleImageUpdate = async (existing, newImage, field) => {
   return existing ? existing[field] : null;
 };
 
-// Get current settings
+// GET
 exports.getSettings = async (req, res) => {
   try {
     const settings = await BasicInfo.findOne().sort({ createdAt: -1 }).limit(1);
@@ -27,23 +26,19 @@ exports.getSettings = async (req, res) => {
   }
 };
 
-// Update settings with image handling
+// PUT
 exports.updateSettings = async (req, res) => {
   try {
-    const { userId } = req; // From auth middleware
+    const { userId } = req; // from auth middleware
     const { siteTitle, currencyDirection } = req.body;
-    
-    // Find existing settings
     let existingSettings = await BasicInfo.findOne();
-    
-    // Prepare update data
+
     const updateData = {
       siteTitle,
       currencyDirection,
       lastUpdatedBy: userId
     };
 
-    // Handle each image field
     if (req.files) {
       if (req.files['favicon']) {
         updateData.favicon = await handleImageUpdate(
@@ -68,13 +63,8 @@ exports.updateSettings = async (req, res) => {
       }
     }
 
-    // Update or create settings
     const options = { new: true, upsert: true, setDefaultsOnInsert: true };
-    const updatedSettings = await BasicInfo.findOneAndUpdate(
-      {},
-      updateData,
-      options
-    );
+    const updatedSettings = await BasicInfo.findOneAndUpdate({}, updateData, options);
 
     res.json(updatedSettings);
   } catch (error) {
@@ -82,7 +72,7 @@ exports.updateSettings = async (req, res) => {
   }
 };
 
-// Middleware for handling file uploads
+// Middleware for file upload
 exports.uploadFiles = parser.fields([
   { name: 'favicon', maxCount: 1 },
   { name: 'headerLogo', maxCount: 1 },
