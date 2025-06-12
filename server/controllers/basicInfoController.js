@@ -1,5 +1,5 @@
 // controllers/basicInfoController.js
-const BasicInfo = require('../models/basicInfo');
+const BasicInfo = require('../models/basicInfoSchema');
 const { parser, deleteFromCloudinary } = require('../utils/cloudinary');
 
 // Helper function to handle image updates

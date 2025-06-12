@@ -7,6 +7,6 @@ const auth = require('../middlewares/authMiddleware');
 router.get('/', getMenuBuilder);
 
 // UPDATE MenuBuilder
-router.put('/', auth, updateMenuBuilder);
+// router.put('/', auth, updateMenuBuilder);
 
 module.exports = router;
