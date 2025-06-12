@@ -7,7 +7,13 @@ const {
 } = require('../controllers/basicInfoController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
-// router.get('/', getSettings);
+router.get('/', basicInfoController.getSettings);
+// router.put(
+//   '/',
+//   authMiddleware,
+//   basicInfoController.uploadFiles,
+//   basicInfoController.updateSettings
+// );
 
 // router.put('/', authMiddleware, uploadFiles, updateSettings);
 

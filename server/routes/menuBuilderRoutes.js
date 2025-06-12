@@ -6,7 +6,7 @@ const auth = require('../middlewares/authMiddleware');
 // // GET MenuBuilder
 // router.get('/', getMenuBuilder);
 
-// // UPDATE MenuBuilder
+// UPDATE MenuBuilder
 // router.put('/', auth, updateMenuBuilder);
 
 module.exports = router;

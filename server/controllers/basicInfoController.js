@@ -1,3 +1,4 @@
+// controllers/basicInfoController.js
 const BasicInfo = require('../models/basicInfoSchema');
 const { parser, deleteFromCloudinary } = require('../utils/cloudinary');
 

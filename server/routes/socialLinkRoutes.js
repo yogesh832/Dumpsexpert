@@ -10,13 +10,13 @@ const auth = require('../middlewares/authMiddleware');
 // // GET all SocialLinks
 // router.get('/', getSocialLinks);
 
-// // CREATE a SocialLink
+// CREATE a SocialLink
 // router.post('/', auth, upload.single('socialIcon'), createSocialLink);
 
-// // UPDATE a SocialLink
+// UPDATE a SocialLink
 // router.put('/:id', auth, upload.single('socialIcon'), updateSocialLink);
 
-// // DELETE a SocialLink
+// DELETE a SocialLink
 // router.delete('/:id', auth, deleteSocialLink);
 
 module.exports = router;
