@@ -29,11 +29,11 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 mb-20 left-0 w-full bg-white shadow-md z-50 text-lg md:px-6">
-      <div className="max-w-9xl mx-20 py-4 flex justify-between">
+    <nav className="fixed top-0 mb-20 left-0 w-full bg-white shadow-md z-50 text-lg md:px-2">
+      <div className="max-w-[100vw] mx-20 py-4 flex justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center cursor-pointer space-x-4">
-          <img src={dumplogo} alt="DumpsXpert Logo" className="h-12 w-auto" />
+          <img src={dumplogo} alt="DumpsXpert Logo" className="h-12 min-w-35 w-auto" />
         </Link>
 
         {/* Desktop Search */}
@@ -41,9 +41,9 @@ const Navbar = () => {
           <Input
             type="text"
             placeholder="Search"
-            className="outline-none px-4 py-2 w-72 text-xl rounded-xl border border-gray-300"
+            className="outline-none min-w-30 px-4 h-10 w-72 text-xl rounded-xl border border-gray-300"
           />
-          <Button className="text-white bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition text-xl">
+          <Button className="text-white bg-blue-600 px-5 py-1 rounded-lg hover:bg-blue-700 transition text-xl">
             <FaSearch size={20} />
           </Button>
         </div>
@@ -62,20 +62,23 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Desktop Nav Links */}
-        <ul className="hidden md:flex space-x-8 font-semibold text-base text-black">
-          {navLinks.map((item, index) => (
-            <li key={index}>
-              <Link
-                to={item.path}
-                className="flex items-center text-lg gap-2 hover:text-blue-700 cursor-pointer transition"
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        
+      {/* Desktop Nav Links */}
+<ul className="hidden md:flex flex-nowrap justify-between items-center font-medium text-black w-full overflow-hidden">
+  {navLinks.map((item, index) => (
+    <li key={index} className="flex-1 text-center">
+      <Link
+        to={item.path}
+        className="flex items-center justify-center py-2 text-[clamp(0.75rem,1vw,1rem)] whitespace-nowrap hover:text-blue-700 transition"
+      >
+        {item.icon}
+        <span className="ml-1">{item.label}</span>
+      </Link>
+    </li>
+  ))}
+</ul>
+
+
       </div>
 
       {/* Mobile Search Input */}
