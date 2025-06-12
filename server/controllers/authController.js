@@ -114,3 +114,31 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ error: "Server error during password reset" });
   }
 };
+
+exports.handleSocialCallback = (req, res) => {
+  try {
+    const token = req.user.generateJWT();
+    const role = req.user.role;
+    let redirectUrl = "http://localhost:5173";
+
+    if (role === "admin") {
+      redirectUrl += "/admin/dashboard";
+    } else if (role === "student") {
+      redirectUrl += "/student/dashboard";
+    } else {
+      redirectUrl += "/guest/dashboard";
+    }
+
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .redirect(redirectUrl);
+  } catch (error) {
+    console.error("OAuth callback error:", error);
+    res.redirect("http://localhost:5173/login?error=auth_failed");
+  }
+};

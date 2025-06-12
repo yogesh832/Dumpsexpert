@@ -7,7 +7,7 @@ const {
 } = require('../controllers/basicInfoController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
-router.get('/', basicInfoController.getSettings);
+// router.get('/', basicInfoController.getSettings);
 // router.put(
 //   '/',
 //   authMiddleware,
