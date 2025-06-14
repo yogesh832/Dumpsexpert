@@ -4,7 +4,11 @@ import { instance } from "../lib/axios";
 import useAuthStore from "../store";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
-import { HiOutlineMail, HiOutlineLockClosed, HiOutlineKey } from "react-icons/hi";
+import {
+  HiOutlineMail,
+  HiOutlineLockClosed,
+  HiOutlineKey,
+} from "react-icons/hi";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -50,7 +54,10 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const res = await instance.post("/api/auth/email/verify-otp", { email, otp });
+      const res = await instance.post("/api/auth/email/verify-otp", {
+        email,
+        otp,
+      });
       if (res.status === 200) {
         setMessage("OTP verified");
         setError("");
@@ -86,7 +93,9 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 px-4">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl">
-        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Register</h2>
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
+          Register
+        </h2>
 
         {/* Message Boxes */}
         {message && (
@@ -103,7 +112,9 @@ const Register = () => {
         {/* Step-based Email Registration */}
         {step === "email" && (
           <div className="space-y-4 mb-6">
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <div className="relative">
               <input
                 type="email"
@@ -130,7 +141,9 @@ const Register = () => {
 
         {step === "otp" && (
           <div className="space-y-4 mb-6">
-            <label className="block text-sm font-medium text-gray-700">OTP</label>
+            <label className="block text-sm font-medium text-gray-700">
+              OTP
+            </label>
             <div className="relative">
               <input
                 type="text"
@@ -157,7 +170,9 @@ const Register = () => {
 
         {step === "password" && (
           <div className="space-y-4 mb-6">
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <div className="relative">
               <input
                 type="password"
@@ -188,7 +203,9 @@ const Register = () => {
             <div className="w-full border-t border-gray-300"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-2 text-gray-500">or continue with</span>
+            <span className="bg-white px-2 text-gray-500">
+              or continue with
+            </span>
           </div>
         </div>
 

@@ -4,16 +4,15 @@ const FacebookStrategy = require("passport-facebook").Strategy;
 const User = require("../models/userSchema");
 const dotenv = require("dotenv");
 
-
 dotenv.config();
-
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT,
       clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: "https://dumpsexpert-2.onrender.com/api/auth/google/callback",
+      callbackURL:
+        "https://dumpsexpert-2.onrender.com/api/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -48,7 +47,8 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT,
       clientSecret: process.env.FACEBOOK_SECRET,
-      callbackURL: "https://dumpsexpert-2.onrender.com/api/auth/facebook/callback",
+      callbackURL:
+        "https://dumpsexpert-2.onrender.com/api/auth/facebook/callback",
       profileFields: ["id", "emails", "name"],
     },
     async (accessToken, refreshToken, profile, done) => {

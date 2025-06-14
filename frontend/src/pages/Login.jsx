@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router';
-import { instance } from '../lib/axios';
-import useAuthStore from '../store/index';
-import { FcGoogle } from 'react-icons/fc';
-import { FaFacebookF } from 'react-icons/fa';
-import { HiOutlineMail, HiOutlineLockClosed } from 'react-icons/hi';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router";
+import { instance } from "../lib/axios";
+import useAuthStore from "../store/index";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebookF } from "react-icons/fa";
+import { HiOutlineMail, HiOutlineLockClosed } from "react-icons/hi";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const setUser = useAuthStore((state) => state.setUser);
-  
+
   // Check for error parameters in URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const errorParam = params.get('error');
-    
-    if (errorParam === 'auth_failed') {
-      setError('Authentication failed. Please try again.');
+    const errorParam = params.get("error");
+
+    if (errorParam === "auth_failed") {
+      setError("Authentication failed. Please try again.");
     }
   }, [location]);
 
@@ -29,7 +29,7 @@ const Login = () => {
     const cleanedEmail = email.trim().toLowerCase();
 
     try {
-      const res = await instance.post('/api/auth/signin', {
+      const res = await instance.post("/api/auth/signin", {
         email: cleanedEmail,
         password,
       });
@@ -37,26 +37,30 @@ const Login = () => {
       setUser(res.data.user);
 
       const role = res.data.user.role;
-      if (role === 'admin') navigate('/admin/dashboard');
-      else if (role === 'student') navigate('/student/dashboard');
-      else if (role === 'guest') navigate('/guest/dashboard');
-      else navigate('/');
+      if (role === "admin") navigate("/admin/dashboard");
+      else if (role === "student") navigate("/student/dashboard");
+      else if (role === "guest") navigate("/guest/dashboard");
+      else navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center mt-12 justify-center bg-gradient-to-br from-slate-100 to-slate-200 px-4">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl">
-        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Login</h2>
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
+          Login
+        </h2>
 
         {/* OAuth Buttons */}
-        
+
         {/* Email/Password Form */}
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <div className="relative">
               <input
                 type="email"
@@ -71,7 +75,9 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <div className="relative">
               <input
                 type="password"
@@ -94,9 +100,11 @@ const Login = () => {
             Login
           </button>
         </form>
-<div className="py-6 text-center  text-gray-400">--------------------- OR --------------------</div>
+        <div className="py-6 text-center  text-gray-400">
+          --------------------- OR --------------------
+        </div>
 
-<div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col gap-4 mb-6">
           <a href="https://dumpsexpert-2.onrender.com/api/auth/google">
             <button className="flex items-center justify-center gap-2 w-full py-2 px-4 bg-red-100 hover:bg-red-200 text-red-600 font-semibold rounded-md transition-all duration-200">
               <FcGoogle className="text-xl" /> Google
@@ -109,9 +117,9 @@ const Login = () => {
           </a>
         </div>
         <p className="mt-6 text-sm text-center text-gray-600">
-          Don't have an account?{' '}
+          Don't have an account?{" "}
           <span
-            onClick={() => navigate('/register')}
+            onClick={() => navigate("/register")}
             className="text-blue-600 cursor-pointer hover:underline"
           >
             Register
