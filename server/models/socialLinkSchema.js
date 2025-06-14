@@ -4,12 +4,25 @@ const socialLinkSchema = new mongoose.Schema({
   socialIcon: {
     type: String,
     required: true,
-    trim: true // Stores Cloudinary URL of the icon image
+    trim: true, // Stores Cloudinary URL of the icon image
+    validate: {
+      validator: (v) => /^https?:\/\/.+\.(jpg|jpeg|png|gif|svg)$/.test(v),
+      message: 'Invalid image URL'
+    }
   },
   socialURL: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    validate: {
+      validator: (v) => /^https?:\/\/.+/.test(v),
+      message: 'Invalid URL format'
+    }
+  },
+  lastUpdatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 }, { timestamps: true });
 

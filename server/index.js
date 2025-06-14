@@ -10,7 +10,18 @@ const passportAuthRoutes = require("./routes/passportAuthRoutes");
 const basicInfoRoutes = require("./routes/basicInfoRoutes");
 const menuBuilderRoutes = require("./routes/menuBuilderRoutes");
 const socialLinkRoutes = require("./routes/socialLinkRoutes");
-
+const blogRoutes = require("./routes/blogRoutes");
+const blogPostRoutes = require("./routes/blogPostRoutes");
+const productRoutes = require("./routes/productRoutes");
+const metaInfoRoutes = require("./routes/metaInfoRoutes");
+const scriptRoutes = require("./routes/scriptRoutes");
+const sitemapRoutes = require("./routes/sitemapRoutes");
+const testimonialRoutes = require("./routes/testimonialRoutes");
+const contactRoutes = require("./routes/contactRoutes");
+const newsletterRoutes = require("./routes/newsletterRoutes");
+const faqRoutes = require("./routes/faqRoutes");
+const couponRoutes = require("./routes/couponRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 const dbConnection = require("./config/dbConnection");
 
@@ -55,9 +66,23 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", passportAuthRoutes);
-// app.use('/api/basic-info', basicInfoRoutes);
-// app.use('/api/menu-builder', menuBuilderRoutes);
-// app.use('/api/social-links', socialLinkRoutes);
+app.use('/api/basic-info', basicInfoRoutes);
+app.use('/api/menu-builder', menuBuilderRoutes);
+app.use('/api/social-links', socialLinkRoutes);
+app.use('/api/blog-categories', blogRoutes);
+app.use('/api/blogs', blogPostRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/meta-info', metaInfoRoutes);
+app.use('/api/scripts', scriptRoutes);
+app.use('/api/sitemaps', sitemapRoutes);
+app.use('/api/testimonials', testimonialRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/faqs', faqRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/seo', seoRoutes);
+app.use('/api/images', imageUploadRoutes);
 
 
 app.listen(PORT, () => {

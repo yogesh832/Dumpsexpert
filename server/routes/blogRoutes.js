@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../middlewares/authMiddleware");
 
 const {
   createBlogCategory,
@@ -9,11 +10,13 @@ const {
   deleteBlogCategory,
 } = require("../controllers/addBlogCategoryController");
 
-// You can protect routes using auth middleware if needed
-router.post("/", createBlogCategory);
+// Public routes - can be accessed without authentication
 router.get("/", getAllBlogCategories);
 router.get("/:id", getBlogCategoryById);
-router.put("/:id", updateBlogCategory);
-router.delete("/:id", deleteBlogCategory);
+
+// Protected routes - require authentication
+router.post("/", auth, createBlogCategory);
+router.put("/:id", auth, updateBlogCategory);
+router.delete("/:id", auth, deleteBlogCategory);
 
 module.exports = router;
