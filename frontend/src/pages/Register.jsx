@@ -194,12 +194,12 @@ const Register = () => {
 
         {/* OAuth Buttons (Now at Bottom) */}
         <div className="flex flex-col gap-4">
-          <a href="http://localhost:8000/api/auth/google">
+          <a href="https://dumpsexpert-2.onrender.com/api/auth/google">
             <button className="flex items-center justify-center gap-2 w-full py-2 px-4 bg-red-100 hover:bg-red-200 text-red-600 font-semibold rounded-md transition-all duration-200">
               <FcGoogle className="text-xl" /> Google
             </button>
           </a>
-          <a href="http://localhost:8000/api/auth/facebook">
+          <a href="https://dumpsexpert-2.onrender.com/api/auth/facebook">
             <button className="flex items-center justify-center gap-2 w-full py-2 px-4 bg-blue-100 hover:bg-blue-200 text-blue-600 font-semibold rounded-md transition-all duration-200">
               <FaFacebookF className="text-xl" /> Facebook
             </button>

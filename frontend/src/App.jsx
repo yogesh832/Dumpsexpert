@@ -80,10 +80,12 @@ import BlogPosts from "./features/admin/pages/BlogPosts";
 import BlogList from "./features/admin/pages/BlogList";
 import EditBlog from "./features/admin/pages/EditBlog";
 import AddBlogCategory from "./features/admin/pages/AddBlogCategory";
+import ScriptManager from "./components/Scripts/ScriptManager";
 
 const App = () => {
   return (
     <AuthProvider>
+      <ScriptManager />
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Public routes */}

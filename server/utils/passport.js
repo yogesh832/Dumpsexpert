@@ -13,7 +13,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT,
       clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: "http://localhost:8000/api/auth/google/callback",
+      callbackURL: "https://dumpsexpert-2.onrender.com/api/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -48,7 +48,7 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT,
       clientSecret: process.env.FACEBOOK_SECRET,
-      callbackURL: "http://localhost:8000/api/auth/facebook/callback",
+      callbackURL: "https://dumpsexpert-2.onrender.com/api/auth/facebook/callback",
       profileFields: ["id", "emails", "name"],
     },
     async (accessToken, refreshToken, profile, done) => {

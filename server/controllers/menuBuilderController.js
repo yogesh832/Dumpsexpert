@@ -26,7 +26,7 @@ exports.updateMenuBuilder = async (req, res, next) => {
     const updates = {
       mainMenu,
       premadeMenu,
-      lastUpdatedBy: req.user.id,
+      lastUpdatedBy: req.user._id, // Changed from req.user.id to req.user._id
     };
 
     const menuBuilder = await MenuBuilder.findOneAndUpdate(
@@ -37,6 +37,7 @@ exports.updateMenuBuilder = async (req, res, next) => {
 
     res.json(menuBuilder);
   } catch (error) {
-    next(error);
+    console.error('Error updating menu builder:', error);
+    res.status(500).json({ message: 'Server error during menu update', error: error.message });
   }
 };

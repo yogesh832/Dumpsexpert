@@ -1,4 +1,4 @@
-const AddBlogCategory = require("../models/AddBlogCategory");
+const AddBlogCategory = require("../models/addBlogCategorySchema");
 
 // Create Blog Category
 exports.createBlogCategory = async (req, res) => {
@@ -65,12 +65,51 @@ exports.getBlogCategoryById = async (req, res) => {
 // Update Blog Category
 exports.updateBlogCategory = async (req, res) => {
   try {
-    const updated = await AddBlogCategory.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    return res.status(200).json({ message: "Updated", data: updated });
+    const {
+      language,
+      title,
+      category,
+      metaTitle,
+      metaKeywords,
+      metaDescription,
+      schema,
+      status,
+      imageUrl
+    } = req.body;
+
+    // Validate required fields
+    if (!language || !title || !category || !metaTitle || !metaKeywords || !metaDescription || !schema || !imageUrl) {
+      return res.status(400).json({ error: "All required fields must be provided" });
+    }
+
+    // Create update object with lastUpdatedBy
+    const updateData = {
+      language,
+      title,
+      category,
+      metaTitle,
+      metaKeywords,
+      metaDescription,
+      schema,
+      status: status ? status.toLowerCase() : 'unpublish',
+      imageUrl,
+      lastUpdatedBy: req.user?._id || req.body.lastUpdatedBy
+    };
+
+    const updated = await AddBlogCategory.findByIdAndUpdate(
+      req.params.id, 
+      updateData, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Blog category not found" });
+    }
+
+    return res.status(200).json({ message: "Blog category updated successfully", data: updated });
   } catch (err) {
-    return res.status(500).json({ error: "Update failed" });
+    console.error("❌ Error in updateBlogCategory:", err);
+    return res.status(500).json({ error: "Update failed", details: err.message });
   }
 };
 
