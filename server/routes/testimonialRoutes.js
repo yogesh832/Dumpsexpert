@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { isAuthenticated } = require('../middleware/auth');
+const { authMiddleware } = require('../middlewares/authMiddleware');
 const {
   getAllTestimonials,
   getTestimonialById,
@@ -44,9 +44,9 @@ router.get('/', getAllTestimonials);
 router.get('/:id', getTestimonialById);
 
 // Protected routes
-router.post('/', isAuthenticated, upload.single('image'), createTestimonial);
-router.put('/:id', isAuthenticated, upload.single('image'), updateTestimonial);
-router.delete('/:id', isAuthenticated, deleteTestimonial);
-router.post('/reorder', isAuthenticated, reorderTestimonials);
+router.post('/', authMiddleware, upload.single('image'), createTestimonial);
+router.put('/:id', authMiddleware, upload.single('image'), updateTestimonial);
+router.delete('/:id', authMiddleware, deleteTestimonial);
+router.post('/reorder', authMiddleware, reorderTestimonials);
 
 module.exports = router;

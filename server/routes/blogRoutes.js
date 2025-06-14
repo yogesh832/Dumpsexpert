@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middlewares/authMiddleware");
+const { authMiddleware } = require("../middlewares/authMiddleware");
 
 const {
   createBlogCategory,
@@ -8,15 +8,15 @@ const {
   getBlogCategoryById,
   updateBlogCategory,
   deleteBlogCategory,
-} = require("../controllers/addBlogCategoryController");
+} = require("../controllers/addBlogCategory");
 
-// Public routes - can be accessed without authentication
+// Public routes
 router.get("/", getAllBlogCategories);
 router.get("/:id", getBlogCategoryById);
 
-// Protected routes - require authentication
-router.post("/", auth, createBlogCategory);
-router.put("/:id", auth, updateBlogCategory);
-router.delete("/:id", auth, deleteBlogCategory);
+// Protected routes
+router.post("/", authMiddleware, createBlogCategory);
+router.put("/:id", authMiddleware, updateBlogCategory);
+router.delete("/:id", authMiddleware, deleteBlogCategory);
 
 module.exports = router;

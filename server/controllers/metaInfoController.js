@@ -1,13 +1,11 @@
 const MetaInfo = require('../models/metaInfoSchema');
 
 // Get all meta information
-exports.getMetaInfo = async (req, res) => {
+exports.getAllMetaInfo = async (req, res) => {
   try {
-    // Find the meta info document (there should be only one)
     const metaInfo = await MetaInfo.findOne().populate('lastUpdatedBy', 'name email');
-    
+
     if (!metaInfo) {
-      // If no meta info exists, create a default one
       const defaultMetaInfo = new MetaInfo({
         home: {
           metaTitle: 'DumpsExpert - Home',
@@ -59,214 +57,98 @@ exports.getMetaInfo = async (req, res) => {
             "name": "DumpsExpert Blog"
           })
         },
-        lastUpdatedBy: req.user?._id || '64f8b8fb83e6a0e1e4b0bd0f' // Default admin ID or current user
+        lastUpdatedBy: req.user?._id || '64f8b8fb83e6a0e1e4b0bd0f'
       });
 
       await defaultMetaInfo.save();
-      return res.status(200).json({
-        message: 'Default meta information created and retrieved successfully',
-        data: defaultMetaInfo
-      });
+      return res.status(200).json({ message: 'Default meta info created', data: defaultMetaInfo });
     }
-    
-    res.status(200).json({
-      message: 'Meta information retrieved successfully',
-      data: metaInfo
-    });
+
+    res.status(200).json({ message: 'Meta information retrieved', data: metaInfo });
   } catch (error) {
-    console.error('Error retrieving meta information:', error);
-    res.status(500).json({
-      message: 'Server error while retrieving meta information',
-      error: error.message
-    });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Get meta information for a specific page
-exports.getPageMetaInfo = async (req, res) => {
+// Get meta info for a specific page
+exports.getMetaInfoByPage = async (req, res) => {
   try {
     const { page } = req.params;
-    
-    // Validate page parameter
     const validPages = ['home', 'about', 'faq', 'contact', 'blog'];
     if (!validPages.includes(page)) {
       return res.status(400).json({ message: 'Invalid page parameter' });
     }
-    
-    // Find the meta info document
+
     const metaInfo = await MetaInfo.findOne().select(`${page} lastUpdatedBy`);
-    
     if (!metaInfo) {
       return res.status(404).json({ message: 'Meta information not found' });
     }
-    
-    res.status(200).json({
-      message: `Meta information for ${page} page retrieved successfully`,
-      data: metaInfo[page]
-    });
+
+    res.status(200).json({ message: `Meta info for ${page}`, data: metaInfo[page] });
   } catch (error) {
-    console.error('Error retrieving page meta information:', error);
-    res.status(500).json({
-      message: 'Server error while retrieving page meta information',
-      error: error.message
-    });
+    res.status(500).json({ message: 'Error getting page meta info', error: error.message });
   }
 };
 
-// Update meta information
-exports.updateMetaInfo = async (req, res) => {
+// Update all meta info
+exports.updateAllMetaInfo = async (req, res) => {
   try {
     const { home, about, faq, contact, blog } = req.body;
     const userId = req.user?._id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-    // Validate authentication
-    if (!userId) {
-      return res.status(401).json({ message: 'Authentication required' });
-    }
-
-    // Find existing meta info or create new one
     let metaInfo = await MetaInfo.findOne();
-    
-    if (!metaInfo) {
-      // Create new meta info if it doesn't exist
-      metaInfo = new MetaInfo({
-        lastUpdatedBy: userId
-      });
-    }
+    if (!metaInfo) metaInfo = new MetaInfo({ lastUpdatedBy: userId });
 
-    // Update fields if provided
-    if (home) {
-      // Validate schema JSON
-      if (home.schema) {
+    const pages = { home, about, faq, contact, blog };
+    for (const [page, data] of Object.entries(pages)) {
+      if (data && data.schema) {
         try {
-          JSON.parse(home.schema);
-        } catch (e) {
-          return res.status(400).json({ message: 'Invalid JSON schema for home page' });
+          JSON.parse(data.schema);
+        } catch (err) {
+          return res.status(400).json({ message: `Invalid JSON schema for ${page}` });
         }
       }
-      metaInfo.home = { ...metaInfo.home.toObject(), ...home };
+      if (data) metaInfo[page] = { ...metaInfo[page]?.toObject(), ...data };
     }
 
-    if (about) {
-      // Validate schema JSON
-      if (about.schema) {
-        try {
-          JSON.parse(about.schema);
-        } catch (e) {
-          return res.status(400).json({ message: 'Invalid JSON schema for about page' });
-        }
-      }
-      metaInfo.about = { ...metaInfo.about.toObject(), ...about };
-    }
-
-    if (faq) {
-      // Validate schema JSON
-      if (faq.schema) {
-        try {
-          JSON.parse(faq.schema);
-        } catch (e) {
-          return res.status(400).json({ message: 'Invalid JSON schema for faq page' });
-        }
-      }
-      metaInfo.faq = { ...metaInfo.faq.toObject(), ...faq };
-    }
-
-    if (contact) {
-      // Validate schema JSON
-      if (contact.schema) {
-        try {
-          JSON.parse(contact.schema);
-        } catch (e) {
-          return res.status(400).json({ message: 'Invalid JSON schema for contact page' });
-        }
-      }
-      metaInfo.contact = { ...metaInfo.contact.toObject(), ...contact };
-    }
-
-    if (blog) {
-      // Validate schema JSON
-      if (blog.schema) {
-        try {
-          JSON.parse(blog.schema);
-        } catch (e) {
-          return res.status(400).json({ message: 'Invalid JSON schema for blog page' });
-        }
-      }
-      metaInfo.blog = { ...metaInfo.blog.toObject(), ...blog };
-    }
-
-    // Update lastUpdatedBy
     metaInfo.lastUpdatedBy = userId;
-
-    // Save changes
     await metaInfo.save();
 
-    res.status(200).json({
-      message: 'Meta information updated successfully',
-      data: metaInfo
-    });
+    res.status(200).json({ message: 'Meta info updated', data: metaInfo });
   } catch (error) {
-    console.error('Error updating meta information:', error);
-    res.status(500).json({
-      message: 'Server error during meta information update',
-      error: error.message
-    });
+    res.status(500).json({ message: 'Update error', error: error.message });
   }
 };
 
-// Update meta information for a specific page
-exports.updatePageMetaInfo = async (req, res) => {
+// Update meta info for a specific page
+exports.updateMetaInfoByPage = async (req, res) => {
   try {
     const { page } = req.params;
-    const pageData = req.body;
+    const data = req.body;
     const userId = req.user?._id;
 
-    // Validate page parameter
     const validPages = ['home', 'about', 'faq', 'contact', 'blog'];
-    if (!validPages.includes(page)) {
-      return res.status(400).json({ message: 'Invalid page parameter' });
-    }
+    if (!validPages.includes(page)) return res.status(400).json({ message: 'Invalid page' });
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-    // Validate authentication
-    if (!userId) {
-      return res.status(401).json({ message: 'Authentication required' });
-    }
-
-    // Validate schema JSON if provided
-    if (pageData.schema) {
+    if (data.schema) {
       try {
-        JSON.parse(pageData.schema);
+        JSON.parse(data.schema);
       } catch (e) {
-        return res.status(400).json({ message: `Invalid JSON schema for ${page} page` });
+        return res.status(400).json({ message: 'Invalid JSON schema' });
       }
     }
 
-    // Find existing meta info or create new one
     let metaInfo = await MetaInfo.findOne();
-    
-    if (!metaInfo) {
-      // Create new meta info with default values
-      metaInfo = new MetaInfo({
-        lastUpdatedBy: userId
-      });
-    }
+    if (!metaInfo) metaInfo = new MetaInfo({ lastUpdatedBy: userId });
 
-    // Update the specific page data
-    metaInfo[page] = { ...metaInfo[page].toObject(), ...pageData };
+    metaInfo[page] = { ...metaInfo[page]?.toObject(), ...data };
     metaInfo.lastUpdatedBy = userId;
-
-    // Save changes
     await metaInfo.save();
 
-    res.status(200).json({
-      message: `Meta information for ${page} page updated successfully`,
-      data: metaInfo[page]
-    });
+    res.status(200).json({ message: `Meta info for ${page} updated`, data: metaInfo[page] });
   } catch (error) {
-    console.error('Error updating page meta information:', error);
-    res.status(500).json({
-      message: 'Server error during page meta information update',
-      error: error.message
-    });
+    res.status(500).json({ message: 'Error updating page meta', error: error.message });
   }
 };

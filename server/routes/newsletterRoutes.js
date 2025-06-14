@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated } = require('../middleware/auth');
+const { authMiddleware } = require('../middlewares/authMiddleware');
 const {
   subscribe,
   confirmSubscription,
@@ -20,13 +20,13 @@ router.get('/confirm/:token', confirmSubscription);
 router.get('/unsubscribe/:token', unsubscribe);
 
 // Protected routes (admin only)
-router.get('/subscribers', isAuthenticated, getAllSubscribers);
-router.delete('/subscribers/:id', isAuthenticated, deleteSubscriber);
-router.put('/subscribers/:id/status', isAuthenticated, updateSubscriberStatus);
+router.get('/subscribers', authMiddleware, getAllSubscribers);
+router.delete('/subscribers/:id', authMiddleware, deleteSubscriber);
+router.put('/subscribers/:id/status', authMiddleware, updateSubscriberStatus);
 
-router.post('/send', isAuthenticated, createAndSendNewsletter);
-router.get('/history', isAuthenticated, getAllNewsletters);
-router.get('/history/:id', isAuthenticated, getNewsletterById);
-router.delete('/history/:id', isAuthenticated, deleteNewsletter);
+router.post('/send', authMiddleware, createAndSendNewsletter);
+router.get('/history', authMiddleware, getAllNewsletters);
+router.get('/history/:id', authMiddleware, getNewsletterById);
+router.delete('/history/:id', authMiddleware, deleteNewsletter);
 
 module.exports = router;

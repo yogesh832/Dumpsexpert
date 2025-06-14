@@ -1,25 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../controllers/productController');
-const auth = require('../middlewares/authMiddleware');
-const { parser } = require('../utils/cloudinary');
+const multer = require('multer');
 
-// Get all products with pagination and filtering
-router.get('/', productController.getAllProducts);
+const {
+  getAllProducts,
+  getProductById,
+  getProductsByCategory,
+  createProduct,
+  updateProduct,
+  deleteProduct
+} = require('../controllers/productController');
 
-// Get product by ID
-router.get('/id/:id', productController.getProductById);
+const { authMiddleware } = require('../middlewares/authMiddleware');
 
-// Get products by category
-router.get('/category/:category', productController.getProductsByCategory);
+// Configure multer
+const upload = multer({ dest: 'uploads/' });
 
-// Create a new product
-router.post('/', auth, parser.single('image'), productController.createProduct);
+// 🟢 PUBLIC ROUTES (place specific routes first)
+router.get('/category/:category', getProductsByCategory);
+router.get('/:id', getProductById);
+router.get('/', getAllProducts);
 
-// Update a product
-router.put('/:id', auth, parser.single('image'), productController.updateProduct);
-
-// Delete a product
-router.delete('/:id', auth, productController.deleteProduct);
+// 🔐 PROTECTED ROUTES
+router.post('/', authMiddleware, upload.single('image'), createProduct);
+router.put('/:id', authMiddleware, upload.single('image'), updateProduct);
+router.delete('/:id', authMiddleware, deleteProduct);
 
 module.exports = router;

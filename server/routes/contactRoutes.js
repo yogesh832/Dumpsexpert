@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated } = require('../middleware/auth');
+const { authMiddleware } = require('../middlewares/authMiddleware');
 const {
   submitContactForm,
   getAllContacts,
@@ -14,10 +14,10 @@ const {
 router.post('/submit', submitContactForm);
 
 // Protected routes (admin only)
-router.get('/', isAuthenticated, getAllContacts);
-router.get('/:id', isAuthenticated, getContactById);
-router.put('/:id', isAuthenticated, updateContact);
-router.delete('/:id', isAuthenticated, deleteContact);
-router.post('/:id/reply', isAuthenticated, replyToContact);
+router.get('/', authMiddleware, getAllContacts);
+router.get('/:id', authMiddleware, getContactById);
+router.put('/:id', authMiddleware, updateContact);
+router.delete('/:id', authMiddleware, deleteContact);
+router.post('/:id/reply', authMiddleware, replyToContact);
 
 module.exports = router;

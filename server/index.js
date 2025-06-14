@@ -22,9 +22,9 @@ const newsletterRoutes = require("./routes/newsletterRoutes");
 const faqRoutes = require("./routes/faqRoutes");
 const couponRoutes = require("./routes/couponRoutes");
 const orderRoutes = require("./routes/orderRoutes");
-
+const seoRoutes = require("./routes/seoRoutes");
 const dbConnection = require("./config/dbConnection");
-
+const imageUploadRoutes = require("./routes/imageUploadRoutes");
 require("./utils/passport");
 
 dotenv.config();

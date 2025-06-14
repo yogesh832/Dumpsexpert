@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const sitemapController = require('../controllers/sitemapController');
-const auth = require('../middleware/authMiddleware');
+const {authMiddleware} = require('../middlewares/authMiddleware');
 const multer = require('multer');
 const path = require('path');
 
@@ -33,18 +33,18 @@ router.get('/', sitemapController.getAllSitemaps);
 router.get('/:id', sitemapController.getSitemapById);
 
 // Create a new sitemap
-router.post('/', auth, upload.single('sitemap'), sitemapController.createSitemap);
+router.post('/', authMiddleware, upload.single('sitemap'), sitemapController.createSitemap);
 
 // Update a sitemap
-router.put('/:id', auth, upload.single('sitemap'), sitemapController.updateSitemap);
+router.put('/:id', authMiddleware, upload.single('sitemap'), sitemapController.updateSitemap);
 
 // Delete a sitemap
-router.delete('/:id', auth, sitemapController.deleteSitemap);
+router.delete('/:id', authMiddleware, sitemapController.deleteSitemap);
 
 // Download a sitemap
 router.get('/:id/download', sitemapController.downloadSitemap);
 
 // Generate sitemap.xml
-router.post('/generate', auth, sitemapController.generateSitemap);
+router.post('/generate', authMiddleware, sitemapController.generateSitemap);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const metaInfoController = require('../controllers/metaInfoController');
-const auth = require('../middlewares/authMiddleware');
+const { authMiddleware } = require('../middlewares/authMiddleware');
 
 // Get all meta information
 router.get('/', metaInfoController.getAllMetaInfo);
@@ -10,9 +10,9 @@ router.get('/', metaInfoController.getAllMetaInfo);
 router.get('/:page', metaInfoController.getMetaInfoByPage);
 
 // Update all meta information
-router.put('/', auth, metaInfoController.updateAllMetaInfo);
+router.put('/', authMiddleware, metaInfoController.updateAllMetaInfo);
 
 // Update meta information for a specific page
-router.put('/:page', auth, metaInfoController.updateMetaInfoByPage);
+router.put('/:page', authMiddleware, metaInfoController.updateMetaInfoByPage);
 
 module.exports = router;

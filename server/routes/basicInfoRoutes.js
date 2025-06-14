@@ -5,7 +5,9 @@ const {
   updateSettings,
   uploadFiles
 } = require('../controllers/basicInfoController');
-const authMiddleware = require('../middlewares/authMiddleware');
+
+// ✅ Corrected import for named export
+const { authMiddleware } = require('../middlewares/authMiddleware');
 
 // GET basic info settings
 router.get('/', getSettings);

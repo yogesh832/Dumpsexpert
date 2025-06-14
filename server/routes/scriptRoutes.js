@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const scriptController = require('../controllers/scriptController');
-const auth = require('../middleware/authMiddleware');
+const {authMiddleware} = require('../middlewares/authMiddleware');
 
 // Get all script settings (admin only)
 router.get('/', scriptController.getScriptSettings);
@@ -10,6 +10,6 @@ router.get('/', scriptController.getScriptSettings);
 router.get('/public', scriptController.getPublicScriptSettings);
 
 // Update script settings (admin only)
-router.put('/', auth, scriptController.updateScriptSettings);
+router.put('/', authMiddleware, scriptController.updateScriptSettings);
 
 module.exports = router;

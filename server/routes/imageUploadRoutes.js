@@ -11,7 +11,7 @@ const {
   deleteImage,
   getImageCategories
 } = require('../controllers/imageUploadController');
-const auth = require('../middlewares/authMiddleware');
+const {authMiddleware} = require('../middlewares/authMiddleware');
 
 // Configure multer for temporary storage before uploading to Cloudinary
 const storage = multer.diskStorage({
@@ -35,12 +35,12 @@ router.get('/categories', getImageCategories);
 router.get('/:id', getImageById);
 
 // Upload a new image
-router.post('/', auth, upload.single('image'), uploadImage);
+router.post('/', authMiddleware, upload.single('image'), uploadImage);
 
 // Update image metadata or replace image
-router.put('/:id', auth, upload.single('image'), updateImage);
+router.put('/:id', authMiddleware, upload.single('image'), updateImage);
 
 // Delete an image
-router.delete('/:id', auth, deleteImage);
+router.delete('/:id', authMiddleware, deleteImage);
 
 module.exports = router;

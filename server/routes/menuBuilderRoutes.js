@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { getMenuBuilder, updateMenuBuilder } = require('../controllers/menuBuilderController');
-const auth = require('../middlewares/authMiddleware');
+const { authMiddleware } = require('../middlewares/authMiddleware'); // ✅ Fix here
 
 // GET MenuBuilder
 router.get('/', getMenuBuilder);
 
 // UPDATE MenuBuilder
-router.put('/', auth, updateMenuBuilder);
+router.put('/', authMiddleware, updateMenuBuilder); // ✅ Use the correct function
 
 module.exports = router;

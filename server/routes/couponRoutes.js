@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isAuthenticated } = require('../middleware/auth');
+const { authMiddleware } = require('../middlewares/authMiddleware');
 const {
   getAllCoupons,
   getActiveCoupons,
@@ -16,10 +16,10 @@ router.get('/active', getActiveCoupons);
 router.post('/validate', validateCoupon);
 
 // Protected routes (admin only)
-router.get('/', isAuthenticated, getAllCoupons);
-router.get('/:id', isAuthenticated, getCouponById);
-router.post('/', isAuthenticated, createCoupon);
-router.put('/:id', isAuthenticated, updateCoupon);
-router.delete('/:id', isAuthenticated, deleteCoupon);
+router.get('/', authMiddleware, getAllCoupons);
+router.get('/:id', authMiddleware, getCouponById);
+router.post('/', authMiddleware, createCoupon);
+router.put('/:id', authMiddleware, updateCoupon);
+router.delete('/:id', authMiddleware, deleteCoupon);
 
 module.exports = router;
