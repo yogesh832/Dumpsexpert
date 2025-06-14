@@ -1,31 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { instance } from "../lib/axios";
 import useAuthStore from "../store";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 const AuthProvider = ({ children }) => {
   const setUser = useAuthStore((state) => state.setUser);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // The token is in HTTP-only cookie, so no need to send it manually
         const res = await instance.get("/api/auth/me");
         setUser(res.data.user);
       } catch (err) {
-        console.log("Session expired or not logged in", err);
-      } finally {
-        setLoading(false);
+        console.log("Not logged in or session expired");
+        console.error(err);
+        setUser(null); // explicitly clear user state
       }
     };
 
     fetchUser();
   }, [setUser]);
 
-  if (loading) return <div className="flex items-center justify-center p-4 h-[100vh] text-center"><LoadingSpinner/></div>;
-
-  return children;
+  return children; // 🟢 Always render children
 };
 
 export default AuthProvider;
