@@ -139,6 +139,6 @@ exports.handleSocialCallback = (req, res) => {
       .redirect(redirectUrl);
   } catch (error) {
     console.error("OAuth callback error:", error);
-    res.redirect("http://localhost:5173/login?error=auth_failed");
+    res.redirect("https://dumpsexpert.vercel.app/login?error=auth_failed");
   }
 };

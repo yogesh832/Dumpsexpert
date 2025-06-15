@@ -5,49 +5,23 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-//user schema
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    default: null,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true,
-  },
-  password: {
-    type: String,
-  },
-  provider: {
-    type: String,
-    enum: ["email", "google", "facebook"],
-    default: "email",
-  },
-  providerId: {
-    type: String,
-    required: false,
-  },
-  profileImage: {
-    type: String,
-    default: "",
-  },
-  role: {
-    type: String,
-    enum: ["guest", "student", "admin"],
-    default: "guest",
-  },
-  isVerified: {
-    type: Boolean,
-    default: false,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  name: { type: String, default: null },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  password: { type: String },
+  provider: { type: String, enum: ["email", "google", "facebook"], default: "email" },
+  providerId: { type: String },
+  phone: { type: String, default: "" },
+  address: { type: String, default: "" },
+  dob: { type: Date },
+  gender: { type: String, enum: ["Male", "Female", "Other"] },
+  bio: { type: String, default: "" },
+  profileImage: { type: String, default: "" },
+  role: { type: String, enum: ["guest", "student", "admin"], default: "guest" },
+  isVerified: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
 });
+
 
 //hashing of password
 userSchema.pre("save", async function (next) {
