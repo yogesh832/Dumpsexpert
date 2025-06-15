@@ -21,6 +21,6 @@ const AuthProvider = ({ children }) => {
   }, [setUser]);
 
   return children; 
-};
+};// AuthProvider.jsx
 
 export default AuthProvider;
