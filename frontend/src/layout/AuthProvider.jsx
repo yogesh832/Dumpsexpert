@@ -13,14 +13,14 @@ const AuthProvider = ({ children }) => {
       } catch (err) {
         console.log("Not logged in or session expired");
         console.error(err);
-        setUser(null); // explicitly clear user state
+        setUser(null); 
       }
     };
 
     fetchUser();
   }, [setUser]);
 
-  return children; // 🟢 Always render children
+  return children; 
 };
 
 export default AuthProvider;

@@ -119,7 +119,7 @@ exports.handleSocialCallback = (req, res) => {
   try {
     const token = req.user.generateJWT();
     const role = req.user.role;
-    let redirectUrl = "http://localhost:5173";
+    let redirectUrl = "https://dumpsexpert.vercel.app";
 
     if (role === "admin") {
       redirectUrl += "/admin/dashboard";
