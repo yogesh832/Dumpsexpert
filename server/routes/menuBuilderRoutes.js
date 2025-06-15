@@ -10,3 +10,4 @@ router.get('/', getMenuBuilder);
 router.put('/', authMiddleware, updateMenuBuilder); // ✅ Use the correct function
 
 module.exports = router;
+// @ts-check
