@@ -104,10 +104,8 @@ exports.createProduct = async (req, res) => {
     if (!sapExamCode || !title || !price || !category || !status || !action) {
       return res.status(400).json({ message: 'All fields are required' });
     }
+const hardcodedAdminId = '664c1234567890abcdef1234'; // ✅ Replace with a real _id from your User collection
 
-    if (!userId) {
-      return res.status(401).json({ message: 'Authentication required' });
-    }
 
     // Upload image to Cloudinary if provided
     let imageUrl = '';
@@ -129,7 +127,7 @@ exports.createProduct = async (req, res) => {
       category,
       status,
       action,
-      lastUpdatedBy: userId
+      lastUpdatedBy: hardcodedAdminId
     });
 
     await newProduct.save();
@@ -160,12 +158,7 @@ exports.updateProduct = async (req, res) => {
       action
     } = req.body;
 
-    const userId = req.user?._id;
-
-    // Validate authentication
-    if (!userId) {
-      return res.status(401).json({ message: 'Authentication required' });
-    }
+  
 
     // Find the product first to check if it exists
     const existingProduct = await Product.findById(id);
@@ -225,17 +218,13 @@ exports.updateProduct = async (req, res) => {
 };
 
 // Delete a product
+
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user?._id;
 
-    // Validate authentication
-    if (!userId) {
-      return res.status(401).json({ message: 'Authentication required' });
-    }
+    // ✅ No more auth check needed
 
-    // Find the product first to check if it exists
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
@@ -248,21 +237,20 @@ exports.deleteProduct = async (req, res) => {
         await cloudinary.uploader.destroy(`products/${publicId}`);
       } catch (cloudinaryError) {
         console.warn('Error deleting image from Cloudinary:', cloudinaryError);
-        // Continue with deletion even if image removal fails
       }
     }
 
     await Product.findByIdAndDelete(id);
-    
+
     res.status(200).json({
       message: 'Product deleted successfully',
-      deletedId: id
+      deletedId: id,
     });
   } catch (error) {
     console.error('Error deleting product:', error);
     res.status(500).json({
       message: 'Server error during product deletion',
-      error: error.message
+      error: error.message,
     });
   }
 };

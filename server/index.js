@@ -25,6 +25,15 @@ const orderRoutes = require("./routes/orderRoutes");
 const seoRoutes = require("./routes/seoRoutes");
 const dbConnection = require("./config/dbConnection");
 const imageUploadRoutes = require("./routes/imageUploadRoutes");
+
+const productCategoryRoutes = require('./routes/productCategoryRoutes');
+
+const Question = require('./models/QuestionSchema');
+
+
+
+const examRoutes = require('./routes/examRoutes');
+const questionRoutes = require('./routes/questionRoutes');
 require("./utils/passport");
 
 dotenv.config();
@@ -39,6 +48,8 @@ const allowedOrigins = [
   "https://dumpsexpert.vercel.app",
 ];
 
+
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -52,6 +63,8 @@ app.use(
     credentials: true,
   })
 );
+
+
 // app.options('*', cors()); 
 app.use(express.json());
 app.use(cookieParser());
@@ -83,6 +96,30 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/seo', seoRoutes);
 app.use('/api/images', imageUploadRoutes);
+app.use('/api/exams', examRoutes);
+app.use('/api/questions', questionRoutes);
+
+
+
+app.get('/api/exams/:examId/questions', async (req, res) => {
+  try {
+    const questions = await Question.find({ examId: req.params.examId });
+    res.json(questions);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+app.use('/api/product-categories', productCategoryRoutes); // <-- new line
+// ⚠️ AFTER all app.use() and app.use('/api/...')
+app.use((err, req, res, next) => {
+  console.error('🔥 UNCAUGHT ERROR:', err.stack || err);
+  res.status(500).json({
+    message: 'Internal server error',
+    error: err.message || err,
+  });
+});
 
 
 app.listen(PORT, () => {

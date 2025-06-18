@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router";
 
 const examCourses = [
   {
@@ -37,9 +38,10 @@ const ExamCoursesPage = () => {
             <span className="text-blue-700 font-semibold text-center mx-4">
               {course.title}
             </span>
-            <button className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+          <Link to="one">  <button className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
               Attempt
             </button>
+              </Link>
           </div>
         ))}
       </div>

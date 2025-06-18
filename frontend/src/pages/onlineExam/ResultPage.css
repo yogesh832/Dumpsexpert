@@ -1,0 +1,88 @@
+/* === Detailed Result Page === */
+.result-page {
+  padding: 2rem 1rem;
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9fafb;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* === Heading === */
+.detail-heading {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* === Individual Question Card === */
+.question-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 850px;
+  border-left: 6px solid gray;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease-in-out;
+}
+
+.question-card:hover {
+  transform: translateY(-2px);
+}
+
+.question-card h4 {
+  font-size: 1.125rem;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+}
+
+.question-card p {
+  margin: 6px 0;
+  font-size: 1rem;
+  color: #334155;
+}
+
+.question-card strong {
+  color: #1e293b;
+}
+
+/* === Status-based Borders === */
+.question-card.correct {
+  border-left-color: #22c55e;
+}
+
+.question-card.wrong {
+  border-left-color: #ef4444;
+}
+
+.question-card.skipped {
+  border-left-color: #facc15;
+}
+
+/* === Responsive === */
+@media screen and (max-width: 768px) {
+  .question-card {
+    padding: 1rem;
+    width: 95%;
+  }
+
+  .detail-heading {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .question-card h4 {
+    font-size: 1rem;
+  }
+
+  .question-card p {
+    font-size: 0.95rem;
+  }
+}

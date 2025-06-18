@@ -1,72 +1,193 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const QuestionList = ({ exam, setView }) => {
+const QuestionForm = ({ exam, question, setView }) => {
+  const isEdit = !!question;
+
+  const [questionText, setQuestionText] = useState("");
+  const [options, setOptions] = useState(["", "", "", ""]);
+  const [correctAnswers, setCorrectAnswers] = useState([false, false, false, false]);
+  const [difficulty, setDifficulty] = useState("Easy");
+  const [marks, setMarks] = useState(1);
+  const [negativeMarks, setNegativeMarks] = useState(0);
+  const [isSample, setIsSample] = useState(false);
+  const [status, setStatus] = useState("draft");
+
+  // Prefill on edit
+  useEffect(() => {
+    if (isEdit) {
+      setQuestionText(question.questionText || "");
+      setOptions(question.options?.map((opt) => opt.text) || ["", "", "", ""]);
+      setCorrectAnswers(question.correctAnswers || [false, false, false, false]);
+      setDifficulty(question.difficulty || "Easy");
+      setMarks(question.marks || 1);
+      setNegativeMarks(question.negativeMarks || 0);
+      setIsSample(question.isSample || false);
+      setStatus(question.status || "draft");
+    }
+  }, [question]);
+
+  // Determine question type dynamically
+  const isMultipleCorrect = correctAnswers.filter(Boolean).length > 1;
+  const inputType = isMultipleCorrect ? "checkbox" : "radio";
+
+  const handleOptionChange = (index, value) => {
+    const updated = [...options];
+    updated[index] = value;
+    setOptions(updated);
+  };
+
+  const handleCorrectAnswerChange = (index) => {
+    const updated = [...correctAnswers];
+    if (inputType === "radio") {
+      updated.fill(false);
+    }
+    updated[index] = !updated[index];
+    setCorrectAnswers(updated);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const payload = {
+      examId: exam._id,
+      questionText,
+      options: options.map((opt, i) => ({ label: String.fromCharCode(65 + i), text: opt })),
+      correctAnswers,
+      difficulty,
+      marks,
+      negativeMarks,
+      isSample,
+      status,
+    };
+
+    const request = isEdit
+      ? axios.put(`http://localhost:8000/api/questions/${question._id}`, payload)
+      : axios.post("http://localhost:8000/api/questions", payload);
+
+    request
+      .then(() => {
+        alert("Question saved successfully!");
+        setView("manageQuestions");
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Error saving question.");
+      });
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-gray-800">
-          Questions & Answers List
-        </h2>
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 max-w-2xl mx-auto">
+      <h2 className="text-xl font-semibold">{isEdit ? "Edit" : "Add"} Question</h2>
+
+      <div>
+        <label className="block font-medium">Question Text:</label>
+        <textarea
+          value={questionText}
+          onChange={(e) => setQuestionText(e.target.value)}
+          className="w-full border p-2 rounded"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium mb-1">Options:</label>
+        {options.map((opt, index) => (
+          <div key={index} className="flex items-center mb-2 gap-2">
+            <input
+              type={inputType}
+              checked={correctAnswers[index]}
+              onChange={() => handleCorrectAnswerChange(index)}
+              className="mt-1"
+            />
+            <input
+              type="text"
+              value={opt}
+              onChange={(e) => handleOptionChange(index, e.target.value)}
+              className="flex-1 border p-1 rounded"
+              placeholder={`Option ${String.fromCharCode(65 + index)}`}
+              required
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex gap-4">
+        <div>
+          <label className="block font-medium">Difficulty:</label>
+          <select
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+            className="border p-1 rounded"
+          >
+            <option>Easy</option>
+            <option>Medium</option>
+            <option>Hard</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block font-medium">Marks:</label>
+          <input
+            type="number"
+            value={marks}
+            onChange={(e) => setMarks(+e.target.value)}
+            className="border p-1 rounded w-20"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block font-medium">Negative Marks:</label>
+          <input
+            type="number"
+            value={negativeMarks}
+            onChange={(e) => setNegativeMarks(+e.target.value)}
+            className="border p-1 rounded w-20"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 mt-2">
+        <label>
+          <input
+            type="checkbox"
+            checked={isSample}
+            onChange={(e) => setIsSample(e.target.checked)}
+          />
+          <span className="ml-2">Is Sample Question</span>
+        </label>
+
+        <label>
+          Status:
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="ml-2 border p-1 rounded"
+          >
+            <option value="draft">Draft</option>
+            <option value="publish">Publish</option>
+          </select>
+        </label>
+      </div>
+
+      <div className="mt-4">
         <button
-          onClick={() => setView("addQuestion")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-medium shadow"
+          type="submit"
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded mr-3"
         >
-          + Add Question
+          {isEdit ? "Update" : "Create"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setView("manageQuestions")}
+          className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+        >
+          Cancel
         </button>
       </div>
-
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full table-auto border-collapse shadow-md rounded-md overflow-hidden">
-          <thead>
-            <tr className="bg-gray-200 text-gray-700 text-sm">
-              <th className="p-3 text-left border-b">Sn.No</th>
-              <th className="p-3 text-left border-b">Exam Code</th>
-              <th className="p-3 text-left border-b">Question</th>
-              <th className="p-3 text-left border-b">Answer</th>
-              <th className="p-3 text-left border-b">Sample</th>
-              <th className="p-3 text-left border-b">Status</th>
-              <th className="p-3 text-left border-b">Action</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm text-gray-800">
-            {[1, 2, 3].map((q) => (
-              <tr key={q} className="hover:bg-gray-50 border-b transition duration-300">
-                <td className="p-3">{q}</td>
-                <td className="p-3">{exam?.id || "EX-001"}</td>
-                <td className="p-3">Sample Question {q}</td>
-                <td className="p-3">C</td>
-                <td className="p-3">
-                  <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-medium">
-                    Active
-                  </span>
-                </td>
-                <td className="p-3">
-                  <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
-                    Published
-                  </span>
-                </td>
-                <td className="p-3 space-x-2">
-                  <button
-                    onClick={() => setView("editQuestion")}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-xs"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </form>
   );
 };
 
-export default QuestionList;
+export default QuestionForm;

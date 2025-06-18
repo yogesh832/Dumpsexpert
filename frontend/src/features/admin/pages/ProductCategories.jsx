@@ -1,96 +1,134 @@
-import React, { useState } from 'react';
-
-const mockData = [
-  { id: 1, name: 'ISACA', status: 'Publish' },
-  { id: 2, name: '-', status: 'Publish' },
-  { id: 3, name: 'ORACLE', status: 'Publish' },
-  { id: 4, name: 'Microsoft', status: 'Publish' },
-];
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router"; // ✅ use react-router-dom
+import axios from "axios";
 
 const ProductCategories = () => {
-  const [search, setSearch] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const filteredData = mockData.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/api/product-categories");
+        const responseData = res.data;
+
+        if (Array.isArray(responseData)) {
+          setCategories(responseData);
+        } else if (Array.isArray(responseData.data)) {
+          setCategories(responseData.data);
+        } else {
+          setCategories([]);
+          console.warn("Unexpected category response:", responseData);
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Failed to load categories");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Delete category
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      try {
+        await axios.delete(`http://localhost:8000/api/product-categories/${id}`);
+        setCategories((prev) => prev.filter((cat) => cat._id !== id));
+      } catch (err) {
+        alert("Failed to delete category");
+        console.error(err);
+      }
+    }
+  };
+
+  // Search filter
+  const filtered = categories.filter((cat) =>
+    cat.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="p-6 bg-white min-h-screen">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Product Categories</h2>
-        <div className="flex space-x-2">
-          <button className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">
-            Bulk Delete
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold">Product Categories</h2>
+        <Link to="add">
+          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            + Add
           </button>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            + Add Category
-          </button>
-        </div>
+        </Link>
       </div>
 
-      <div className="bg-white rounded shadow p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <label>Show&nbsp;
-              <select className="border border-gray-300 rounded px-2 py-1">
-                <option>10</option>
-                <option>25</option>
-                <option>50</option>
-              </select>&nbsp;entries
-            </label>
-          </div>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="border border-gray-300 px-3 py-1 rounded"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+      {/* Search Input */}
+      <input
+        type="text"
+        placeholder="Search categories..."
+        className="border border-gray-300 rounded px-3 py-2 mb-4 w-full"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-        <table className="w-full table-auto border border-gray-200 text-sm">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2 border">#</th>
+      {/* Loading, Error, Empty */}
+      {loading ? (
+        <p className="text-center text-gray-600">Loading categories...</p>
+      ) : error ? (
+        <p className="text-center text-red-500">{error}</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-center text-gray-500">No matching categories found.</p>
+      ) : (
+        <table className="w-full border text-sm">
+          <thead className="bg-gray-100">
+            <tr>
               <th className="p-2 border">Image</th>
               <th className="p-2 border">Name</th>
               <th className="p-2 border">Status</th>
-              <th className="p-2 border">Action</th>
+              <th className="p-2 border">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((item, index) => (
-              <tr key={index} className="border-t">
-                <td className="p-2 border">
-                  <input type="checkbox" />
+            {filtered.map((cat) => (
+              <tr key={cat._id}>
+                <td className="border p-2 text-center">
+                  {cat.image ? (
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      className="w-12 h-12 object-cover rounded mx-auto"
+                    />
+                  ) : (
+                    "-"
+                  )}
                 </td>
-                <td className="p-2 border">[Image]</td>
-                <td className="p-2 border">{item.name}</td>
-                <td className="p-2 border">
-                  <span className="bg-green-500 text-white px-2 py-1 rounded text-xs">
-                    {item.status}
+                <td className="border p-2">{cat.name}</td>
+                <td className="border p-2 text-center">
+                  <span className={`px-2 py-1 rounded text-xs text-white ${
+                    cat.status === "Publish" ? "bg-green-500" : "bg-yellow-500"
+                  }`}>
+                    {cat.status || "Ready"}
                   </span>
                 </td>
-                <td className="p-2 border space-x-2">
-                  <button className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600">
-                    Edit
-                  </button>
-                  <button className="bg-pink-500 text-white px-3 py-1 rounded text-xs hover:bg-pink-600">
+                <td className="border p-2 space-x-2 text-center">
+                  <Link to={`edit/${cat._id}`}>
+                    <button className="px-3 py-1 text-white bg-green-600 rounded hover:bg-green-700">
+                      Edit
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(cat._id)}
+                    className="px-3 py-1 text-white bg-red-600 rounded hover:bg-red-700"
+                  >
                     Delete
                   </button>
                 </td>
               </tr>
             ))}
-            {filteredData.length === 0 && (
-              <tr>
-                <td colSpan="5" className="text-center py-4 text-gray-500">
-                  No matching records found.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
-      </div>
+      )}
     </div>
   );
 };

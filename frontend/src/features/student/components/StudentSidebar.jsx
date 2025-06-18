@@ -11,7 +11,7 @@ const menuItems = [
   { name: "Dashboard", to: "/student/dashboard", icon: <FaUser /> },
   { name: "My Orders", to: "/student/orders", icon: <FaShoppingCart /> },
   { name: "My Courses (PDF)", to: "/student/courses-pdf", icon: <FaFileAlt /> },
-  { name: "My Courses (Online Exam)", to: "/student/courses-exam", icon: <FaFileAlt /> },
+  { name: "My Courses (Online Exam)", to: "/student/courses-exam/list", icon: <FaFileAlt /> },
   { name: "Result History Tracking", to: "/student/results", icon: <FaFileAlt /> },
   { name: "Edit Profile", to: "/student/edit-profile", icon: <FaUser /> },
   { name: "Change Password", to: "/student/change-password", icon: <FaUser /> },

@@ -1,16 +1,80 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const ExamForm = ({ exam, setView }) => {
   const isEditing = Boolean(exam);
 
+  const [formData, setFormData] = useState({
+    name: "",
+    eachQuestionMark: "",
+    duration: "",
+    sampleDuration: "",
+    passingScore: "",
+    code: "",
+    numberOfQuestions: "", // ✅ fixed field name
+    priceUSD: "",
+    priceINR: "",
+    status: "unpublish",
+    mainInstructions: "",
+    sampleInstructions: "",
+    lastUpdatedBy: "", // ✅ added
+  });
+
+  useEffect(() => {
+    if (exam) {
+      setFormData({
+        name: exam.name || "",
+        eachQuestionMark: exam.eachQuestionMark || "",
+        duration: exam.duration || "",
+        sampleDuration: exam.sampleDuration || "",
+        passingScore: exam.passingScore || "",
+        code: exam.code || "",
+        numberOfQuestions: exam.numberOfQuestions || "",
+        priceUSD: exam.priceUSD || "",
+        priceINR: exam.priceINR || "",
+        status: exam.status || "unpublish",
+        mainInstructions: exam.mainInstructions || "",
+        sampleInstructions: exam.sampleInstructions || "",
+        lastUpdatedBy: exam.lastUpdatedBy || "", // ✅ prefill if available
+      });
+    }
+  }, [exam]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      ...formData,
+      eachQuestionMark: Number(formData.eachQuestionMark),
+      duration: Number(formData.duration),
+      sampleDuration: Number(formData.sampleDuration),
+      passingScore: Number(formData.passingScore),
+      numberOfQuestions: Number(formData.numberOfQuestions),
+      priceUSD: Number(formData.priceUSD),
+      priceINR: Number(formData.priceINR),
+    };
+
+    try {
+      if (isEditing) {
+        await axios.put(`http://localhost:8000/api/exams/${exam._id}`, payload);
+      } else {
+        await axios.post("http://localhost:8000/api/exams", payload);
+      }
+      setView("list");
+    } catch (err) {
+      console.error("Error saving exam:", err.response?.data || err.message);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-8 py-10 space-y-8">
-      {/* Back & Title */}
       <div className="flex justify-between items-center">
-        <button
-          onClick={() => setView("list")}
-          className="text-sm text-gray-600 hover:underline"
-        >
+        <button onClick={() => setView("list")} className="text-sm text-gray-600 hover:underline">
           ← Back
         </button>
         <h2 className="text-2xl md:text-3xl font-semibold text-gray-800">
@@ -18,67 +82,76 @@ const ExamForm = ({ exam, setView }) => {
         </h2>
       </div>
 
-      {/* Form */}
-      <form className="bg-white rounded-xl border border-gray-200 shadow p-6 md:p-10 space-y-8">
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow p-6 md:p-10 space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-          {[
-            { label: "Exam Name", placeholder: "e.g. Final Test" },
-            { label: "Each Question Mark", placeholder: "e.g. 2" },
-            { label: "Duration (Minutes)", placeholder: "e.g. 60" },
-            { label: "Sample Duration (Minutes)", placeholder: "e.g. 30" },
-            { label: "Passing Score (%)", placeholder: "e.g. 50" },
-            { label: "Exam Code", placeholder: "e.g. EX-123" },
-            { label: "Number of Questions", placeholder: "e.g. 20" },
-            { label: "Price ($)", placeholder: "e.g. 10" },
-            { label: "Price (₹)", placeholder: "e.g. 799" },
-          ].map((field, i) => (
-            <div key={i}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {field.label}
-              </label>
-              <input
-                type="text"
-                placeholder={field.placeholder}
-                className="w-full border rounded-lg px-4 py-2 text-sm shadow-sm focus:ring focus:ring-blue-100"
-              />
-            </div>
-          ))}
+   {[
+  { name: "name", label: "Exam Name", placeholder: "e.g. Final Test", type: "text" },
+  { name: "eachQuestionMark", label: "Each Question Mark", placeholder: "e.g. 2", type: "number" },
+  { name: "duration", label: "Duration (Minutes)", placeholder: "e.g. 60", type: "number" },
+  { name: "sampleDuration", label: "Sample Duration (Minutes)", placeholder: "e.g. 30", type: "number" },
+  { name: "passingScore", label: "Passing Score (%)", placeholder: "e.g. 50", type: "number" },
+  { name: "code", label: "Exam Code", placeholder: "e.g. EX-123", type: "text" },
+  { name: "numberOfQuestions", label: "Number of Questions", placeholder: "e.g. 20", type: "number" },
+  { name: "priceUSD", label: "Price ($)", placeholder: "e.g. 10", type: "number" },
+  { name: "priceINR", label: "Price (₹)", placeholder: "e.g. 799", type: "number" },
+  { name: "lastUpdatedBy", label: "Updated By", placeholder: "e.g. admin123", type: "text" },
+].map((field, i) => (
+  <div key={i}>
+    <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
+    <input
+      name={field.name}
+      type={field.type}
+      value={formData[field.name]}
+      onChange={handleChange}
+      placeholder={field.placeholder}
+      className="w-full border rounded-lg px-4 py-2 text-sm shadow-sm"
+      required={["name", "duration", "numberOfQuestions", "lastUpdatedBy"].includes(field.name)}
+      min={field.type === "number" ? 0 : undefined}
+    />
+  </div>
+))}
 
+       
           {/* Status */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select className="w-full border rounded-lg px-4 py-2 text-sm shadow-sm">
-              <option value="unpublish">Unpublish</option>
-              <option value="publish">Publish</option>
-            </select>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select
+  name="status"
+  value={formData.status}
+  onChange={handleChange}
+  className="w-full border rounded-lg px-4 py-2 text-sm shadow-sm"
+>
+  <option value="unpublished">Unpublished</option>
+  <option value="published">Published</option>
+</select>
+
           </div>
         </div>
 
         {/* Instructions */}
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Main Exam Instructions
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Main Exam Instructions</label>
             <textarea
+              name="mainInstructions"
+              value={formData.mainInstructions}
+              onChange={handleChange}
               className="w-full border rounded-lg px-4 py-2 text-sm shadow-sm h-28 resize-none"
               placeholder="Write instructions for the main exam..."
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Sample Exam Instructions
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Sample Exam Instructions</label>
             <textarea
+              name="sampleInstructions"
+              value={formData.sampleInstructions}
+              onChange={handleChange}
               className="w-full border rounded-lg px-4 py-2 text-sm shadow-sm h-28 resize-none"
               placeholder="Write instructions for the sample exam..."
             />
           </div>
         </div>
 
-        {/* Save Button */}
         <div className="pt-4 flex justify-end">
           <button
             type="submit"

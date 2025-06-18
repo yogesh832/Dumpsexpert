@@ -1,80 +1,72 @@
-import React, { useState } from 'react';
-
-const mockProducts = [
-  {
-    id: 1,
-    code: 'SAP001',
-    title: 'SAP FICO Certification',
-    price: '$200',
-    category: 'Finance',
-    status: 'Unpublish',
-  },
-  {
-    id: 2,
-    code: 'SAP002',
-    title: 'SAP ABAP Training',
-    price: '$150',
-    category: 'Development',
-    status: 'Publish',
-  },
-  {
-    id: 3,
-    code: 'SAP003',
-    title: 'SAP HANA Basics',
-    price: '$180',
-    category: 'Database',
-    status: 'Publish',
-  },
-];
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const ProductList = () => {
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const filteredProducts = mockProducts.filter((product) =>
-    product.title.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get('http://localhost:8000/api/products');
+      setProducts(res.data.data || []);
+    } catch (err) {
+      console.error('Fetch failed:', err);
+      setError('Failed to load products');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirm = window.confirm('Are you sure you want to delete this product?');
+    if (!confirm) return;
+
+    try {
+      await axios.delete(`http://localhost:8000/api/products/${id}`);
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+    } catch (err) {
+      console.error('Delete failed:', err);
+      setError('Failed to delete product');
+    }
+  };
+
+  const filtered = products.filter(p =>
+    p.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="p-6 bg-white min-h-screen">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Products</h2>
-        <div className="flex items-center space-x-2">
-          <select className="border px-2 py-1 rounded">
-            <option>Choose a option</option>
-          </select>
-          <select className="border px-2 py-1 rounded">
-            <option>All Categories</option>
-          </select>
-          <button className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600">Filter</button>
-          <button className="bg-pink-500 text-white px-4 py-1 rounded hover:bg-pink-600">Bulk Delete</button>
-          <button className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">+ Add Product</button>
-        </div>
-      </div>
-
-      <div className="bg-white rounded shadow p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            Show&nbsp;
-            <select className="border rounded px-2 py-1">
-              <option>10</option>
-              <option>25</option>
-              <option>50</option>
-            </select>&nbsp;entries
-          </div>
+        <div className="flex items-center gap-2">
           <input
             type="text"
             placeholder="Search..."
-            className="border px-3 py-1 rounded"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            className="border px-3 py-1 rounded"
           />
+          <button
+            onClick={() => navigate('/admin/products/add')}
+            className="bg-blue-600 text-white px-4 py-1 rounded"
+          >
+            + Add Product
+          </button>
         </div>
+      </div>
 
+      {error && <p className="text-red-500">{error}</p>}
+
+      <div className="bg-white rounded shadow p-4">
         <table className="w-full text-sm border">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-2 border"><input type="checkbox" /></th>
-              <th className="p-2 border">SAP Exam. Code</th>
+              <th className="p-2 border">#</th>
               <th className="p-2 border">Image</th>
               <th className="p-2 border">Title</th>
               <th className="p-2 border">Price</th>
@@ -84,28 +76,46 @@ const ProductList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredProducts.map((product) => (
-              <tr key={product.id} className="text-center">
-                <td className="p-2 border"><input type="checkbox" /></td>
-                <td className="p-2 border">{product.code}</td>
-                <td className="p-2 border">[Img]</td>
+            {filtered.map((product, i) => (
+              <tr key={product._id} className="text-center">
+                <td className="p-2 border">{i + 1}</td>
+                <td className="p-2 border">
+                  <img
+                    src={product.imageUrl}
+                    alt={product.title}
+                    className="h-12 w-12 object-cover mx-auto rounded"
+                  />
+                </td>
                 <td className="p-2 border">{product.title}</td>
                 <td className="p-2 border">{product.price}</td>
                 <td className="p-2 border">{product.category}</td>
                 <td className="p-2 border">
-                  <span className={`px-2 py-1 rounded text-white text-xs ${product.status === 'Publish' ? 'bg-green-500' : 'bg-yellow-500'}`}>
+                  <span className={`px-2 py-1 text-white text-xs rounded ${product.status === 'active' ? 'bg-green-500' : 'bg-yellow-500'}`}>
                     {product.status}
                   </span>
                 </td>
                 <td className="p-2 border space-x-1">
-                  <button className="bg-green-500 text-white px-2 py-1 rounded text-xs">Edit</button>
-                  <button className="bg-pink-500 text-white px-2 py-1 rounded text-xs">Delete</button>
-                  <button className="bg-teal-500 text-white px-2 py-1 rounded text-xs">Copy</button>
+                  <button
+                    onClick={() => navigate(`/admin/products/edit/${product._id}`)}
+                    className="bg-green-500 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product._id)}
+                    className="bg-pink-500 text-white px-2 py-1 rounded text-xs"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        {filtered.length === 0 && (
+          <p className="text-center py-4 text-gray-500">No products found.</p>
+        )}
       </div>
     </div>
   );

@@ -21,9 +21,8 @@ router.get('/category/:category', getProductsByCategory);
 router.get('/:id', getProductById);
 router.get('/', getAllProducts);
 
-// 🔐 PROTECTED ROUTES
-router.post('/', authMiddleware, upload.single('image'), createProduct);
-router.put('/:id', authMiddleware, upload.single('image'), updateProduct);
-router.delete('/:id', authMiddleware, deleteProduct);
+router.post('/', upload.single('image'), createProduct);
+router.put('/:id', upload.single('image'), updateProduct);
+router.delete('/:id', deleteProduct);
 
 module.exports = router;

@@ -1,0 +1,280 @@
+ [
+  {
+    "id": 1,
+    "question": "What is the default port for a Node.js application?",
+    "options": ["3000", "8080", "5000", "8000"],
+    "correctAnswer": "3000"
+  },
+  {
+    "id": 2,
+    "question": "Which module is used to create a web server in Node.js?",
+    "options": ["http", "fs", "url", "path"],
+    "correctAnswer": "http"
+  },
+  {
+    "id": 3,
+    "question": "Which keyword is used to export a module in Node.js?",
+    "options": ["export", "exports", "module.exports", "require"],
+    "correctAnswer": "module.exports"
+  },
+  {
+    "id": 4,
+    "question": "Which method is used to read a file in Node.js?",
+    "options": ["readFile", "fs.read", "fs.readFile", "file.read"],
+    "correctAnswer": "fs.readFile"
+  },
+  {
+    "id": 5,
+    "question": "Which package manager comes with Node.js?",
+    "options": ["npm", "yarn", "bower", "pip"],
+    "correctAnswer": "npm"
+  },
+  {
+    "id": 6,
+    "question": "Which middleware is commonly used to parse incoming JSON requests?",
+    "options": ["body-parser", "json-parser", "urlencoded", "express-json"],
+    "correctAnswer": "body-parser"
+  },
+  {
+    "id": 7,
+    "question": "What is the purpose of the `require` function in Node.js?",
+    "options": ["To import modules", "To export modules", "To run a module", "To compile code"],
+    "correctAnswer": "To import modules"
+  },
+  {
+    "id": 8,
+    "question": "Which method is used to listen to a port in Express?",
+    "options": ["app.run()", "app.start()", "app.listen()", "app.port()"],
+    "correctAnswer": "app.listen()"
+  },
+  {
+    "id": 9,
+    "question": "How do you install Express in a Node project?",
+    "options": ["npm install express", "install express", "node install express", "npm express"],
+    "correctAnswer": "npm install express"
+  },
+  {
+    "id": 10,
+    "question": "What does `res.send()` do in Express?",
+    "options": ["Sends a response", "Renders HTML", "Redirects", "Parses JSON"],
+    "correctAnswer": "Sends a response"
+  },
+
+  {
+    "id": 11,
+    "question": "Which of the following is not a core module in Node.js?",
+    "options": ["fs", "os", "http", "express"],
+    "correctAnswer": "express"
+  },
+  {
+    "id": 12,
+    "question": "Which Node.js module is used for working with file paths?",
+    "options": ["path", "url", "querystring", "fs"],
+    "correctAnswer": "path"
+  },
+  {
+    "id": 13,
+    "question": "How do you start a Node.js application from the terminal?",
+    "options": ["run app.js", "start app.js", "node app.js", "node run app.js"],
+    "correctAnswer": "node app.js"
+  },
+  {
+    "id": 14,
+    "question": "What does npm stand for?",
+    "options": ["Node Package Manager", "New Project Manager", "Node Program Manager", "Node Plugin Manager"],
+    "correctAnswer": "Node Package Manager"
+  },
+  {
+    "id": 15,
+    "question": "Which object is available globally in Node.js?",
+    "options": ["window", "global", "document", "self"],
+    "correctAnswer": "global"
+  },
+  {
+    "id": 16,
+    "question": "Which command initializes a Node.js project?",
+    "options": ["npm start", "npm init", "node init", "npm build"],
+    "correctAnswer": "npm init"
+  },
+  {
+    "id": 17,
+    "question": "Which function is used to create a buffer?",
+    "options": ["Buffer.alloc()", "new Buffer()", "Buffer()", "createBuffer()"],
+    "correctAnswer": "Buffer.alloc()"
+  },
+  {
+    "id": 18,
+    "question": "Which module helps with event-driven programming in Node.js?",
+    "options": ["events", "http", "fs", "stream"],
+    "correctAnswer": "events"
+  },
+  {
+    "id": 19,
+    "question": "What type of architecture does Node.js use?",
+    "options": ["Multi-threaded", "Event-driven", "Blocking", "Synchronous"],
+    "correctAnswer": "Event-driven"
+  },
+  {
+    "id": 20,
+    "question": "Which function is used to load a module in Node.js?",
+    "options": ["import", "load", "require", "include"],
+    "correctAnswer": "require"
+  },
+
+  
+  {
+    "id": 21,
+    "question": "What is React primarily used for?",
+    "options": ["Styling web pages", "Building user interfaces", "Database handling", "Server configuration"],
+    "correctAnswer": "Building user interfaces"
+  },
+  {
+    "id": 22,
+    "question": "What is a component in React?",
+    "options": ["A part of database", "A reusable piece of UI", "A Node.js module", "A style file"],
+    "correctAnswer": "A reusable piece of UI"
+  },
+  {
+    "id": 23,
+    "question": "What hook is used for state management?",
+    "options": ["useEffect", "useState", "useRef", "useContext"],
+    "correctAnswer": "useState"
+  },
+  {
+    "id": 24,
+    "question": "What is JSX?",
+    "options": ["JavaScript XML", "Java Simple XML", "JavaScript Extension", "JSON Extension"],
+    "correctAnswer": "JavaScript XML"
+  },
+  {
+    "id": 25,
+    "question": "How do you create a React app?",
+    "options": ["npm init react", "create-react-app myApp", "npx react-create", "npm build react"],
+    "correctAnswer": "create-react-app myApp"
+  },
+  {
+    "id": 26,
+    "question": "What is the virtual DOM?",
+    "options": ["A copy of the real DOM", "A plugin", "A real DOM", "A browser cache"],
+    "correctAnswer": "A copy of the real DOM"
+  },
+  {
+    "id": 27,
+    "question": "Which lifecycle method is called after the component is rendered?",
+    "options": ["componentDidMount", "componentWillMount", "render", "constructor"],
+    "correctAnswer": "componentDidMount"
+  },
+  {
+    "id": 28,
+    "question": "Which hook is used for side effects?",
+    "options": ["useState", "useEffect", "useRef", "useReducer"],
+    "correctAnswer": "useEffect"
+  },
+  {
+    "id": 29,
+    "question": "How do you pass data from parent to child in React?",
+    "options": ["props", "state", "context", "router"],
+    "correctAnswer": "props"
+  },
+  {
+    "id": 30,
+    "question": "Which keyword is used to create a functional component?",
+    "options": ["class", "function", "component", "module"],
+    "correctAnswer": "function"
+  },
+
+ 
+  {
+    "id": 31,
+    "question": "What does useRef hook do?",
+    "options": ["Access DOM elements", "Manage routing", "Store global state", "Create new components"],
+    "correctAnswer": "Access DOM elements"
+  },
+  {
+    "id": 32,
+    "question": "How do you handle routing in React?",
+    "options": ["React Router", "React Path", "useRouter", "RouteJS"],
+    "correctAnswer": "React Router"
+  },
+  {
+    "id": 33,
+    "question": "What is the default method to export a component?",
+    "options": ["export default", "exports", "module.exports", "require"],
+    "correctAnswer": "export default"
+  },
+  {
+    "id": 34,
+    "question": "Which hook is used to access context?",
+    "options": ["useContext", "useState", "useEffect", "useRef"],
+    "correctAnswer": "useContext"
+  },
+  {
+    "id": 35,
+    "question": "What does `key` help with in React lists?",
+    "options": ["Unique identity", "Styling", "Routing", "Event handling"],
+    "correctAnswer": "Unique identity"
+  },
+  {
+    "id": 36,
+    "question": "How can you conditionally render elements?",
+    "options": ["if-else", "ternary operator", "&&", "All of the above"],
+    "correctAnswer": "All of the above"
+  },
+  {
+    "id": 37,
+    "question": "What is the starting point of a React app?",
+    "options": ["index.js", "App.js", "main.js", "root.js"],
+    "correctAnswer": "index.js"
+  },
+  {
+    "id": 38,
+    "question": "What is used to update state in React?",
+    "options": ["setState", "this.state", "state", "useData"],
+    "correctAnswer": "setState"
+  },
+  {
+    "id": 39,
+    "question": "How do you style components in React?",
+    "options": ["Inline CSS", "CSS modules", "Styled components", "All of the above"],
+    "correctAnswer": "All of the above"
+  },
+  {
+    "id": 40,
+    "question": "Which hook replaces lifecycle methods in functional components?",
+    "options": ["useEffect", "useState", "useCallback", "useMemo"],
+    "correctAnswer": "useEffect"
+  },
+
+ 
+  {
+    "id": 41,
+    "question": "Which company developed JavaScript?",
+    "options": ["Netscape", "Microsoft", "Apple", "Google"],
+    "correctAnswer": "Netscape"
+  },
+  {
+    "id": 42,
+    "question": "What is the output of '2' + 2?",
+    "options": ["4", "22", "NaN", "Error"],
+    "correctAnswer": "22"
+  },
+  {
+    "id": 43,
+    "question": "Which keyword declares a block-scoped variable?",
+    "options": ["var", "let", "const", "both let and const"],
+    "correctAnswer": "both let and const"
+  },
+  {
+    "id": 44,
+    "question": "Which method converts JSON to object?",
+    "options": ["JSON.parse()", "JSON.stringify()", "JSON.objectify()", "parse.JSON()"],
+    "correctAnswer": "JSON.parse()"
+  },
+  {
+    "id": 45,
+    "question": "What is the type of NaN in JavaScript?",
+    "options": ["undefined", "number", "NaN", "object"],
+    "correctAnswer": "number"
+  }
+
+]

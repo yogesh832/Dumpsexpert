@@ -1,33 +1,26 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const examCodeSchema = new mongoose.Schema({
-  code: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
+const examSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    eachQuestionMark: { type: Number },
+    duration: { type: Number, required: true }, // ✅ required
+    sampleDuration: { type: Number },
+    passingScore: { type: Number },
+    code: { type: String, unique: true },
+    numberOfQuestions: { type: Number, required: true },
+    priceUSD: { type: Number },
+    priceINR: { type: Number },
+    status: {
+      type: String,
+      enum: ["unpublished", "published"],
+      required: true,
+    },
+    mainInstructions: { type: String },
+    sampleInstructions: { type: String },
+    lastUpdatedBy: { type: String, required: true },
   },
-  duration: {
-    type: Number,
-    required: true,
-    min: 1
-  },
-  numberOfQuestions: {
-    type: Number,
-    required: true,
-    min: 1
-  },
-  status: {
-    type: String,
-    enum: ['unpublish', 'publish'],
-    required: true,
-    default: 'unpublish'
-  },
-  lastUpdatedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('ExamCode', examCodeSchema);
+module.exports = mongoose.model("Exam", examSchema);
