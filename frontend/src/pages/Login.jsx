@@ -105,12 +105,12 @@ const Login = () => {
         </div>
 
         <div className="flex flex-col gap-4 mb-6">
-          <a href="https://dumpsexpert-2.onrender.com/api/auth/google">
+          <a href={`${import.meta.env.VITE_HOSTED_API_URL}/api/auth/google`}>
             <button className="flex items-center justify-center gap-2 w-full py-2 px-4 bg-red-100 hover:bg-red-200 text-red-600 font-semibold rounded-md transition-all duration-200">
               <FcGoogle className="text-xl" /> Google
             </button>
           </a>
-          <a href="https://dumpsexpert-2.onrender.com/api/auth/facebook">
+          <a href={`${import.meta.env.VITE_HOSTED_API_URL}/api/auth/facebook`}>
             <button className="flex items-center justify-center gap-2 w-full py-2 px-4 bg-blue-100 hover:bg-blue-200 text-blue-600 font-semibold rounded-md transition-all duration-200">
               <FaFacebookF className="text-xl" /> Facebook
             </button>

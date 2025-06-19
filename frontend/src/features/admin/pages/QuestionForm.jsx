@@ -82,8 +82,8 @@ const QuestionForm = ({ exam, question, setView }) => {
     };
 
     const req = question
-      ? axios.put(`http://localhost:8000/api/questions/${question._id}`, payload)
-      : axios.post("http://localhost:8000/api/questions", payload);
+      ? instance.put(`/api/questions/${question._id}`, payload)
+: instance.post("/api/questions", payload);
 
     req.then(() => setView("manageQuestions")).catch(console.error);
   };
