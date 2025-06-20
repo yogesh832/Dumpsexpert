@@ -1,200 +1,206 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const AddBlogCategory = () => {
+const AddBlogCategoryForm = () => {
   const [formData, setFormData] = useState({
-    language: '',
-    image: null,
-    title: '',
-    category: '',
-    content: '',
-    metaTitle: '',
-    metaKeywords: '',
-    metaDescription: '',
-    schema: '',
-    status: 'Unpublish',
+    sectionName: "",
+    category: "",
+    imageUrl: "",
+    metaTitle: "",
+    metaKeywords: "",
+    metaDescription: "",
+    schema: "",
   });
 
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({ ...prev, image: file }));
-      setPreviewUrl(URL.createObjectURL(file));
+  const validateSchema = (schema) => {
+    try {
+      JSON.parse(schema);
+      return "";
+    } catch {
+      return "Invalid JSON format in schema field.";
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "schema") {
+      const error = validateSchema(value);
+      setErrors((prev) => ({ ...prev, schema: error }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    alert('Blog Post Submitted (Check Console)');
+
+    // Validate schema before submitting
+    const schemaError = validateSchema(formData.schema);
+    if (schemaError) {
+      setErrors({ schema: schemaError });
+      return;
+    }
+
+    // Log form data before sending
+    console.log("Submitting formData:", formData);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/blog/blog-categories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      // Log response from backend
+      console.log("Response from backend:", data);
+
+      if (response.ok) {
+        alert("Blog category added successfully");
+        setFormData({
+          sectionName: "",
+          category: "",
+          imageUrl: "",
+          metaTitle: "",
+          metaKeywords: "",
+          metaDescription: "",
+          schema: "",
+        });
+        setErrors({});
+      } else {
+        alert(data.message || "Failed to add category");
+      }
+    } catch (error) {
+      console.error("Submit Error:", error);
+      alert("Network error");
+    }
   };
 
   return (
-    <div className="bg-gray-100 p-6 min-h-screen">
-      <div className="text-xl font-semibold text-gray-700 mb-4">Add Blog Category</div>
-
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md space-y-6">
-        {/* Language */}
+    <div className="bg-white p-6 rounded-lg shadow max-w-3xl mx-auto mt-8">
+      <h1 className="text-2xl font-semibold mb-6 text-gray-800">
+        Add Blog Category
+      </h1>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-5">
+        {/* Section Name */}
         <div>
-          <label className="block font-medium mb-1">Language<span className="text-red-500">*</span></label>
-          <select
-            name="language"
-            value={formData.language}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Select a Language</option>
-            <option>English</option>
-            <option>Hindi</option>
-          </select>
-        </div>
-
-        {/* Image Upload */}
-        <div>
-          <label className="block font-medium mb-1">Image<span className="text-red-500">*</span></label>
-          <div className="border p-4 rounded text-center">
-            {previewUrl ? (
-              <img src={previewUrl} alt="Preview" className="mx-auto w-[200px] h-[130px] object-contain" />
-            ) : (
-              <div className="text-gray-400">NO IMAGE FOUND</div>
-            )}
-          </div>
-          <div className="mt-2 flex items-center gap-3">
-            <input type="file" onChange={handleImageChange} />
-            <span className="text-xs text-gray-500">
-              Upload 730x455 (Pixel) | Only jpg, jpeg, png allowed.
-            </span>
-          </div>
-        </div>
-
-        {/* Title */}
-        <div>
-          <label className="block font-medium mb-1">Title<span className="text-red-500">*</span></label>
+          <label className="block font-medium text-gray-700">Section Name</label>
           <input
             type="text"
-            name="title"
-            placeholder="Title"
-            value={formData.title}
+            name="sectionName"
+            value={formData.sectionName}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            required
+            className="mt-1 w-full border px-3 py-2 rounded-md focus:outline-none focus:ring focus:border-blue-300"
           />
         </div>
 
         {/* Category */}
         <div>
-          <label className="block font-medium mb-1">Category<span className="text-red-500">*</span></label>
-          <select
+          <label className="block font-medium text-gray-700">Category</label>
+          <input
+            type="text"
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Select Category</option>
-            <option>Business</option>
-            <option>Technology</option>
-            <option>News</option>
-          </select>
+            required
+            className="mt-1 w-full border px-3 py-2 rounded-md"
+          />
         </div>
 
-        {/* Content */}
+        {/* Image URL */}
         <div>
-          <label className="block font-medium mb-1">Content<span className="text-red-500">*</span></label>
-          <textarea
-            name="content"
-            value={formData.content}
+          <label className="block font-medium text-gray-700">Image URL</label>
+          <input
+            type="text"
+            name="imageUrl"
+            value={formData.imageUrl}
             onChange={handleChange}
-            rows="5"
-            className="w-full border p-2 rounded"
+            required
+            className="mt-1 w-full border px-3 py-2 rounded-md"
           />
         </div>
 
         {/* Meta Title */}
         <div>
-          <label className="block font-medium mb-1">Meta Title<span className="text-red-500">*</span></label>
+          <label className="block font-medium text-gray-700">Meta Title</label>
           <input
             type="text"
             name="metaTitle"
-            placeholder="Meta Title"
             value={formData.metaTitle}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            maxLength={60}
+            required
+            className="mt-1 w-full border px-3 py-2 rounded-md"
           />
         </div>
 
         {/* Meta Keywords */}
         <div>
-          <label className="block font-medium mb-1">Meta Keywords</label>
+          <label className="block font-medium text-gray-700">Meta Keywords</label>
           <input
             type="text"
             name="metaKeywords"
-            placeholder="Meta Keywords"
             value={formData.metaKeywords}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            required
+            className="mt-1 w-full border px-3 py-2 rounded-md"
           />
         </div>
 
         {/* Meta Description */}
         <div>
-          <label className="block font-medium mb-1">Meta Description</label>
+          <label className="block font-medium text-gray-700">Meta Description</label>
           <textarea
             name="metaDescription"
-            rows="3"
-            placeholder="Meta Description"
             value={formData.metaDescription}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            rows={3}
+            maxLength={160}
+            required
+            className="mt-1 w-full border px-3 py-2 rounded-md"
           />
         </div>
 
         {/* Schema */}
         <div>
-          <label className="block font-medium mb-1">Schema</label>
+          <label className="block font-medium text-gray-700">JSON-LD Schema</label>
           <textarea
             name="schema"
-            rows="3"
-            placeholder="<script></script>"
             value={formData.schema}
             onChange={handleChange}
-            className="w-full border p-2 rounded font-mono"
+            rows={5}
+            required
+            placeholder={`Paste valid JSON-LD here like:
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Example Title"
+}`}
+            className={`mt-1 w-full border px-3 py-2 rounded-md ${
+              errors.schema ? "border-red-500" : ""
+            }`}
           />
-        </div>
-
-        {/* Status */}
-        <div>
-          <label className="block font-medium mb-1">Status<span className="text-red-500">*</span></label>
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            <option>Unpublish</option>
-            <option>Publish</option>
-          </select>
+          {errors.schema && (
+            <p className="text-red-500 text-sm mt-1">{errors.schema}</p>
+          )}
         </div>
 
         {/* Submit Button */}
-        <div>
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded"
-          >
-            Save
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+        >
+          Submit
+        </button>
       </form>
     </div>
   );
 };
 
-export default AddBlogCategory;
+export default AddBlogCategoryForm;

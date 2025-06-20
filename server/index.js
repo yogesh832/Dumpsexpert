@@ -11,7 +11,7 @@ const basicInfoRoutes = require("./routes/basicInfoRoutes");
 const menuBuilderRoutes = require("./routes/menuBuilderRoutes");
 const socialLinkRoutes = require("./routes/socialLinkRoutes");
 const blogRoutes = require("./routes/blogRoutes");
-const blogPostRoutes = require("./routes/blogPostRoutes");
+const blogPostRoutes = require("./routes/blogRoutes");
 const productRoutes = require("./routes/productRoutes");
 const metaInfoRoutes = require("./routes/metaInfoRoutes");
 const scriptRoutes = require("./routes/scriptRoutes");
@@ -30,7 +30,7 @@ const productCategoryRoutes = require('./routes/productCategoryRoutes');
 
 const Question = require('./models/QuestionSchema');
 
-
+const blogCategoryRoutes = require("./routes/blogCategoryRoutes");
 
 const examRoutes = require('./routes/examRoutes');
 const questionRoutes = require('./routes/questionRoutes');
@@ -98,7 +98,7 @@ app.use('/api/seo', seoRoutes);
 app.use('/api/images', imageUploadRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/questions', questionRoutes);
-
+app.use('/api/blog-categories', blogCategoryRoutes);
 
 
 app.get('/api/exams/:examId/questions', async (req, res) => {
