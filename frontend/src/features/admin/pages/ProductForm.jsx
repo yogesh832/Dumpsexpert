@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { instance } from '../../../lib/axios';
 import { useNavigate, useParams } from 'react-router';
 
 const ProductForm = ({ mode }) => {
@@ -21,16 +22,16 @@ const ProductForm = ({ mode }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:8000/api/product-categories')
+    instance
+      .get('/api/product-categories')
       .then((res) => setCategories(res.data))
       .catch(() => setCategories([]));
   }, []);
 
   useEffect(() => {
     if (mode === 'edit' && id) {
-      axios
-        .get(`http://localhost:8000/api/products/${id}`)
+      instance
+        .get(`/api/products/${id}`)
         .then((res) => {
           const p = res.data.data;
           setForm({
@@ -68,13 +69,13 @@ const ProductForm = ({ mode }) => {
 
     try {
       if (mode === 'add') {
-        await axios.post('http://localhost:8000/api/products', formData, {
+        await instance.post('/api/products', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
       } else {
-        await axios.put(`http://localhost:8000/api/products/${id}`, formData, {
+        await instance.put(`/api/products/${id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -94,7 +95,7 @@ const ProductForm = ({ mode }) => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:8000/api/products/${id}`);
+      await instance.delete(`/api/products/${id}`);
       navigate('/admin/products/list');
     } catch (err) {
       setError('Failed to delete product');

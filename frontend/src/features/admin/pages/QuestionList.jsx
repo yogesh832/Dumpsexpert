@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { instance } from "../../../lib/axios";
 
 const QuestionForm = ({ exam, question, setView }) => {
   const isEdit = !!question;
@@ -61,8 +62,8 @@ const QuestionForm = ({ exam, question, setView }) => {
     };
 
     const request = isEdit
-      ? axios.put(`http://localhost:8000/api/questions/${question._id}`, payload)
-      : axios.post("http://localhost:8000/api/questions", payload);
+      ? instance.put(`/api/questions/${question._id}`, payload)
+: instance.post("/api/questions", payload);
 
     request
       .then(() => {
