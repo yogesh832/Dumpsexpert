@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 exports.authMiddleware = (req, res, next) => {
   console.log("Cookies:", req.cookies);  // Add this
   const token = req.cookies.token;
+  console.log(token)
   // Check if token exists
 
   if (!token) return res.status(401).json({ error: "Access Denied - No Token" });

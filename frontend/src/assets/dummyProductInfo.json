@@ -1,0 +1,29 @@
+{
+  "_id": "68510614c81e10f31e1b71f6",
+  "title": "Cisco Certified Network Associate (CCNA)",
+  "price": 670,
+  "category": "cisco",
+  "imageUrls": [
+    "https://res.cloudinary.com/dil5x4cxh/image/upload/v1750140437/products/sd2pk4akhj7htxhx8rnt.png",
+    "https://images.pexels.com/photos/32622786/pexels-photo-32622786.jpeg?_gl=1*1r3luxv*_ga*MjA4ODkwODg3MS4xNzQ5NzQzNDIw*_ga_8JE65Q40S6*czE3NTA0MzI2ODkkbzQkZzEkdDE3NTA0MzI3MDAkajQ5JGwwJGgw",
+    "https://images.pexels.com/photos/30774926/pexels-photo-30774926.jpeg?_gl=1*a41v4p*_ga*MjA4ODkwODg3MS4xNzQ5NzQzNDIw*_ga_8JE65Q40S6*czE3NTA0MzI2ODkkbzQkZzEkdDE3NTA0MzI3NjMkajQ4JGwwJGgw"
+  ],
+  "description": "This CCNA course prepares you for a networking career with hands-on labs and real-world simulations. Learn routing, switching, IP addressing, and more.",
+  "status": "active",
+  "reviews": [
+    {
+      "user": "Ken",
+      "rating": 5,
+      "comment": "Excellent content and perfect practice questions!",
+      "date": "2025-06-18T10:00:00Z"
+    },
+    {
+      "user": "Teddy",
+      "rating": 4,
+      "comment": "Good material, helped me pass the exam.",
+      "date": "2025-06-17T15:30:00Z"
+    }
+  ],
+  "createdAt": "2025-06-17T06:07:16.524Z",
+  "updatedAt": "2025-06-17T06:07:16.524Z"
+}
