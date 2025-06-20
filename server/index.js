@@ -10,7 +10,7 @@ const basicInfoRoutes = require("./routes/basicInfoRoutes");
 const menuBuilderRoutes = require("./routes/menuBuilderRoutes");
 const socialLinkRoutes = require("./routes/socialLinkRoutes");
 const blogRoutes = require("./routes/blogRoutes");
-const blogPostRoutes = require("./routes/blogPostRoutes");
+const blogPostRoutes = require("./routes/blogRoutes");
 const productRoutes = require("./routes/productRoutes");
 const metaInfoRoutes = require("./routes/metaInfoRoutes");
 const scriptRoutes = require("./routes/scriptRoutes");
@@ -29,6 +29,14 @@ const questionRoutes = require("./routes/questionRoutes");
 const Question = require("./models/QuestionSchema");
 const dbConnection = require("./config/dbConnection");
 
+const productCategoryRoutes = require('./routes/productCategoryRoutes');
+
+const Question = require('./models/QuestionSchema');
+
+const blogCategoryRoutes = require("./routes/blogCategoryRoutes");
+
+const examRoutes = require('./routes/examRoutes');
+const questionRoutes = require('./routes/questionRoutes');
 require("./utils/passport");
 dotenv.config();
 
@@ -74,6 +82,37 @@ app.get("/", (req, res) => {
 // ✅ All API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", passportAuthRoutes);
+
+app.use('/api/basic-info', basicInfoRoutes);
+app.use('/api/menu-builder', menuBuilderRoutes);
+app.use('/api/social-links', socialLinkRoutes);
+app.use('/api/blog-categories', blogRoutes);
+app.use('/api/blogs', blogPostRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/meta-info', metaInfoRoutes);
+app.use('/api/scripts', scriptRoutes);
+app.use('/api/sitemaps', sitemapRoutes);
+app.use('/api/testimonials', testimonialRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/faqs', faqRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/seo', seoRoutes);
+app.use('/api/images', imageUploadRoutes);
+app.use('/api/exams', examRoutes);
+app.use('/api/questions', questionRoutes);
+app.use('/api/blog-categories', blogCategoryRoutes);
+app.use('/api/blog', blogRoutes);
+
+app.get('/api/exams/:examId/questions', async (req, res) => {
+  try {
+    const questions = await Question.find({ examId: req.params.examId });
+    res.json(questions);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 app.use("/api/basic-info", basicInfoRoutes);
 app.use("/api/menu-builder", menuBuilderRoutes);
 app.use("/api/social-links", socialLinkRoutes);
@@ -97,6 +136,7 @@ app.use("/api/product-categories", productCategoryRoutes);
 
 // ✅ Custom exam questions route
 app.get("/api/exams/:examId/questions", async (req, res) => {
+
   try {
     const questions = await Question.find({ examId: req.params.examId });
     res.json(questions);
@@ -116,4 +156,4 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
-});
+})

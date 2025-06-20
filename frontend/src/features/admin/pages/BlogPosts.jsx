@@ -40,7 +40,7 @@ const BlogPosts = () => {
 
   return (
     <div className="bg-gray-100 p-6 min-h-screen">
-      <div className="text-xl font-semibold text-gray-700 mb-4">Add Blog Category</div>
+      <div className="text-xl font-semibold text-gray-700 mb-4">Add Blog </div>
 
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md space-y-6">
         {/* Language */}

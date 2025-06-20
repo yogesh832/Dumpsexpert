@@ -1,22 +1,33 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { authMiddleware } = require("../middlewares/authMiddleware");
-
 const {
-  createBlogCategory,
-  getAllBlogCategories,
-  getBlogCategoryById,
-  updateBlogCategory,
-  deleteBlogCategory,
-} = require("../controllers/addBlogCategory");
+  getAllBlogs,
+  getBlogById,
+  getBlogBySlug,
+  createBlog,
+  updateBlog,
+  deleteBlog
+} = require('../controllers/blogController');
+const { parser } = require('../utils/cloudinary');
 
-// Public routes
-router.get("/", getAllBlogCategories);
-router.get("/:id", getBlogCategoryById);
+console.log({
+  getAllBlogs,
+  getBlogById,
+  getBlogBySlug,
+  createBlog,
+  updateBlog,
+  deleteBlog
+});
 
-// Protected routes
-router.post("/", authMiddleware, createBlogCategory);
-router.put("/:id", authMiddleware, updateBlogCategory);
-router.delete("/:id", authMiddleware, deleteBlogCategory);
+
+// ✅ Specific routes FIRST
+router.get('/all', getAllBlogs);
+router.get('/slug/:slug', getBlogBySlug);
+router.post('/create', parser.single('image'), createBlog);
+router.put('/:id', parser.single('image'), updateBlog);
+router.delete('/:id', deleteBlog);
+
+// ❗ Generic dynamic route LAST
+router.get('/:id', getBlogById);
 
 module.exports = router;
