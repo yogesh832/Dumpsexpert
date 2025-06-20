@@ -1,4 +1,4 @@
-const BlogList = require('../models/blogListSchema');
+const BlogList = require('../models/blogSchema');
 const { cloudinary } = require('../utils/cloudinary');
 
 // Get all blog posts with pagination and filtering
@@ -41,31 +41,32 @@ exports.getAllBlogs = async (req, res) => {
   }
 };
 
-// Get a single blog post by ID
-exports.getBlogById = async (req, res) => {
+// Get a single blog post by ID// Get a single blog post by slug (for public viewing)
+exports.getBlogBySlug = async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    const blog = await BlogList.findById(id)
+    const { slug } = req.params;
+
+    const blog = await BlogList.findOne({ slug, status: 'publish' })
       .populate('category', 'title')
       .populate('lastUpdatedBy', 'name email');
-    
+
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }
-    
+
     res.status(200).json({
       message: 'Blog retrieved successfully',
       data: blog
     });
   } catch (error) {
-    console.error('Error retrieving blog:', error);
+    console.error('Error retrieving blog by slug:', error);
     res.status(500).json({
       message: 'Server error while retrieving blog',
       error: error.message
     });
   }
 };
+
 
 // Get a single blog post by slug (for public viewing)
 exports.getBlogBySlug = async (req, res) => {
@@ -167,6 +168,35 @@ exports.createBlog = async (req, res) => {
     });
   }
 };
+
+
+// Get a single blog post by ID
+exports.getBlogById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const blog = await BlogList.findById(id)
+      .populate('category', 'title')
+      .populate('lastUpdatedBy', 'name email');
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    res.status(200).json({
+      message: 'Blog retrieved successfully',
+      data: blog
+    });
+  } catch (error) {
+    console.error('Error retrieving blog:', error);
+    res.status(500).json({
+      message: 'Server error while retrieving blog',
+      error: error.message
+    });
+  }
+};
+
+
 
 // Update a blog post
 exports.updateBlog = async (req, res) => {

@@ -99,7 +99,7 @@ app.use('/api/images', imageUploadRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/blog-categories', blogCategoryRoutes);
-
+app.use('/api/blog', blogRoutes);
 
 app.get('/api/exams/:examId/questions', async (req, res) => {
   try {
