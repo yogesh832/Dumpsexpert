@@ -160,6 +160,8 @@ import DetailedResultPage from "./pages/onlineExam/DetailedResultPage";
 import AddProductCategory from "./features/admin/pages/AddProductCategory.jsx";
 import EditProductCategory from "./features/admin/pages/EditProductCategory";
 import ProductForm from "./features/admin/pages/ProductForm.jsx";
+import SEOTesterPage from "./pages/SEOTesterPage";
+
 
 const App = () => {
   return (
@@ -181,6 +183,7 @@ const App = () => {
             <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/seo-tester" element={<SEOTesterPage />} />
           </Route>
 
           {/* Admin routes */}
