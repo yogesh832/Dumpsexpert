@@ -30,3 +30,4 @@ router.put('/:id', questionCtrl.updateQuestion);
 router.delete('/:id', questionCtrl.deleteQuestion);
 
 module.exports = router;
+//added comment to avoid confusion
