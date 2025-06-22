@@ -23,10 +23,7 @@ const couponRoutes = require("./routes/couponRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const seoRoutes = require("./routes/seoRoutes");
 const imageUploadRoutes = require("./routes/imageUploadRoutes");
-const productCategoryRoutes = require("./routes/productCategoryRoutes");
-const examRoutes = require("./routes/examRoutes");
-const questionRoutes = require("./routes/questionRoutes");
-const Question = require("./models/QuestionSchema");
+
 const dbConnection = require("./config/dbConnection");
 
 const productCategoryRoutes = require('./routes/productCategoryRoutes');
