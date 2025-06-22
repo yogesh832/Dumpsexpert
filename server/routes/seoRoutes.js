@@ -19,6 +19,9 @@ router.put('/default', authMiddleware, seoController.updateDefaultSEO);
 // Update SEO settings for a specific page (protected)
 router.put('/:page', authMiddleware, seoController.updatePageSEO);
 
+// Create or update SEO settings for a specific page (protected)
+router.post('/:page', authMiddleware, seoController.updatePageSEO);
+
 // Delete SEO settings for a specific page (revert to default) (protected)
 router.delete('/:page', authMiddleware, seoController.deletePageSEO);
 

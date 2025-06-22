@@ -44,6 +44,47 @@ const SEOMetaInfo = () => {
     toast.success(`${page.charAt(0).toUpperCase() + page.slice(1)} page SEO settings updated successfully`);
   };
 
+  // Function to send data to SEO schema
+  const handleSendToSEO = async () => {
+    if (!metaInfo || !activeTab || !metaInfo[activeTab]) {
+      toast.error('No SEO data available to send');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Convert meta info to SEO schema format
+      const seoData = {
+        title: metaInfo[activeTab].metaTitle || '',
+        description: metaInfo[activeTab].metaDescription || '',
+        keywords: metaInfo[activeTab].metaKeywords || '',
+        ogTitle: metaInfo[activeTab].metaTitle || '',
+        ogDescription: metaInfo[activeTab].metaDescription || '',
+        ogImage: '',
+        twitterTitle: metaInfo[activeTab].metaTitle || '',
+        twitterDescription: metaInfo[activeTab].metaDescription || '',
+        twitterImage: '',
+        canonicalUrl: '',
+        schema: metaInfo[activeTab].schema || ''
+      };
+
+      // Send POST request to save to SEO schema
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/seo/${activeTab}`,
+        seoData,
+        { withCredentials: true }
+      );
+      
+      toast.success(`SEO data for ${activeTab} page has been sent to SEO schema successfully`);
+    } catch (error) {
+      console.error('Error sending SEO data to schema:', error);
+      toast.error(error.response?.data?.message || 'Failed to send SEO data to schema');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Available pages for SEO configuration
   const pages = [
     { id: 'home', label: 'Home Page' },
@@ -96,11 +137,34 @@ const SEOMetaInfo = () => {
 
             {/* SEO Form for the active tab */}
             {metaInfo && (
-              <SEOForm 
-                page={activeTab} 
-                initialData={metaInfo[activeTab]} 
-                onSave={(updatedData) => handleSave(activeTab, updatedData)} 
-              />
+              <div>
+                <SEOForm 
+                  page={activeTab} 
+                  initialData={metaInfo[activeTab]} 
+                  onSave={(updatedData) => handleSave(activeTab, updatedData)} 
+                />
+                
+                {/* Send to SEO Schema button */}
+                <div className="mt-6 flex justify-center">
+                  <button
+                    onClick={handleSendToSEO}
+                    disabled={loading}
+                    className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 flex items-center justify-center"
+                  >
+                    {loading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Sending...
+                      </>
+                    ) : (
+                      'Send to SEO Schema'
+                    )}
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         )}

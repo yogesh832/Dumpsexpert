@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Helmet } from 'react-helmet-async';
+import SEOHead from './SEO/SEOHead';
 import './SEOTester.css';
 
 const SEOTester = () => {
@@ -130,9 +132,58 @@ const SEOTester = () => {
     }
   }, [page]);
 
+  // Render SEO Head component with fetched data
+  const renderSEOHead = () => {
+    if (!seoData || page === 'all') return null;
+    
+    return (
+      <SEOHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        canonicalUrl={seoData.canonicalUrl}
+        ogTitle={seoData.ogTitle}
+        ogDescription={seoData.ogDescription}
+        ogImage={seoData.ogImage}
+        ogUrl={window.location.href}
+        twitterTitle={seoData.twitterTitle}
+        twitterDescription={seoData.twitterDescription}
+        twitterImage={seoData.twitterImage}
+        jsonLd={seoData.schema}
+      />
+    );
+  };
+
   return (
     <div className="seo-tester-container">
+      {/* Apply SEO metadata using react-helmet-async */}
+      {renderSEOHead()}
+      
       <h1>SEO API Tester</h1>
+      
+      <div className="seo-preview">
+        <h2>SEO Preview</h2>
+        {seoData && page !== 'all' && (
+          <div className="preview-container">
+            <div className="preview-item">
+              <h3>Browser Tab</h3>
+              <div className="browser-tab">
+                <div className="tab-favicon"></div>
+                <span className="tab-title">{seoData.title || 'No title'}</span>
+              </div>
+            </div>
+            
+            <div className="preview-item">
+              <h3>Search Result</h3>
+              <div className="search-result">
+                <div className="result-title">{seoData.title || 'No title'}</div>
+                <div className="result-url">{seoData.canonicalUrl || window.location.origin}</div>
+                <div className="result-description">{seoData.description || 'No description'}</div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       
       <div className="page-selector">
         <label htmlFor="page-select">Select Page:</label>
@@ -360,5 +411,80 @@ const SEOTester = () => {
     </div>
   );
 };
+
+// Add CSS for SEO preview
+const style = document.createElement('style');
+style.textContent = `
+  .seo-preview {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  .preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+  
+  .preview-item {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .browser-tab {
+    display: flex;
+    align-items: center;
+    background-color: #e9ecef;
+    padding: 0.5rem;
+    border-radius: 8px 8px 0 0;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .tab-favicon {
+    width: 16px;
+    height: 16px;
+    background-color: #6c757d;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  
+  .tab-title {
+    font-size: 14px;
+    color: #212529;
+  }
+  
+  .search-result {
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    max-width: 600px;
+  }
+  
+  .result-title {
+    color: #1a0dab;
+    font-size: 18px;
+    margin-bottom: 4px;
+    cursor: pointer;
+  }
+  
+  .result-url {
+    color: #006621;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  
+  .result-description {
+    color: #545454;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+`;
+document.head.appendChild(style);
 
 export default SEOTester;
