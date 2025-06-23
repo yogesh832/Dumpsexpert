@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { authMiddleware } = require('../middlewares/authMiddleware');
-// const { isAdmin } = require('../middleware/roleCheck');
+// const { authMiddleware } = require('../middlewares/authMiddleware'); ❌ Remove this line
+// const { isAdmin } = require('../middlewares/roleCheck');
+
 const {
   createOrder,
   getAllOrders,
@@ -13,16 +14,16 @@ const {
   getOrderStatistics
 } = require('../controllers/orderController');
 
-// User routes (requires authentication)
-router.post('/', authMiddleware, createOrder);
-router.get('/my-orders', authMiddleware, getUserOrders);
-router.get('/:id', authMiddleware, getOrderById);
-router.post('/:id/cancel', authMiddleware, cancelOrder);
+// ---------------- USER ROUTES (NO AUTH) ---------------- //
+router.post('/', createOrder);
+router.get('/my-orders', getUserOrders);
+router.get('/:id', getOrderById);
+router.post('/:id/cancel', cancelOrder);
 
-// Admin routes (requires admin role)
-// router.get('/', authMiddleware, isAdmin, getAllOrders);
-// router.put('/:id/status', authMiddleware, isAdmin, updateOrderStatus);
-// router.put('/:id/payment', authMiddleware, isAdmin, updatePaymentDetails);
-// router.get('/statistics/summary', authMiddleware, isAdmin, getOrderStatistics);
+// ---------------- ADMIN ROUTES (NO AUTH) ---------------- //
+router.get('/', getAllOrders);
+router.put('/:id/status', updateOrderStatus);
+router.put('/:id/payment', updatePaymentDetails);
+router.get('/statistics/summary', getOrderStatistics);
 
 module.exports = router;

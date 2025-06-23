@@ -29,7 +29,7 @@ import "../../../styles/custom.css";
 // Icon mapping for all menu items
 const iconMap = {
   Dashboard: <FaTachometerAlt size={20} />,
-  "Monthly Sale Report": <FaClipboardList size={20} />,
+  // "Monthly Sale Report": <FaClipboardList size={20} />,
   "Web Customization": <FaTools size={20} />,
   "Basic Information": <FaIdBadge size={20} />,
   "Menu Builder": <FaList size={20} />,
@@ -41,18 +41,18 @@ const iconMap = {
   "Maintenance Mode": <FaTools size={20} />,
   Announcement: <FaBlog size={20} />,
   Preloader: <FaCogs size={20} />,
-  "Footer Info": <FaList size={20} />,
-  "Footer Link": <FaList size={20} />,
-  "General Settings": <FaCogs size={20} />,
-  "Email Configuration": <FaEnvelope size={20} />,
+  // "Footer Info": <FaList size={20} />,
+  // "Footer Link": <FaList size={20} />,
+  // "General Settings": <FaCogs size={20} />,
+  // "Email Configuration": <FaEnvelope size={20} />,
   Scripts: <FaTools size={20} />,
-  "Cookie Alert": <FaList size={20} />,
-  "Custom CSS": <FaTools size={20} />,
+  // "Cookie Alert": <FaList size={20} />,
+  // "Custom CSS": <FaTools size={20} />,
   "Mail From Admin": <FaEnvelope size={20} />,
   "Mail To Admin": <FaEnvelope size={20} />,
-  "Follow Up Admin": <FaEnvelope size={20} />,
-  "Advanced Email": <FaEnvelope size={20} />,
-  "Payment Settings": <FaCreditCard size={20} />,
+  // "Follow Up Admin": <FaEnvelope size={20} />,
+  // "Advanced Email": <FaEnvelope size={20} />,
+  // "Payment Settings": <FaCreditCard size={20} />,
   Currencies: <FaCreditCard size={20} />,
   "Payment Gateway": <FaCreditCard size={20} />,
   "Shipping Method": <FaBoxOpen size={20} />,
@@ -68,11 +68,11 @@ const iconMap = {
   "Completed Orders": <FaShoppingCart size={20} />,
   "Rejected Orders": <FaShoppingCart size={20} />,
   "Order Reports": <FaClipboardList size={20} />,
-  "All Order Report": <FaClipboardList size={20} />,
+  // "All Order Report": <FaClipboardList size={20} />,
   "Product Sale Report": <FaClipboardList size={20} />,
   Customers: <FaUser size={20} />,
   Exam: <FaBook size={20} />,
-  "Exam Code": <FaIdBadge size={20} />,
+  "Online Exam": <FaIdBadge size={20} />,
   Media: <FaPhotoVideo size={20} />,
   "Media List": <FaPhotoVideo size={20} />,
   Blog: <FaBlog size={20} />,
@@ -366,81 +366,41 @@ const sidebarItems = [
     sectionTitle: "Admin Panel",
     links: [
       { label: "Dashboard", to: "/admin/dashboard" },
-      { label: "Monthly Sale Report", to: "/admin/monthly-sale-report" },
       {
         label: "Web Customization",
         to: "/admin/web-customization",
         children: [
-          {
-            label: "Basic Information",
-            to: "/admin/web-customization/basic-info",
-          },
-          {
-            label: "Menu Builder",
-            to: "/admin/web-customization/menu-builder",
-          },
-          {
-            label: "Social Links",
-            to: "/admin/web-customization/social-links",
-          },
+          { label: "Basic Information", to: "/admin/web-customization/basic-info" },
+          { label: "Menu Builder", to: "/admin/web-customization/menu-builder" },
+          { label: "Social Links", to: "/admin/web-customization/social-links" },
           {
             label: "SEO",
             to: "/admin/web-customization/seo",
             children: [
-              {
-                label: "SEO Meta Info",
-                to: "/admin/web-customization/seo/meta-info",
-              },
-              {
-                label: "SEO Site Map",
-                to: "/admin/web-customization/seo/site-map",
-              },
+              { label: "SEO Meta Info", to: "/admin/web-customization/seo/meta-info" },
+              { label: "SEO Site Map", to: "/admin/web-customization/seo/site-map" },
             ],
           },
           { label: "Permalink", to: "/admin/web-customization/permalink" },
-          {
-            label: "Maintenance Mode",
-            to: "/admin/web-customization/maintenance",
-          },
-          {
-            label: "Announcement",
-            to: "/admin/web-customization/announcement",
-          },
+          { label: "Maintenance Mode", to: "/admin/web-customization/maintenance" },
+          { label: "Announcement", to: "/admin/web-customization/announcement" },
           { label: "Preloader", to: "/admin/web-customization/preloader" },
-          { label: "Footer Info", to: "/admin/web-customization/footer-info" },
-          { label: "Footer Link", to: "/admin/web-customization/footer-link" },
         ],
       },
       {
         label: "Settings",
         to: "/admin/settings",
         children: [
-          { label: "General Settings", to: "/admin/settings/general" },
+          // { label: "General Settings", to: "/admin/settings/general" },
           {
             label: "Email Configuration",
             to: "/admin/settings/email-config",
             children: [
-              {
-                label: "Mail From Admin",
-                to: "/admin/settings/email-config/from-admin",
-              },
-              {
-                label: "Mail To Admin",
-                to: "/admin/settings/email-config/to-admin",
-              },
-              {
-                label: "Follow Up Admin",
-                to: "/admin/settings/email-config/follow-up",
-              },
-              {
-                label: "Advanced Email",
-                to: "/admin/settings/email-config/advanced",
-              },
+              { label: "Mail From Admin", to: "/admin/settings/email-config/from-admin" },
+              { label: "Mail To Admin", to: "/admin/settings/email-config/to-admin" },
             ],
           },
           { label: "Scripts", to: "/admin/settings/scripts" },
-          { label: "Cookie Alert", to: "/admin/settings/cookie-alert" },
-          { label: "Custom CSS", to: "/admin/settings/custom-css" },
         ],
       },
       {
@@ -505,25 +465,10 @@ const sidebarItems = [
           { label: "Posts", to: "/admin/blog/posts" },
         ],
       },
-      {
-        label: "Subscribers",
-        to: "/admin/subscribers",
-        children: [
-          { label: "Subscribers List", to: "/admin/subscribers/list" },
-          { label: "Mail to Subscribers", to: "/admin/subscribers/mail" },
-        ],
-      },
-      {
-        label: "Downloads",
-        to: "/admin/downloads",
-        children: [
-          { label: "Downloaded Samples", to: "/admin/downloads/samples" },
-        ],
-      },
-      { label: "Settings", to: "/admin/settings" },
     ],
   },
 ];
+
 
 const AdminSidebar = () => {
   return (

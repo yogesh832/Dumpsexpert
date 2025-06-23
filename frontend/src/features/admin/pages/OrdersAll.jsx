@@ -1,22 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const OrdersAll = () => {
-  const orders = Array.from({ length: 32 }, (_, i) => ({
-    id: i + 1,
-    customer: `Customer ${i + 1}`,
-    status: ["Completed", "Pending", "Rejected"][i % 3],
-    date: `2025-06-${(i % 30) + 1}`.padStart(10, "0"),
-    total: `$${(100 + i * 10).toFixed(2)}`
-  }));
-
+  const [orders, setOrders] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentOrders = orders.slice(indexOfFirst, indexOfLast);
+  useEffect(() => {
+    fetchOrders(currentPage);
+  }, [currentPage]);
 
-  const totalPages = Math.ceil(orders.length / itemsPerPage);
+  const fetchOrders = async (page) => {
+    try {
+      const res = await axios.get("http://localhost:8000/api/orders", {
+        params: {
+          page,
+          limit: itemsPerPage,
+        },
+      });
+
+      const { data, pagination } = res.data;
+      setOrders(data);
+      setTotalPages(pagination.pages);
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+    }
+  };
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -38,15 +48,25 @@ const OrdersAll = () => {
           </tr>
         </thead>
         <tbody>
-          {currentOrders.map(order => (
-            <tr key={order.id}>
-              <td className="px-4 py-2 border">{order.id}</td>
-              <td className="px-4 py-2 border">{order.customer}</td>
-              <td className="px-4 py-2 border">{order.date}</td>
-              <td className="px-4 py-2 border">{order.status}</td>
-              <td className="px-4 py-2 border">{order.total}</td>
+          {orders.length > 0 ? (
+            orders.map((order) => (
+              <tr key={order._id}>
+                <td className="px-4 py-2 border">{order.orderNumber}</td>
+                <td className="px-4 py-2 border">{order.user?.name || "N/A"}</td>
+                <td className="px-4 py-2 border">
+                  {new Date(order.createdAt).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-2 border capitalize">{order.status}</td>
+                <td className="px-4 py-2 border">₹{order.total.toFixed(2)}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className="text-center py-4 text-gray-500">
+                No orders found
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
