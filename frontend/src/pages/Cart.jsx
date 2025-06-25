@@ -1,30 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import emptycartimg from "../assets/landingassets/emptycart.webp";
 import Button from "../components/ui/Button";
-import cartData from "../assets/cartData";
+import useCartStore from "../store/useCartStore";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState(cartData);
+  const cartItems = useCartStore(state => state.cartItems);
+  const removeFromCart = useCartStore(state => state.removeFromCart);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
+  const getCartTotal = useCartStore(state => state.getCartTotal);
 
   const handleDelete = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
+    removeFromCart(id);
   };
 
   const handleQuantityChange = (id, type) => {
-    setCartItems(prevItems =>
-      prevItems
-        .map(item => {
-          if (item.id === id) {
-            const newQty = type === "inc" ? item.quantity + 1 : item.quantity - 1;
-            return { ...item, quantity: newQty };
-          }
-          return item;
-        })
-        .filter(item => item.quantity > 0)
-    );
+    updateQuantity(id, type);
   };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = getCartTotal();
   const discount = 0;
   const grandTotal = subtotal - discount;
 
@@ -52,20 +45,20 @@ const Cart = () => {
             <div className="space-y-4 w-full max-h-[565px] overflow-y-auto pr-2">
               {cartItems.map((item) => (
                 <div
-                  key={item.id}
+                  key={item._id}
                   className="flex items-center justify-between bg-white border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow-md transition duration-200"
                 >
                   <div className="flex items-center gap-4">
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={item.imageUrls?.[0] || 'https://via.placeholder.com/100'}
+                      alt={item.title}
                       className="w-16 h-16 object-cover rounded-lg border border-gray-100"
                     />
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-800">{item.name}</h4>
+                      <h4 className="text-lg font-semibold text-gray-800">{item.title}</h4>
                       <div className="flex items-center gap-2 mt-2">
                         <button
-                          onClick={() => handleQuantityChange(item.id, "dec")}
+                          onClick={() => handleQuantityChange(item._id, "dec")}
                           className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-lg"
                         >
                           −
@@ -74,7 +67,7 @@ const Cart = () => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => handleQuantityChange(item.id, "inc")}
+                          onClick={() => handleQuantityChange(item._id, "inc")}
                           className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-lg"
                         >
                           +
@@ -87,7 +80,7 @@ const Cart = () => {
                       ₹{item.price * item.quantity}
                     </p>
                     <button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDelete(item._id)}
                       className="text-red-500 text-sm hover:underline"
                     >
                       Delete

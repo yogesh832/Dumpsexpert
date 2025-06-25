@@ -1,17 +1,15 @@
 import React, { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Thumbs } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/thumbs";
+import { toast } from "react-hot-toast";
 
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import dummyProduct from "../assets/dummyProductInfo.json";
+import useCartStore from "../store/useCartStore";
 
 const ProductDetails = () => {
   const loading = false; // Simulate loading if needed
   const product = dummyProduct;
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const addToCart = useCartStore(state => state.addToCart);
+  const [isAdding, setIsAdding] = useState(false);
 
   if (loading) {
     return (
@@ -25,53 +23,33 @@ const ProductDetails = () => {
     <div className="min-h-screen mt-28 px-6 md:px-20 mb-20">
       {/* Top Section */}
       <div className="flex flex-col md:flex-row gap-10">
-        {/* Image Carousel */}
-        <div className="w-full md:w-1/2">
-          <Swiper
-            spaceBetween={10}
-            navigation
-            modules={[Navigation, Thumbs]}
-            thumbs={{ swiper: thumbsSwiper }}
-            className="rounded-lg border mb-4"
-          >
-            {product.imageUrls.map((img, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={img}
-                  alt={`product-${index}`}
-                  className="w-full h-96 object-cover rounded-lg"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-
-          {/* Thumbnail Swiper */}
-          <Swiper
-            onSwiper={setThumbsSwiper}
-            spaceBetween={10}
-            slidesPerView={4}
-            watchSlidesProgress
-            className="mt-2"
-          >
-            {product.imageUrls.map((img, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={img}
-                  alt={`thumb-${index}`}
-                  className="w-full h-20 object-cover border rounded hover:scale-105 transition-transform"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        {/* Product Image */}
+        <div className="w-full md:w-[40%]">
+          {product.imageUrls.length > 0 && (
+            <img
+              src={product.imageUrls[0]}
+              alt="product"
+              className="w-full h-72 object-cover rounded-lg" // reduced height from h-96 to h-72
+            />
+          )}
         </div>
 
         {/* Product Info */}
-        <div className="w-full md:w-1/2 flex flex-col justify-start gap-4">
+        <div className="w-full md:w-[60%] flex flex-col justify-start gap-4">
           <h1 className="text-3xl font-bold">{product.title}</h1>
           <p className="text-xl text-blue-600 font-semibold">₹ {product.price}</p>
           <p className="text-gray-700">{product.description}</p>
-          <button className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all w-fit">
-            Add to Cart
+          <button 
+            className={`mt-4 px-6 py-2 ${isAdding ? 'bg-green-600' : 'bg-blue-600'} text-white rounded hover:bg-blue-700 transition-all w-fit flex items-center gap-2`}
+            onClick={() => {
+              setIsAdding(true);
+              addToCart(product);
+              toast.success('Added to cart!');
+              setTimeout(() => setIsAdding(false), 1000);
+            }}
+            disabled={isAdding}
+          >
+            {isAdding ? 'Added ✓' : 'Add to Cart'}
           </button>
         </div>
       </div>
