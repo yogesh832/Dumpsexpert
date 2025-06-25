@@ -9,3 +9,46 @@ html {
   @apply w-full p-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500;
 }
 
+
+/* Scrollbar Width */
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background-color: #ffffff;
+}
+
+/* Thumb */
+::-webkit-scrollbar-thumb {
+  background-color: #145DFB;
+  border-radius: 0;
+}
+
+/* Scrollbar Buttons */
+::-webkit-scrollbar-button {
+  width: 16px;
+  height: 20px; /* ⬅️ Larger height for arrows */
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px 16px; /* ⬅️ Larger arrow icons */
+  border: none;
+}
+
+/* Up Arrow */
+::-webkit-scrollbar-button:vertical:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23145DFB' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 14l5-5 5 5z'/%3E%3C/svg%3E");
+}
+
+/* Down Arrow */
+::-webkit-scrollbar-button:vertical:increment {
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23145DFB' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+}
+
+/* Hide extra buttons if needed */
+::-webkit-scrollbar-button:vertical:increment:disabled,
+::-webkit-scrollbar-button:vertical:decrement:disabled {
+  display: none;
+}

@@ -91,9 +91,11 @@ exports.updateDefaultSEO = async (req, res) => {
       ogTitle,
       ogDescription,
       ogImage,
+      ogUrl,
       twitterTitle,
       twitterDescription,
       twitterImage,
+      twitterCard,
       canonicalUrl,
       schema
     } = req.body;
@@ -124,15 +126,24 @@ exports.updateDefaultSEO = async (req, res) => {
     
     // Update default SEO settings
     seo.default = {
+      // Basic SEO fields
       title: title || seo.default?.title,
       description: description || seo.default?.description,
       keywords: keywords || seo.default?.keywords,
+      
+      // Open Graph fields
       ogTitle: ogTitle || seo.default?.ogTitle,
       ogDescription: ogDescription || seo.default?.ogDescription,
       ogImage: ogImage || seo.default?.ogImage,
+      ogUrl: ogUrl || seo.default?.ogUrl,
+      
+      // Twitter Card fields
       twitterTitle: twitterTitle || seo.default?.twitterTitle,
       twitterDescription: twitterDescription || seo.default?.twitterDescription,
       twitterImage: twitterImage || seo.default?.twitterImage,
+      twitterCard: twitterCard || seo.default?.twitterCard,
+      
+      // Additional SEO fields
       canonicalUrl: canonicalUrl || seo.default?.canonicalUrl,
       schema: schema || seo.default?.schema
     };
@@ -164,9 +175,11 @@ exports.updatePageSEO = async (req, res) => {
       ogTitle,
       ogDescription,
       ogImage,
+      ogUrl,
       twitterTitle,
       twitterDescription,
       twitterImage,
+      twitterCard,
       canonicalUrl,
       schema,
       useDefault
@@ -214,15 +227,24 @@ exports.updatePageSEO = async (req, res) => {
       
       // Update page SEO settings
       seo.pages.set(page, {
+        // Basic SEO fields
         title: title || existingPageSEO.title,
         description: description || existingPageSEO.description,
         keywords: keywords || existingPageSEO.keywords,
+        
+        // Open Graph fields
         ogTitle: ogTitle || existingPageSEO.ogTitle,
         ogDescription: ogDescription || existingPageSEO.ogDescription,
         ogImage: ogImage || existingPageSEO.ogImage,
+        ogUrl: ogUrl || existingPageSEO.ogUrl,
+        
+        // Twitter Card fields
         twitterTitle: twitterTitle || existingPageSEO.twitterTitle,
         twitterDescription: twitterDescription || existingPageSEO.twitterDescription,
         twitterImage: twitterImage || existingPageSEO.twitterImage,
+        twitterCard: twitterCard || existingPageSEO.twitterCard,
+        
+        // Additional SEO fields
         canonicalUrl: canonicalUrl || existingPageSEO.canonicalUrl,
         schema: schema || existingPageSEO.schema
       });
