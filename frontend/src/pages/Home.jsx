@@ -12,7 +12,7 @@ import SEOTester from "../components/SEOTester";
 const Home = () => {
   return (
     <div>
-      <SEOTester />
+      {/* <SEOTester /> */}
       <HeroSection />
       <AllOtherDumps />
       <BlogSection />

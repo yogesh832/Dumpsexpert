@@ -10,10 +10,12 @@ import { Link } from "react-router";
 import dumplogo from "../../assets/landingassets/dumplogo.webp";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
+import useCartStore from "../../store/useCartStore";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const cartCount = useCartStore(state => state.getCartCount());
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const toggleSearch = () => setShowSearch(!showSearch);
@@ -24,7 +26,16 @@ const Navbar = () => {
     { label: "IT Dumps", path: "/dumps" },
     { label: "Contact", path: "/contact" },
     { label: "Blogs", path: "/blogs" },
-    { label: "Cart", path: "/cart", icon: <FaShoppingCart size={22} /> },
+    { label: "Cart", path: "/cart", icon: (
+      <div className="relative">
+        <FaShoppingCart size={22} />
+        {cartCount > 0 && (
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            {cartCount}
+          </span>
+        )}
+      </div>
+    ) },
     { label: "Login/Register", path: "/login", icon: <FaUser size={22} /> },
   ];
 
