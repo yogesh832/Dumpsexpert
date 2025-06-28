@@ -92,7 +92,8 @@ const ProductList = lazy(() => import("./features/admin/pages/ProductList"));
 const ProductReviews = lazy(() =>
   import("./features/admin/pages/ProductReviews")
 );
-const Coupons = lazy(() => import("./features/admin/pages/Coupons"));
+const CouponForm = lazy(() => import("./features/admin/pages/CouponForm.jsx"));
+const Coupons = lazy(() => import("./features/admin/pages/CouponList.jsx"));
 const OrdersManagement = lazy(() =>
   import("./features/admin/pages/OrdersManagement")
 );
@@ -161,7 +162,6 @@ import AddProductCategory from "./features/admin/pages/AddProductCategory.jsx";
 import EditProductCategory from "./features/admin/pages/EditProductCategory";
 import ProductForm from "./features/admin/pages/ProductForm.jsx";
 import SEOTesterPage from "./pages/SEOTesterPage";
-
 
 const App = () => {
   return (
@@ -259,10 +259,12 @@ const App = () => {
                   <Route path="reviews" element={<ProductReviews />} />
                 </Route>
 
-                <Route path="coupons">
-                  <Route index element={<ProductManagement />} />
-                  <Route path="list" element={<Coupons />} />
-                </Route>
+               <Route path="coupons">
+  <Route index element={<ProductManagement />} />
+  <Route path="list" element={<Coupons />} />
+  <Route path="add" element={<CouponForm />} />
+<Route path="edit/:id" element={<CouponForm />} /></Route>
+
 
                 <Route path="orders">
                   <Route index element={<OrdersManagement />} />
