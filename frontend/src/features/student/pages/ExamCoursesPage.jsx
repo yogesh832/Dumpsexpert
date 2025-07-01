@@ -1,50 +1,68 @@
-import React from "react";
-import { Link } from "react-router";
-
-const examCourses = [
-  {
-    date: "25/05/2025",
-    title: "C_FIORC_2502 – SAP Certified Associate – SAP Fiori Application Developer"
-  },
-  {
-    date: "20/04/2025",
-    title: "C_TS4FI_2023 – SAP Certified Application Associate – SAP S/4HANA for Financial Accounting"
-  },
-  {
-    date: "10/06/2025",
-    title: "C_TADM_23 – SAP Certified Technology Associate – System Administration"
-  },
-  {
-    date: "05/05/2025",
-    title: "C_HCDEV_2305 – SAP Certified Development Associate – SAP HANA Cloud"
-  },
-  {
-    date: "30/03/2025",
-    title: "C_ARCIG_2308 – SAP Certified Application Associate – SAP Ariba Integration"
-  }
-];
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom"; // ✅ Corrected import
+import axios from "axios";
 
 const ExamCoursesPage = () => {
+  const [examCourses, setExamCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      console.log("📡 Fetching exams...");
+      try {
+        const response = await axios.get("http://localhost:8000/api/exams"); // adjust if different
+        console.log("✅ Data fetched:", response.data);
+        setExamCourses(response.data);
+      } catch (error) {
+        console.error("❌ Error fetching exams:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExams();
+  }, []);
+
   return (
     <div className="bg-white text-black p-6 rounded-xl shadow-lg max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">My Exam Courses</h1>
-      <div className="space-y-4">
-        {examCourses.map((course, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between border p-4 rounded-lg shadow-sm"
-          >
-            <span className="text-sm font-medium">{course.date}</span>
-            <span className="text-blue-700 font-semibold text-center mx-4">
-              {course.title}
-            </span>
-          <Link to="one">  <button className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-              Attempt
-            </button>
-              </Link>
-          </div>
-        ))}
-      </div>
+
+      {loading ? (
+        <p>Loading exams...</p>
+      ) : (
+        <div className="space-y-4">
+          {examCourses.length === 0 ? (
+            <p>No exams available</p>
+          ) : (
+            examCourses.map((course, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between border p-4 rounded-lg shadow-sm"
+              >
+                <span className="text-sm font-medium">
+                  {new Date(course.createdAt).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+
+                <span className="text-blue-700 font-semibold text-center mx-4 flex-1">
+                  {course.name}
+                </span>
+                <span className="text-blue-700 font-semibold text-center mx-4 ">
+                  {course.code}
+                </span>
+<Link to={`/student/courses-exam/instructions/${course._id}`}>
+                  <button className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                    Attempt
+                  </button>
+                </Link>
+              </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 };

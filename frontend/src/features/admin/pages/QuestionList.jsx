@@ -23,6 +23,7 @@ const QuestionList = ({ exam, setView, setSelectedQuestion }) => {
         `http://localhost:8000/api/questions/byExam/${exam._id}`
       );
       setQuestions(Array.isArray(res.data) ? res.data : []);
+      console.log(questions);
     } catch (err) {
       console.error("Failed to fetch questions", err);
       setQuestions([]);

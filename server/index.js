@@ -32,6 +32,8 @@ const Question = require('./models/QuestionSchema');
 
 const blogCategoryRoutes = require("./routes/blogCategoryRoutes");
 
+const resultRoutes = require("./routes/resultRoutes")
+
 const examRoutes = require('./routes/examRoutes');
 const questionRoutes = require('./routes/questionRoutes');
 require("./utils/passport");
@@ -130,6 +132,7 @@ app.use("/api/images", imageUploadRoutes);
 app.use("/api/exams", examRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/product-categories", productCategoryRoutes);
+app.use("/api/results", resultRoutes);
 
 // ✅ Custom exam questions route
 app.get("/api/exams/:examId/questions", async (req, res) => {

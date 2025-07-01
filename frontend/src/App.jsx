@@ -259,12 +259,12 @@ const App = () => {
                   <Route path="reviews" element={<ProductReviews />} />
                 </Route>
 
-               <Route path="coupons">
-  <Route index element={<ProductManagement />} />
-  <Route path="list" element={<Coupons />} />
-  <Route path="add" element={<CouponForm />} />
-<Route path="edit/:id" element={<CouponForm />} /></Route>
-
+                <Route path="coupons">
+                  <Route index element={<ProductManagement />} />
+                  <Route path="list" element={<Coupons />} />
+                  <Route path="add" element={<CouponForm />} />
+                  <Route path="edit/:id" element={<CouponForm />} />
+                </Route>
 
                 <Route path="orders">
                   <Route index element={<OrdersManagement />} />
@@ -337,11 +337,12 @@ const App = () => {
                 path="/student/courses-exam/list"
                 element={<ExamCoursesPage />}
               />
-              <Route
-                path="/student/courses-exam/list/one"
-                element={<InstructionsPage />}
-              />
-              <Route path="/student/courses-exam/test" element={<TestPage />} />
+              <Route path="/student/courses-exam/instructions/:examId" element={<InstructionsPage />} />
+
+              
+<Route path="/student/courses-exam/test/:examId" element={<TestPage />} />
+
+              {/* <Route path="/student/courses-exam/test" element={<TestPage />} /> */}
               <Route
                 path="/student/courses-exam/result"
                 element={<ResultPage />}
@@ -357,6 +358,8 @@ const App = () => {
                 path="/student/change-password"
                 element={<ChangePassword />}
               />
+              <Route path="/exams/:id" element={<InstructionsPage />} />
+
               <Route path="/logout" element={<Logout />} />
             </Route>
           </Route>

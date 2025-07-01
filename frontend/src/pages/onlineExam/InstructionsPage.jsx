@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import "./InstructionsPage.css";
 
 const InstructionsPage = () => {
   const [agreed, setAgreed] = useState(false);
   const navigate = useNavigate();
+  const { examId } = useParams(); // ✅ get examId from route
 
   const handleStart = () => {
     if (!agreed) {
       alert("Please agree to the terms and conditions before starting.");
       return;
     }
-    navigate("/student/courses-exam/test");
+    navigate(`/student/courses-exam/test/${examId}`);
   };
 
   return (
@@ -76,3 +77,4 @@ const InstructionsPage = () => {
 };
 
 export default InstructionsPage;
+
