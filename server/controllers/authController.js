@@ -3,7 +3,6 @@ const ResetToken = require("../models/resetTokenSchema");
 const { generateResetToken } = require("../utils/otp");
 const { sendOTP } = require("../utils/smtp");
 
-
 const bcrypt = require("bcrypt");
 
 exports.signup = async (req, res) => {
@@ -54,11 +53,15 @@ exports.signin = async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .json({
         message: "User signed in successfully",
-        user: { email: user.email, role: user.role },
+        user: {
+          _id: user._id,
+          email: user.email,
+          role: user.role,
+        },
       });
   } catch (error) {
     res.status(500).json({ error: "Server error during signin" });
@@ -78,9 +81,12 @@ exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
-    
+
     if (!user) {
-      return res.status(200).json({ message: "If the email is registered, a password reset link has been sent" });
+      return res.status(200).json({
+        message:
+          "If the email is registered, a password reset link has been sent",
+      });
     }
 
     const token = generateResetToken();
@@ -101,7 +107,8 @@ exports.resetPassword = async (req, res) => {
   try {
     const { email, token, newPassword } = req.body;
     const resetToken = await ResetToken.findOne({ email, token });
-    if (!resetToken) return res.status(400).json({ error: "Invalid or expired token" });
+    if (!resetToken)
+      return res.status(400).json({ error: "Invalid or expired token" });
 
     const user = await User.findOne({ email });
     user.password = newPassword;

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './TestPage.css';
 
-// Utility to clean HTML from Quill
+// Utility to clean HTML
 const stripHtml = (html) => {
   const div = document.createElement('div');
   div.innerHTML = html;
@@ -29,7 +29,7 @@ const TestPage = () => {
       try {
         const res = await axios.get(`http://localhost:8000/api/questions/byExam/${examId}`);
         setQuestions(res.data);
-console.log(res.data)
+
         const initialStatus = {};
         res.data.forEach(q => initialStatus[q._id] = 'Not Visited');
         setStatusMap(initialStatus);
@@ -41,14 +41,14 @@ console.log(res.data)
     if (examId) fetchQuestions();
   }, [examId]);
 
-  // Auto submit on blur limit
+  // Auto submit on tab-switches
   useEffect(() => {
     if (autoSubmitTriggered && questions.length > 0) {
       handleSubmit();
     }
   }, [autoSubmitTriggered, questions]);
 
-  // Timer countdown
+  // Timer
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
@@ -63,7 +63,7 @@ console.log(res.data)
     return () => clearInterval(timer);
   }, []);
 
-  // Disable copy/paste/cut
+  // Block copy/paste/cut
   useEffect(() => {
     const blockAction = (e) => {
       e.preventDefault();
@@ -79,7 +79,7 @@ console.log(res.data)
     };
   }, []);
 
-  // Disable right click
+  // Disable right-click
   useEffect(() => {
     const disableRightClick = (e) => {
       e.preventDefault();
@@ -89,7 +89,7 @@ console.log(res.data)
     return () => document.removeEventListener('contextmenu', disableRightClick);
   }, []);
 
-  // Tab-switch tracking
+  // Detect tab switches
   useEffect(() => {
     let blurCount = 0;
     const handleVisibilityChange = () => {
@@ -152,9 +152,10 @@ console.log(res.data)
     return `${min}:${secStr}`;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const endTime = new Date();
     const duration = Math.floor((endTime - startTime) / 1000);
+    const studentId = localStorage.getItem("studentId");
 
     let wrongAnswers = 0;
 
@@ -168,18 +169,28 @@ console.log(res.data)
     });
 
     const resultData = {
+      studentId,
+      examCode: examId,
       totalQuestions: questions.length,
       attempted: Object.keys(userAnswers).length,
       wrong: wrongAnswers,
+      correct: questions.length - wrongAnswers,
       percentage: Math.round(((questions.length - wrongAnswers) / questions.length) * 100),
       duration,
-      completedAt: endTime.toLocaleTimeString(),
-      examCode: examId,
+      completedAt: new Date().toISOString(),
       questions,
-      userAnswers
+      userAnswers,
     };
 
-    navigate('/student/courses-exam/result', { state: resultData });
+    try {
+      const res = await axios.post("http://localhost:8000/api/results/save", resultData);
+      navigate('/student/courses-exam/result', {
+        state: { ...resultData, attempt: res.data.attempt || 1 },
+      });
+    } catch (error) {
+      console.error("❌ Failed to save result:", error.response?.data || error.message);
+      alert("Failed to save result. Try again.");
+    }
   };
 
   if (!questions.length) {

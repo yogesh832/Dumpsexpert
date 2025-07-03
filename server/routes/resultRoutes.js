@@ -12,18 +12,22 @@ router.post("/save", async (req, res) => {
       return res.status(400).json({ message: "studentId and examCode are required" });
     }
 
-    const existing = await Result.findOne({ studentId, examCode });
-    if (existing) {
-      return res.status(409).json({ message: "Result already submitted for this exam." });
-    }
+    // 🧠 Find previous attempts
+    const previousAttempts = await Result.find({ studentId, examCode });
+    const nextAttempt = previousAttempts.length + 1;
 
-    const result = new Result(req.body);
+    const result = new Result({
+      ...req.body,
+      attempt: nextAttempt, // 🆕 include the attempt number
+    });
+
     await result.save();
-    res.status(201).json({ message: "Result saved successfully" });
+    res.status(201).json({ message: "Result saved successfully", attempt: nextAttempt });
   } catch (err) {
     res.status(500).json({ error: "Failed to save result", details: err.message });
   }
 });
+
 
 // ✅ GET /api/results/check?studentId=abc123&examCode=EXAM101
 // Used in frontend to check before test starts
