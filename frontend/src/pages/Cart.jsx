@@ -64,7 +64,7 @@ const Cart = () => {
       console.error('Payment initiation failed:', error);
       alert('Payment initiation failed');
     }
-    setShowPaymentModal(false);
+    setShowPaymentModal(false);//added stuff
   };
 
   const handleDelete = (id) => {
