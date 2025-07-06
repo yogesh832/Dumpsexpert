@@ -28,7 +28,7 @@ const Cart = () => {
       };
 
       if (gateway === 'razorpay') {
-        const response = await axios.post('/payments/razorpay/create-order', orderData);
+        const response = await axios.post('/api/payments/razorpay/create-order', orderData);
         const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: response.data.amount,
@@ -38,7 +38,7 @@ const Cart = () => {
           description: "Purchase Exam Dumps",
           handler: async (response) => {
             try {
-              await axios.post('/payments/razorpay/verify', {
+              await axios.post('/api/payments/razorpay/verify', {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
@@ -57,7 +57,7 @@ const Cart = () => {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else if (gateway === 'stripe') {
-        const response = await axios.post('/payments/stripe/create-session', orderData);
+        const response = await axios.post('/api/payments/stripe/create-session', orderData);
         window.location.href = response.data.sessionUrl;
       }
     } catch (error) {
