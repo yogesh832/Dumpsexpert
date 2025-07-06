@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
   profileImage: { type: String, default: "" },
   role: { type: String, enum: ["guest", "student", "admin"], default: "guest" },
   isVerified: { type: Boolean, default: false },
+  subscription: { type: String, enum: ["yes", "no"], default: "no" },
   createdAt: { type: Date, default: Date.now },
 });
 

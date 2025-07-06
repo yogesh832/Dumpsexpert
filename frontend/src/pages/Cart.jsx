@@ -1,13 +1,71 @@
-import React from "react";
+import React, { useState } from "react";
 import emptycartimg from "../assets/landingassets/emptycart.webp";
 import Button from "../components/ui/Button";
 import useCartStore from "../store/useCartStore";
+import axios from 'axios';
+
+// Add this near your other imports
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
 
 const Cart = () => {
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const cartItems = useCartStore(state => state.cartItems);
   const removeFromCart = useCartStore(state => state.removeFromCart);
   const updateQuantity = useCartStore(state => state.updateQuantity);
   const getCartTotal = useCartStore(state => state.getCartTotal);
+
+  const handlePayment = async (gateway) => {
+    try {
+      const orderData = {
+        amount: grandTotal,
+        currency: "INR",
+        items: cartItems.map(item => ({
+          name: item.title,
+          quantity: item.quantity,
+          price: item.price
+        }))
+      };
+
+      if (gateway === 'razorpay') {
+        const response = await axios.post('/payments/razorpay/create-order', orderData);
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+          amount: response.data.amount,
+          currency: response.data.currency,
+          order_id: response.data.id,
+          name: "DumpsExpert",
+          description: "Purchase Exam Dumps",
+          handler: async (response) => {
+            try {
+              await axios.post('/payments/razorpay/verify', {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                amount: orderData.amount
+              });
+              window.location.href = '/dashboard/student';
+            } catch (error) {
+              console.error('Payment verification failed:', error);
+              alert('Payment verification failed');
+            }
+          },
+          theme: {
+            color: "#3B82F6"
+          }
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else if (gateway === 'stripe') {
+        const response = await axios.post('/payments/stripe/create-session', orderData);
+        window.location.href = response.data.sessionUrl;
+      }
+    } catch (error) {
+      console.error('Payment initiation failed:', error);
+      alert('Payment initiation failed');
+    }
+    setShowPaymentModal(false);
+  };
 
   const handleDelete = (id) => {
     removeFromCart(id);
@@ -118,8 +176,51 @@ const Cart = () => {
           <p className="font-medium text-lg">
             Grand Total: <span className="float-right text-green-600">₹{grandTotal}</span>
           </p>
+
+          {cartItems.length > 0 && (
+            <div className="mt-6">
+              <Button 
+                variant="blue" 
+                className="w-full"
+                onClick={() => setShowPaymentModal(true)}
+              >
+                Continue to Payment
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Payment Gateway Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-semibold mb-4">Select Payment Method</h3>
+            <div className="space-y-4">
+              <button
+                onClick={() => handlePayment('razorpay')}
+                className="w-full p-4 border rounded-lg hover:bg-gray-50 flex items-center justify-between"
+              >
+                <span>Pay with Razorpay</span>
+                <span>→</span>
+              </button>
+              <button
+                onClick={() => handlePayment('stripe')}
+                className="w-full p-4 border rounded-lg hover:bg-gray-50 flex items-center justify-between"
+              >
+                <span>Pay with Stripe</span>
+                <span>→</span>
+              </button>
+            </div>
+            <button
+              onClick={() => setShowPaymentModal(false)}
+              className="mt-4 text-gray-600 hover:text-gray-800"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
