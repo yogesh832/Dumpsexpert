@@ -6,17 +6,30 @@ const generateQuestionCode = async () => {
   return `Q-${String(count + 1).padStart(3, '0')}`;
 };
 
-// 🔄 Create a question
+
+
+// Generate unique question code per exam
+
+
 exports.createQuestion = async (req, res) => {
   try {
-    const questionCode = await generateQuestionCode();
-    const question = new Question({ ...req.body, questionCode });
-    const saved = await question.save();
+    const { examId } = req.body;
+
+    if (!examId) {
+      return res.status(400).json({ message: "examId is required" });
+    }
+
+    const questionCode = await generateQuestionCode(examId);
+    const question = new Question({ ...req.body, questionCode }); // ✅ create instance
+    const saved = await question.save(); // ✅ save instance
+
     res.status(201).json(saved);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
+
+
 
 // 🆙 Update a question
 exports.updateQuestion = async (req, res) => {

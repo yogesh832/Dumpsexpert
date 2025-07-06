@@ -18,12 +18,11 @@ const TestPage = () => {
   const [userAnswers, setUserAnswers] = useState({});
   const [startTime] = useState(new Date());
   const [autoSubmitTriggered, setAutoSubmitTriggered] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(3600); // 1 hour
+  const [timeLeft, setTimeLeft] = useState(3600);
 
   const navigate = useNavigate();
   const { examId } = useParams();
 
-  // Fetch questions
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -37,18 +36,15 @@ const TestPage = () => {
         console.error('❌ Failed to load questions:', err);
       }
     };
-
     if (examId) fetchQuestions();
   }, [examId]);
 
-  // Auto submit on tab-switches
   useEffect(() => {
     if (autoSubmitTriggered && questions.length > 0) {
       handleSubmit();
     }
   }, [autoSubmitTriggered, questions]);
 
-  // Timer
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
@@ -63,7 +59,6 @@ const TestPage = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Block copy/paste/cut
   useEffect(() => {
     const blockAction = (e) => {
       e.preventDefault();
@@ -79,7 +74,6 @@ const TestPage = () => {
     };
   }, []);
 
-  // Disable right-click
   useEffect(() => {
     const disableRightClick = (e) => {
       e.preventDefault();
@@ -89,7 +83,6 @@ const TestPage = () => {
     return () => document.removeEventListener('contextmenu', disableRightClick);
   }, []);
 
-  // Detect tab switches
   useEffect(() => {
     let blurCount = 0;
     const handleVisibilityChange = () => {
@@ -202,14 +195,24 @@ const TestPage = () => {
 
   return (
     <div className="app-container">
-      {/* Question Panel */}
       <div className="question-area">
         <h3 className="heading">Question</h3>
-        <h3>Q{current + 1}: {stripHtml(currentQuestion.questionText)}</h3>
+        <div className="mb-2">
+          <strong>Q{current + 1}: </strong>
+          <span>{stripHtml(currentQuestion.questionText)}</span>
+        </div>
 
-        <div className="options">
+        {currentQuestion.image && (
+          <img
+            src={currentQuestion.image}
+            alt="Question"
+            className="my-2 rounded border max-w-xs"
+          />
+        )}
+
+        <div className="options mt-4 space-y-3">
           {currentQuestion.options.map((opt, i) => (
-            <label key={i} className="option">
+            <label key={i} className="option flex items-start gap-2">
               <input
                 type={currentQuestion.questionType === 'checkbox' ? 'checkbox' : 'radio'}
                 checked={
@@ -219,26 +222,38 @@ const TestPage = () => {
                 }
                 onChange={() => handleAnswer(currentQuestion._id, opt.label)}
               />
-              {opt.label}. {stripHtml(opt.text)}
+              <div>
+                <div className="font-medium">
+                  {opt.label}. {stripHtml(opt.text)}
+                </div>
+                {opt.image && (
+                  <img
+                    src={opt.image}
+                    alt={`Option ${opt.label}`}
+                    className="mt-1 max-w-[200px] border rounded"
+                  />
+                )}
+              </div>
             </label>
           ))}
         </div>
 
-        <div className="btns">
-          <button onClick={() => markReview(currentQuestion._id)}>Mark for Review</button>
-          <button onClick={() => skip(currentQuestion._id)}>Skip</button>
-          <button onClick={() => setCurrent((prev) => (prev + 1) % questions.length)}>Next</button>
+        <div className="btns mt-6 flex gap-4">
+          <button onClick={() => markReview(currentQuestion._id)} className="bg-yellow-500 text-white px-3 py-1 rounded">Mark for Review</button>
+          <button onClick={() => skip(currentQuestion._id)} className="bg-gray-400 text-white px-3 py-1 rounded">Skip</button>
+          <button onClick={() => setCurrent((prev) => (prev + 1) % questions.length)} className="bg-blue-600 text-white px-4 py-1 rounded">Next</button>
         </div>
       </div>
 
-      {/* Sidebar Panel */}
       <div className="sidebar">
-        <h2>All Questions</h2>
-        <div className="questions-grid">
+        <h2 className="font-semibold mb-2">All Questions</h2>
+        <div className="questions-grid grid grid-cols-5 gap-2">
           {questions.map((q, i) => (
             <div
               key={q._id}
-              className={`q-btn ${statusMap[q._id]?.toLowerCase()}`}
+              className={`q-btn text-sm px-2 py-1 rounded cursor-pointer text-center ${
+                statusMap[q._id]?.toLowerCase()
+              }`}
               onClick={() => goToQuestion(i)}
             >
               {i + 1}
@@ -247,10 +262,9 @@ const TestPage = () => {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="bottom-bar">
-        <span>Time Left: {formatTime(timeLeft)}</span>
-        <button onClick={handleSubmit} className="submit-btn">Submit Test</button>
+      <div className="bottom-bar fixed bottom-0 left-0 right-0 bg-white border-t py-3 px-6 flex justify-between items-center shadow-lg">
+        <span className="font-semibold">Time Left: {formatTime(timeLeft)}</span>
+        <button onClick={handleSubmit} className="bg-green-600 text-white px-4 py-2 rounded">Submit Test</button>
       </div>
     </div>
   );
