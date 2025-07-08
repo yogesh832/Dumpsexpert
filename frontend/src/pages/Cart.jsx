@@ -29,7 +29,7 @@ const Cart = () => {
 
       if (gateway === "razorpay") {
         const response = await axios.post(
-          "http://localhost:8000/api/payments/razorpay/create-order",
+          "https://dumpsexpert-2.onrender.com/api/payments/razorpay/create-order",
           orderData
         );
       const options = {
@@ -56,7 +56,7 @@ const Cart = () => {
   },
   handler: async function (response) {
     try {
-      await axios.post("http://localhost:8000/api/payments/razorpay/verify", {
+      await axios.post("https://dumpsexpert-2.onrender.com/api/payments/razorpay/verify", {
         razorpay_payment_id: response.razorpay_payment_id,
         razorpay_order_id: response.razorpay_order_id,
         razorpay_signature: response.razorpay_signature,
@@ -74,7 +74,7 @@ const Cart = () => {
         rzp.open();
       } else if (gateway === "stripe") {
         const response = await axios.post(
-          "http://localhost:8000/api/payments/stripe/create-session",
+          "https://dumpsexpert-2.onrender.com/api/payments/stripe/create-session",
           orderData
         );
         window.location.href = response.data.sessionUrl;
