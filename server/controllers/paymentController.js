@@ -12,11 +12,12 @@ const razorpay = new Razorpay({
 exports.createRazorpayOrder = async (req, res) => {
   try {
     const { amount, currency } = req.body;
-    const options = {
-      amount: amount * 100, // Razorpay expects amount in smallest currency unit
-      currency,
-      receipt: `order_${Date.now()}`
-    };
+  const options = {
+  amount: Math.round(amount * 100),  // Correct!
+  currency: "INR",
+  receipt: `order_${Date.now()}`
+};
+
 
     const order = await razorpay.orders.create(options);
     res.json(order);

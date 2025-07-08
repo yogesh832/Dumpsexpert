@@ -32,35 +32,44 @@ const Cart = () => {
           "http://localhost:8000/api/payments/razorpay/create-order",
           orderData
         );
-        const options = {
-          key:
-            import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_7kAotmP1o8JR8V",
-          amount: response.data.amount,
-          currency: response.data.currency,
-          order_id: response.data.id,
-          name: "DumpsExpert",
-          description: "Purchase Exam Dumps",
-          handler: async (response) => {
-            try {
-              await axios.post(
-                "http://localhost:8000/api/payments/razorpay/verify",
-                {
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_signature: response.razorpay_signature,
-                  amount: orderData.amount,
-                }
-              );
-              window.location.href = "/dashboard/student";
-            } catch (error) {
-              console.error("Payment verification failed:", error);
-              alert("Payment verification failed");
-            }
-          },
-          theme: {
-            color: "#3B82F6",
-          },
-        };
+      const options = {
+  key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_7kAotmP1o8JR8V",
+  amount: response.data.amount,
+  currency: response.data.currency,
+  order_id: response.data.id,
+  name: "DumpsExpert",
+  description: "Purchase Exam Dumps",
+  prefill: {
+    name: "Yogesh",
+    email: "upadhayayyogesh832@gmail.com",
+    contact: "9259756919", // must be Indian number format
+  },
+  notes: {
+    app_name: "DumpsExpert",
+  },
+  theme: {
+    color: "#3B82F6",
+  },
+  retry: {
+    enabled: true,
+    max_count: 2,
+  },
+  handler: async function (response) {
+    try {
+      await axios.post("http://localhost:8000/api/payments/razorpay/verify", {
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_signature: response.razorpay_signature,
+        amount: orderData.amount,
+      });
+      window.location.href = "/dashboard/student";
+    } catch (error) {
+      console.error("Payment verification failed:", error);
+      alert("Payment verification failed");
+    }
+  },
+};
+
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else if (gateway === "stripe") {
