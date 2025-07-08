@@ -64,22 +64,26 @@ exports.createStripeSession = async (req, res) => {
   try {
     const { amount, currency, items } = req.body;
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: items.map(item => ({
-        price_data: {
-          currency,
-          product_data: {
-            name: item.name,
-          },
-          unit_amount: item.price * 100,
-        },
-        quantity: item.quantity,
-      })),
-      mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL}/dashboard/student`,
-      cancel_url: `${process.env.FRONTEND_URL}/cart`,
-    });
+  const session = await stripe.checkout.sessions.create({
+  payment_method_types: ['card'],
+  line_items: items.map(item => ({
+    price_data: {
+      currency,
+      product_data: {
+        name: item.name,
+      },
+      unit_amount: item.price * 100,
+    },
+    quantity: item.quantity,
+  })),
+  mode: 'payment',
+  billing_address_collection: 'required', // ✅ Required for Indian regulations
+  customer_email: req.user?.email || 'test@example.com', // fallback for test
+  client_reference_id: req.user?._id?.toString() || undefined,
+  success_url: `${process.env.FRONTEND_URL}/login`,
+  cancel_url: `${process.env.FRONTEND_URL}/cart`,
+});
+
 
     res.json({ sessionUrl: session.url });
   } catch (error) {
