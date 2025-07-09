@@ -9,11 +9,11 @@ const {
 } = require('../controllers/paymentController');
 
 // Razorpay routes
-router.post('/razorpay/create-order', authMiddleware, createRazorpayOrder);
+router.post('/razorpay/create-order', createRazorpayOrder);
 router.post('/razorpay/verify', authMiddleware, verifyRazorpayPayment);
 
 // Stripe routes
-router.post('/stripe/create-session', authMiddleware, createStripeSession);
+router.post('/stripe/create-session', createStripeSession);
 router.post('/stripe/webhook', handleStripeWebhook);
 
 module.exports = router;
