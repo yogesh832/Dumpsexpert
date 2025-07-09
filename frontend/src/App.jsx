@@ -41,7 +41,7 @@ const MenuBuilder = lazy(() => import("./features/admin/pages/MenuBuilder"));
 const SocialLinks = lazy(() => import("./features/admin/pages/SocialLinks"));
 const SEOSettings = lazy(() => import("./features/admin/pages/SEOSettings"));
 const MaintenanceMode = lazy(() =>
-  import("./features/admin/pages/MaintenanceMode")
+  import("./features/admin/pages/MaintenancePage.jsx")
 );
 const Announcement = lazy(() => import("./features/admin/pages/Announcement"));
 const PreloaderSettings = lazy(() =>

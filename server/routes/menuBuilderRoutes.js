@@ -1,13 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { getMenuBuilder, updateMenuBuilder } = require('../controllers/menuBuilderController');
-const { authMiddleware } = require('../middlewares/authMiddleware'); // ✅ Fix here
 
-// GET MenuBuilder
-router.get('/', getMenuBuilder);
+const {
+  getMenuBuilder,
+  updateMenuBuilder,
+  addMenuItem
+} = require("../controllers/menuBuilderController");
 
-// UPDATE MenuBuilder
-router.put('/', authMiddleware, updateMenuBuilder); // ✅ Use the correct function
+router.get("/", getMenuBuilder);            // GET menu
+router.put("/", updateMenuBuilder);         // PUT full update
+router.post("/add", addMenuItem);           // POST single item to main/premade
 
 module.exports = router;
-// @ts-check
