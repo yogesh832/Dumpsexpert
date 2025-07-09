@@ -77,7 +77,7 @@ exports.createStripeSession = async (req, res) => {
         quantity: item.quantity,
       })),
       mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL}/dashboard/student`,
+      success_url: `${process.env.FRONTEND_URL}/student/dashboard`,
       cancel_url: `${process.env.FRONTEND_URL}/cart`,
     });
 

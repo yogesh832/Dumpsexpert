@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import emptycartimg from "../assets/landingassets/emptycart.webp";
 import Button from "../components/ui/Button";
 import useCartStore from "../store/useCartStore";
-import axios from 'axios';
-
-// Add this near your other imports
-axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-axios.defaults.withCredentials = true;
+import { instance } from "../lib/axios";
 
 const Cart = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -26,9 +22,14 @@ const Cart = () => {
           price: item.price
         }))
       };
-
+  
+      console.log(`Initiating ${gateway} payment with baseURL:`, instance.defaults.baseURL);
+      console.log('Order data:', orderData);
+  
       if (gateway === 'razorpay') {
-        const response = await axios.post('/api/payments/razorpay/create-order', orderData);
+        // Use the configured axios instance
+        const response = await instance.post('/api/payments/razorpay/create-order', orderData);
+        console.log('Razorpay response:', response.data);
         const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: response.data.amount,
@@ -38,13 +39,13 @@ const Cart = () => {
           description: "Purchase Exam Dumps",
           handler: async (response) => {
             try {
-              await axios.post('/api/payments/razorpay/verify', {
+              await instance.post('/api/payments/razorpay/verify', {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
                 amount: orderData.amount
               });
-              window.location.href = '/dashboard/student';
+              window.location.href = 'student/dashboard';
             } catch (error) {
               console.error('Payment verification failed:', error);
               alert('Payment verification failed');
@@ -57,14 +58,16 @@ const Cart = () => {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else if (gateway === 'stripe') {
-        const response = await axios.post('/api/payments/stripe/create-session', orderData);
+        // Use the configured axios instance
+        const response = await instance.post('/api/payments/stripe/create-session', orderData);
         window.location.href = response.data.sessionUrl;
       }
     } catch (error) {
       console.error('Payment initiation failed:', error);
-      alert('Payment initiation failed');
+      console.error('Error details:', error.response?.data || error.message);
+      alert('Payment initiation failed: ' + (error.response?.data?.message || error.message));
     }
-    setShowPaymentModal(false);//added stuff
+    setShowPaymentModal(false);
   };
 
   const handleDelete = (id) => {
