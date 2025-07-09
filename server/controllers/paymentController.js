@@ -13,7 +13,7 @@ exports.createRazorpayOrder = async (req, res) => {
   try {
     const { amount, currency } = req.body;
   const options = {
-  amount: Math.round(amount * 100),  // Correct!
+  amount: Math.round(amount * 100), 
   currency: "INR",
   receipt: `order_${Date.now()}`
 };
@@ -39,7 +39,10 @@ exports.verifyRazorpayPayment = async (req, res) => {
 
     if (razorpay_signature === expectedSign) {
       // Update user subscription status
-      await User.findByIdAndUpdate(req.user._id, { subscription: 'yes' });
+      await User.findByIdAndUpdate(req.user._id, {
+      subscription: 'yes',
+      role: 'student'
+    });
 
       // Create payment record
       await Payment.create({
@@ -104,7 +107,10 @@ exports.handleStripeWebhook = async (req, res) => {
       const session = event.data.object;
 
       // Update user subscription status
-      await User.findByIdAndUpdate(session.client_reference_id, { subscription: 'yes' });
+      await User.findByIdAndUpdate(session.client_reference_id, {
+      subscription: 'yes',
+      role: 'student'
+    });
 
       // Create payment record
       await Payment.create({
