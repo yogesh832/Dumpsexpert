@@ -1,6 +1,7 @@
 // controllers/basicInfoController.js
 const BasicInfo = require('../models/basicInfoSchema');
 const { parser, deleteFromCloudinary } = require('../utils/cloudinary');
+const cloudinary = require('cloudinary').v2;
 
 // Helper function
 const handleImageUpdate = async (existing, newImage, field) => {
@@ -30,10 +31,11 @@ exports.getSettings = async (req, res) => {
 exports.updateSettings = async (req, res) => {
   try {
     // Get user ID from auth middleware
-    const userId = req.user?._id;
-    if (!userId) {
-      return res.status(401).json({ message: 'Authentication required' });
-    }
+   const userId = req.body.userId;
+console.log('User ID:', userId); // Debugging line to check userId
+if (!userId) {
+  return res.status(400).json({ message: 'User ID is required' });
+}
 
     const { siteTitle, currencyDirection } = req.body;
     

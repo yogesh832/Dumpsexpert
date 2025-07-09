@@ -38,6 +38,11 @@ const resultRoutes = require("./routes/resultRoutes")
 const examRoutes = require('./routes/examRoutes');
 const questionRoutes = require('./routes/questionRoutes');
 require("./utils/passport");
+
+ const maintenanceRoutes = require("./routes/maintenanceRoutes");
+
+ const announcementRoutes = require("./routes/announcementRoutes");
+ const preloaderRoutes = require("./routes/preloaderRoutes");
 dotenv.config();
 
 const app = express();
@@ -107,6 +112,9 @@ app.use('/api/blog', blogRoutes);
 
 app.use('/api/payments', paymentRoutes);
 
+app.use('/api/maintenance-page', maintenanceRoutes)
+app.use("/api/announcement", announcementRoutes);
+app.use("/api/preloader", preloaderRoutes);
 
 app.get('/api/exams/:examId/questions', async (req, res) => {
   try {
@@ -137,6 +145,8 @@ app.use("/api/exams", examRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/product-categories", productCategoryRoutes);
 app.use("/api/results", resultRoutes);
+
+
 
 // ✅ Custom exam questions route
 app.get("/api/exams/:examId/questions", async (req, res) => {
