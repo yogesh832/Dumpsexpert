@@ -13,7 +13,7 @@ exports.createRazorpayOrder = async (req, res) => {
   try {
     const { amount, currency } = req.body;
   const options = {
-  amount: Math.round(amount * 100),  // Correct!
+  amount: Math.round(amount * 100), 
   currency: "INR",
   receipt: `order_${Date.now()}`
 };
@@ -39,7 +39,10 @@ exports.verifyRazorpayPayment = async (req, res) => {
 
     if (razorpay_signature === expectedSign) {
       // Update user subscription status
-      await User.findByIdAndUpdate(req.user._id, { subscription: 'yes' });
+      await User.findByIdAndUpdate(req.user._id, {
+      subscription: 'yes',
+      role: 'student'
+    });
 
       // Create payment record
       await Payment.create({
@@ -65,26 +68,22 @@ exports.createStripeSession = async (req, res) => {
   try {
     const { amount, currency, items } = req.body;
 
-  const session = await stripe.checkout.sessions.create({
-  payment_method_types: ['card'],
-  line_items: items.map(item => ({
-    price_data: {
-      currency,
-      product_data: {
-        name: item.name,
-      },
-      unit_amount: item.price * 100,
-    },
-    quantity: item.quantity,
-  })),
-  mode: 'payment',
-  billing_address_collection: 'required', // ✅ Required for Indian regulations
-  customer_email: req.user?.email || 'test@example.com', // fallback for test
-  client_reference_id: req.user?._id?.toString() || undefined,
-  success_url: `${process.env.FRONTEND_URL}/login`,
-  cancel_url: `${process.env.FRONTEND_URL}/cart`,
-});
-
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: items.map(item => ({
+        price_data: {
+          currency,
+          product_data: {
+            name: item.name,
+          },
+          unit_amount: item.price * 100,
+        },
+        quantity: item.quantity,
+      })),
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL}/student/dashboard`,
+      cancel_url: `${process.env.FRONTEND_URL}/cart`,
+    });
 
     res.json({ sessionUrl: session.url });
   } catch (error) {
@@ -108,7 +107,10 @@ exports.handleStripeWebhook = async (req, res) => {
       const session = event.data.object;
 
       // Update user subscription status
-      await User.findByIdAndUpdate(session.client_reference_id, { subscription: 'yes' });
+      await User.findByIdAndUpdate(session.client_reference_id, {
+      subscription: 'yes',
+      role: 'student'
+    });
 
       // Create payment record
       await Payment.create({
