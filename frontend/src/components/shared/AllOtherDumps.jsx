@@ -40,7 +40,7 @@ const AllOtherDumps = () => {
             <div className="p-4 bg-white flex justify-center items-center h-24">
               <img src={dump.image} alt={dump.name} className="max-h-full max-w-full object-contain" />
             </div>
-            <div className="bg-red-600 text-white text-center py-2 font-semibold text-sm">
+            <div className="bg-[#012147] text-white text-center py-2 font-semibold text-sm">
               {dump.name}
             </div>
           </div>

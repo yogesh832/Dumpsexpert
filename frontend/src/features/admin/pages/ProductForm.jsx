@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { instance } from '../../../lib/axios';
 import { useNavigate, useParams } from 'react-router';
 
