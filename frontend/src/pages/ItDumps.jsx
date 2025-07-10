@@ -28,6 +28,9 @@ const ITDumps = () => {
         </div>
       ) : (
         <div className="flex flex-col items-center py-8">
+          <h1 className="text-3xl font-bold capitalize mb-6">
+            Please Choose IT Dumps
+          </h1>
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mx-10">
             {dumpsData.map((item) => (
               <Link
