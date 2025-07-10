@@ -1,16 +1,8 @@
 const mongoose = require('mongoose');
 
-const permalinkSchema = new mongoose.Schema({
-  permalinks: {
-    type: Map,
-    of: String,
-    default: {}
-  },
-  lastUpdatedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  }
-}, { timestamps: true });
+const PermalinkSchema = new mongoose.Schema({
+  pageName: { type: String, required: true },
+  slug: { type: String, required: true },
+});
 
-module.exports = mongoose.model('Permalink', permalinkSchema);
+module.exports = mongoose.model('Permalink', PermalinkSchema);
