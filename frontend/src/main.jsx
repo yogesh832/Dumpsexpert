@@ -16,7 +16,7 @@ createRoot(document.getElementById("root")).render(
           options={{
             "client-id":
               "ATxhPLd31jwqQkBasQOAUcxZKJhWBYoopQ4yH1kcsxso8mg-mSO05_n_UGNS9epAVdfelwmGzSyl8UV_", // 🔁 Replace with your actual PayPal Client ID
-            currency: "USD",
+            currency: "INR",
           }}
         >
           <BrowserRouter>
