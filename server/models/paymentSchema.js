@@ -15,11 +15,12 @@ const paymentSchema = new mongoose.Schema({
     required: true,
     default: 'INR'
   },
-  paymentMethod: {
-    type: String,
-    enum: ['stripe', 'razorpay'],
-    required: true
-  },
+paymentMethod: {
+  type: String,
+  enum: ['paypal', 'razorpay'],
+  required: true
+},
+
   paymentId: {
     type: String,
     required: true
