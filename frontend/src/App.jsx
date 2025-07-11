@@ -1,13 +1,13 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router";
-import axios from "axios";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
-import AuthProvider from "./layout/AuthProvider";
-import ScriptManager from "./components/Scripts/ScriptManager";
 
-// Public Layouts and Pages
 const PublicLayout = lazy(() => import("./layout/PublicLayout"));
 const PrivateAdminLayout = lazy(() => import("./layout/PrivateAdminLayout"));
+const PrivateStudentLayout = lazy(() =>
+  import("./layout/PrivateStudentLayout")
+);
+const PrivateGuestLayout = lazy(() => import("./layout/PrivateGuestLayout"));
 const PrivateRoute = lazy(() => import("./routes/PrivateRoutes"));
 const Home = lazy(() => import("./pages/Home"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -19,22 +19,126 @@ const ProductDetails = lazy(() => import("./pages/ProductDetails"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
-const SEOTesterPage = lazy(() => import("./pages/SEOTesterPage"));
-
-// Admin Pages
-const AdminDashboard = lazy(() => import("./features/admin/pages/AdminDashboard"));
-const WebCustomization = lazy(() => import("./features/admin/pages/WebCustomization"));
-const BasicInformation = lazy(() => import("./features/admin/pages/BasicInformation"));
+const StudentDashboard = lazy(() =>
+  import("./features/student/pages/StudentDashboard")
+);
+const GuestDashboard = lazy(() =>
+  import("./features/guest/pages/GuestDashboard")
+);
+const AdminDashboard = lazy(() =>
+  import("./features/admin/pages/AdminDashboard")
+);
+const MonthlySaleReport = lazy(() =>
+  import("./features/admin/pages/MonthlySaleReport")
+);
+const WebCustomization = lazy(() =>
+  import("./features/admin/pages/WebCustomization")
+);
+const BasicInformation = lazy(() =>
+  import("./features/admin/pages/BasicInformation")
+);
 const MenuBuilder = lazy(() => import("./features/admin/pages/MenuBuilder"));
 const SocialLinks = lazy(() => import("./features/admin/pages/SocialLinks"));
 const SEOSettings = lazy(() => import("./features/admin/pages/SEOSettings"));
-const SEOMetaInfo = lazy(() => import("./features/admin/pages/SEOMetaInfo"));
-const SEOSiteMap = lazy(() => import("./features/admin/pages/SEOSiteMap"));
-const MaintenanceMode = lazy(() => import("./features/admin/pages/MaintenancePage"));
+const MaintenanceMode = lazy(() =>
+  import("./features/admin/pages/MaintenancePage.jsx")
+);
 const Announcement = lazy(() => import("./features/admin/pages/Announcement"));
-const PreloaderSettings = lazy(() => import("./features/admin/pages/PreloaderSettings"));
+const PreloaderSettings = lazy(() =>
+  import("./features/admin/pages/PreloaderSettings")
+);
 const FooterInfo = lazy(() => import("./features/admin/pages/FooterInfo"));
 const FooterLink = lazy(() => import("./features/admin/pages/FooterLink"));
+const GeneralSettings = lazy(() =>
+  import("./features/admin/pages/GeneralSettings")
+);
+const EmailConfiguration = lazy(() =>
+  import("./features/admin/pages/EmailConfiguration")
+);
+const EmailConfigFromAdmin = lazy(() =>
+  import("./features/admin/pages/EmailConfigFromAdmin")
+);
+const EmailConfigToAdmin = lazy(() =>
+  import("./features/admin/pages/EmailConfigToAdmin")
+);
+const EmailConfigFollowUp = lazy(() =>
+  import("./features/admin/pages/EmailConfigFollowUp")
+);
+const EmailConfigAdvanced = lazy(() =>
+  import("./features/admin/pages/EmailConfigAdvanced")
+);
+const ScriptsPage = lazy(() => import("./features/admin/pages/ScriptsPage"));
+const CookieAlert = lazy(() => import("./features/admin/pages/CookieAlert"));
+const CustomCSS = lazy(() => import("./features/admin/pages/CustomCSS"));
+const PaymentSettings = lazy(() =>
+  import("./features/admin/pages/PaymentSettings")
+);
+const PaymentCurrencies = lazy(() =>
+  import("./features/admin/pages/PaymentCurrencies")
+);
+const PaymentGateway = lazy(() =>
+  import("./features/admin/pages/PaymentGateway")
+);
+const PaymentShipping = lazy(() =>
+  import("./features/admin/pages/PaymentShipping")
+);
+const ProductManagement = lazy(() =>
+  import("./features/admin/pages/ProductManagement")
+);
+const ProductCategories = lazy(() =>
+  import("./features/admin/pages/ProductCategories.jsx")
+);
+const ProductList = lazy(() => import("./features/admin/pages/ProductList"));
+const ProductReviews = lazy(() =>
+  import("./features/admin/pages/ProductReviews")
+);
+const CouponForm = lazy(() => import("./features/admin/pages/CouponForm.jsx"));
+const Coupons = lazy(() => import("./features/admin/pages/CouponList.jsx"));
+const OrdersManagement = lazy(() =>
+  import("./features/admin/pages/OrdersManagement")
+);
+const OrdersAll = lazy(() => import("./features/admin/pages/OrdersAll"));
+const OrdersPending = lazy(() =>
+  import("./features/admin/pages/OrdersPending")
+);
+const OrdersCompleted = lazy(() =>
+  import("./features/admin/pages/OrdersCompleted")
+);
+const OrdersRejected = lazy(() =>
+  import("./features/admin/pages/OrdersRejected")
+);
+const MonthlyOrderAll = lazy(() =>
+  import("./features/admin/pages/MonthlyOrderAll")
+);
+const CustomersManagement = lazy(() =>
+  import("./features/admin/pages/CustomersManagement")
+);
+const ExamManagement = lazy(() =>
+  import("./features/admin/pages/ExamManagement")
+);
+const MediaManagement = lazy(() =>
+  import("./features/admin/pages/MediaManagement")
+);
+const BlogManagement = lazy(() =>
+  import("./features/admin/pages/BlogManagement")
+);
+const BlogCategory = lazy(() => import("./features/admin/pages/BlogCategory"));
+const BlogArchive = lazy(() => import("./features/admin/pages/BlogArchive"));
+const SubscribersManagement = lazy(() =>
+  import("./features/admin/pages/SubscribersManagement")
+);
+const SubscribersList = lazy(() =>
+  import("./features/admin/pages/SubscribersList")
+);
+const MailToSubscribers = lazy(() =>
+  import("./features/admin/pages/MailToSubscribers")
+);
+const SettingsPage = lazy(() => import("./features/admin/pages/SettingsPage"));
+const DownloadedSamples = lazy(() =>
+  import("./features/admin/pages/DownloadedSamples")
+);
+const SEOMetaInfo = lazy(() => import("./features/admin/pages/SEOMetaInfo"));
+const SEOSiteMap = lazy(() => import("./features/admin/pages/SEOSiteMap"));
 const Permalink = lazy(() => import("./features/admin/pages/Permalink"));
 
 // import AuthProvider from "./layout/AuthProvider";
@@ -62,54 +166,29 @@ import ProductForm from "./features/admin/pages/ProductForm.jsx";
 import SEOTesterPage from "./pages/SEOTesterPage";
 
 const App = () => {
-  const [permalinks, setPermalinks] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/permalinks")
-      .then((res) => {
-        setPermalinks(res.data);
-        console.log("✅ Permalinks loaded:", res.data);
-      })
-      .catch((err) => console.error("❌ Permalink error:", err));
-  }, []);
-
   return (
     <AuthProvider>
       <ScriptManager />
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
-          {/* Public Pages */}
+          {/* Public routes */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
-
-            {/* 🔁 Dynamic Permalink Routes */}
-            {permalinks.map((page) => {
-              const Component = pageComponentMap[page.slug];
-              return (
-                <Route
-                  key={page._id}
-                  path={`/${page.slug}`}
-                  element={
-                    Component ? (
-                      Component
-                    ) : (
-                      <NotFound />
-                    )
-                  }
-                />
-              );
-            })}
-
-            {/* Static Public Routes */}
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/dumps" element={<ITDumps />} />
+            <Route
+              path="/courses/:categoryName"
+              element={<CategoryProducts />}
+            />
             <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/courses/:categoryName" element={<CategoryProducts />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/seo-tester" element={<SEOTesterPage />} />
           </Route>
 
-          {/* Admin Pages */}
+          {/* Admin routes */}
           <Route element={<PrivateRoute />}>
             <Route element={<PrivateAdminLayout />}>
               <Route path="/admin">

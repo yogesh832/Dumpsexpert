@@ -3,73 +3,19 @@ import emptycartimg from "../assets/landingassets/emptycart.webp";
 import Button from "../components/ui/Button";
 import useCartStore from "../store/useCartStore";
 import { instance } from "../lib/axios";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 
 const Cart = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPayPal, setShowPayPal] = useState(false);
   const cartItems = useCartStore((state) => state.cartItems);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const getCartTotal = useCartStore((state) => state.getCartTotal);
 
-  const handlePayment = async (gateway) => {
-    try {
-      const orderData = {
-        amount: grandTotal,
-        currency: "INR",
-        items: cartItems.map((item) => ({
-          name: item.title,
-          quantity: item.quantity,
-          price: item.price,
-        })),
-      };
-  
-      console.log(`Initiating ${gateway} payment with baseURL:`, instance.defaults.baseURL);
-      console.log('Order data:', orderData);
-  
-      if (gateway === 'razorpay') {
-        // Use the configured axios instance
-        const response = await instance.post('/api/payments/razorpay/create-order', orderData);
-        console.log('Razorpay response:', response.data);
-        const options = {
-          key:
-            import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_7kAotmP1o8JR8V",
-          amount: response.data.amount,
-          currency: response.data.currency,
-          order_id: response.data.id,
-          name: "DumpsExpert",
-          description: "Purchase Exam Dumps",
-          handler: async (response) => {
-            try {
-              await instance.post('/api/payments/razorpay/verify', {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                amount: orderData.amount
-              });
-              window.location.href = 'student/dashboard';
-            } catch (error) {
-              console.error('Payment verification failed:', error);
-              alert('Payment verification failed');
-            }
-          },
-          theme: {
-            color: "#3B82F6"
-          }
-        };
-        const rzp = new window.Razorpay(options);
-        rzp.open();
-      } else if (gateway === 'stripe') {
-        // Use the configured axios instance
-        const response = await instance.post('/api/payments/stripe/create-session', orderData);
-        window.location.href = response.data.sessionUrl;
-      }
-    } catch (error) {
-      console.error('Payment initiation failed:', error);
-      console.error('Error details:', error.response?.data || error.message);
-      alert('Payment initiation failed: ' + (error.response?.data?.message || error.message));
-    }
-    setShowPaymentModal(false);
-  };
+  const subtotal = getCartTotal();
+  const discount = 0;
+  const grandTotal = subtotal - discount;
 
   const handleDelete = (id) => {
     removeFromCart(id);
@@ -79,12 +25,51 @@ const Cart = () => {
     updateQuantity(id, type);
   };
 
-  const subtotal = getCartTotal();
-  const discount = 0;
-  const grandTotal = subtotal - discount;
-
   const handleCoupon = () => {
     alert("Coupon applied");
+  };
+
+  const handleRazorpayPayment = async () => {
+    try {
+      const orderData = {
+        amount: grandTotal,
+        currency: "INR",
+      };
+      const response = await instance.post("/api/payments/razorpay/create-order", orderData);
+      const { id, amount, currency } = response.data;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_7kAotmP1o8JR8V",
+        amount: amount,
+        currency: currency,
+        order_id: id,
+        name: "DumpsExpert",
+        description: "Purchase Exam Dumps",
+        handler: async (response) => {
+          try {
+            await instance.post("/api/payments/razorpay/verify", {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              amount: orderData.amount,
+            });
+            window.location.href = "/student/dashboard";
+          } catch (error) {
+            console.error("Verification failed:", error);
+            alert("Payment verification failed.");
+          }
+        },
+        theme: {
+          color: "#3B82F6",
+        },
+      };
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+      setShowPaymentModal(false);
+    } catch (error) {
+      console.error("Payment initiation failed:", error);
+      alert("Payment initiation failed");
+    }
   };
 
   return (
@@ -98,62 +83,35 @@ const Cart = () => {
         <div className="w-full lg:w-[65%]">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center text-center space-y-4">
-              <img
-                src={emptycartimg}
-                alt="empty_cart_img"
-                className="w-64"
-                draggable="false"
-              />
-              <p className="text-gray-600 text-lg">
-                Your cart is empty. Add items to your cart to proceed.
-              </p>
+              <img src={emptycartimg} alt="empty_cart_img" className="w-64" draggable="false" />
+              <p className="text-gray-600 text-lg">Your cart is empty. Add items to your cart to proceed.</p>
             </div>
           ) : (
             <div className="space-y-4 w-full max-h-[565px] overflow-y-auto pr-2">
               {cartItems.map((item) => (
-                <div
-                  key={item._id}
-                  className="flex items-center justify-between bg-white border border-gray-200 p-4 rounded-lg shadow-sm hover:shadow-md transition duration-200"
-                >
+                <div key={item._id} className="flex items-center justify-between bg-white border p-4 rounded-lg shadow-sm">
                   <div className="flex items-center gap-4">
                     <img
-                      src={
-                        item.imageUrls?.[0] || "https://via.placeholder.com/100"
-                      }
+                      src={item.imageUrls?.[0] || "https://via.placeholder.com/100"}
                       alt={item.title}
-                      className="w-16 h-16 object-cover rounded-lg border border-gray-100"
+                      className="w-16 h-16 object-cover rounded-lg border"
                     />
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-800">
-                        {item.title}
-                      </h4>
+                      <h4 className="text-lg font-semibold">{item.title}</h4>
                       <div className="flex items-center gap-2 mt-2">
-                        <button
-                          onClick={() => handleQuantityChange(item._id, "dec")}
-                          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-lg"
-                        >
+                        <button onClick={() => handleQuantityChange(item._id, "dec")} className="px-3 py-1 bg-gray-200 rounded">
                           −
                         </button>
-                        <span className="px-3 py-1 border rounded text-gray-700 bg-white">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => handleQuantityChange(item._id, "inc")}
-                          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-lg"
-                        >
+                        <span className="px-3 py-1 border rounded bg-white">{item.quantity}</span>
+                        <button onClick={() => handleQuantityChange(item._id, "inc")} className="px-3 py-1 bg-gray-200 rounded">
                           +
                         </button>
                       </div>
                     </div>
                   </div>
                   <div className="text-right space-y-2">
-                    <p className="text-gray-800 font-semibold text-lg">
-                      ₹{item.price * item.quantity}
-                    </p>
-                    <button
-                      onClick={() => handleDelete(item._id)}
-                      className="text-red-500 text-sm hover:underline"
-                    >
+                    <p className="text-lg font-semibold">₹{item.price * item.quantity}</p>
+                    <button onClick={() => handleDelete(item._id)} className="text-red-500 text-sm hover:underline">
                       Delete
                     </button>
                   </div>
@@ -165,21 +123,12 @@ const Cart = () => {
 
         {/* Order Summary */}
         <div className="w-full lg:w-[35%] h-96 bg-gray-50 p-6 rounded-xl shadow-md border">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Order Summary
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Order Summary</h2>
 
           <div className="text-gray-700 space-y-2 text-sm">
-            <p>
-              Total (MRP): <span className="float-right">₹{subtotal}</span>
-            </p>
-            <p>
-              Subtotal (Price): <span className="float-right">₹{subtotal}</span>
-            </p>
-            <p>
-              Discount:{" "}
-              <span className="float-right text-green-600">₹{discount}</span>
-            </p>
+            <p>Total (MRP): <span className="float-right">₹{subtotal}</span></p>
+            <p>Subtotal: <span className="float-right">₹{subtotal}</span></p>
+            <p>Discount: <span className="float-right text-green-600">₹{discount}</span></p>
           </div>
 
           <hr className="my-4" />
@@ -188,7 +137,7 @@ const Cart = () => {
             <input
               type="text"
               placeholder="Enter coupon code"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
             />
             <Button variant="blue" onClick={handleCoupon}>
               Apply
@@ -198,17 +147,12 @@ const Cart = () => {
           <hr className="my-4" />
 
           <p className="font-medium text-lg">
-            Grand Total:{" "}
-            <span className="float-right text-green-600">₹{grandTotal}</span>
+            Grand Total: <span className="float-right text-green-600">₹{grandTotal}</span>
           </p>
 
           {cartItems.length > 0 && (
             <div className="mt-6">
-              <Button
-                variant="blue"
-                className="w-full"
-                onClick={() => setShowPaymentModal(true)}
-              >
+              <Button variant="blue" className="w-full" onClick={() => setShowPaymentModal(true)}>
                 Continue to Payment
               </Button>
             </div>
@@ -217,37 +161,94 @@ const Cart = () => {
       </div>
 
       {/* Payment Gateway Modal */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-semibold mb-4">
-              Select Payment Method
-            </h3>
-            <div className="space-y-4">
-              <button
-                onClick={() => handlePayment("razorpay")}
-                className="w-full p-4 border rounded-lg hover:bg-gray-50 flex items-center justify-between"
-              >
-                <span>Pay with Razorpay</span>
-                <span>→</span>
-              </button>
-              <button
-                onClick={() => handlePayment("stripe")}
-                className="w-full p-4 border rounded-lg hover:bg-gray-50 flex items-center justify-between"
-              >
-                <span>Pay with Stripe</span>
-                <span>→</span>
-              </button>
-            </div>
-            <button
-              onClick={() => setShowPaymentModal(false)}
-              className="mt-4 text-gray-600 hover:text-gray-800"
-            >
-              Cancel
-            </button>
-          </div>
+    {showPaymentModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4 shadow-xl">
+      <h3 className="text-xl font-semibold text-center">Select Payment Method</h3>
+
+      {/* Razorpay Button */}
+      <button
+        onClick={handleRazorpayPayment}
+        className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition"
+      >
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg"
+          alt="Razorpay"
+          className="w-20 h-10"
+        />
+        Pay with Razorpay
+      </button>
+
+      {/* PayPal Button */}
+      {!showPayPal && (
+        <button
+          onClick={() => setShowPayPal(true)}
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold rounded-lg shadow transition"
+        >
+          <img
+            src="https://www.paypalobjects.com/webstatic/icon/pp258.png"
+            alt="PayPal"
+            className="w-6 h-6"
+          />
+          Pay with PayPal
+        </button>
+      )}
+
+      {/* PayPal Component */}
+      {showPayPal && (
+        <div className="mt-4">
+          <PayPalButtons
+            style={{ layout: "vertical" }}
+            createOrder={(data, actions) => {
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      value: grandTotal.toString(),
+                    },
+                  },
+                ],
+              });
+            }}
+            onApprove={async (data, actions) => {
+              const details = await actions.order.capture();
+              await instance.post(
+                "/api/payments/paypal/process",
+                {
+                  orderID: data.orderID,
+                  amount: grandTotal,
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                }
+              );
+              alert(`Payment completed by ${details.payer.name.given_name}`);
+              window.location.href = "/student/dashboard";
+            }}
+            onError={(err) => {
+              console.error("PayPal Error:", err);
+              alert("Payment failed");
+            }}
+          />
         </div>
       )}
+
+      {/* Cancel */}
+      <button
+        onClick={() => {
+          setShowPaymentModal(false);
+          setShowPayPal(false);
+        }}
+        className="block mx-auto mt-2 text-sm text-gray-500 hover:underline"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

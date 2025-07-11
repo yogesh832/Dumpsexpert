@@ -1,6 +1,5 @@
 const Payment = require('../models/paymentSchema');
 const User = require('../models/userSchema');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
@@ -9,15 +8,15 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
+// RAZORPAY CREATE ORDER
 exports.createRazorpayOrder = async (req, res) => {
   try {
     const { amount, currency } = req.body;
-  const options = {
-  amount: Math.round(amount * 100), 
-  currency: "INR",
-  receipt: `order_${Date.now()}`
-};
-
+    const options = {
+      amount: Math.round(amount * 100),
+      currency: currency || "INR",
+      receipt: `order_${Date.now()}`
+    };
 
     const order = await razorpay.orders.create(options);
     res.json(order);
@@ -27,10 +26,11 @@ exports.createRazorpayOrder = async (req, res) => {
   }
 };
 
+// RAZORPAY VERIFY PAYMENT
 exports.verifyRazorpayPayment = async (req, res) => {
   try {
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-    
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount } = req.body;
+
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -38,16 +38,14 @@ exports.verifyRazorpayPayment = async (req, res) => {
       .digest("hex");
 
     if (razorpay_signature === expectedSign) {
-      // Update user subscription status
       await User.findByIdAndUpdate(req.user._id, {
-      subscription: 'yes',
-      role: 'student'
-    });
+        subscription: 'yes',
+        role: 'student'
+      });
 
-      // Create payment record
       await Payment.create({
         user: req.user._id,
-        amount: req.body.amount,
+        amount,
         currency: 'INR',
         paymentMethod: 'razorpay',
         paymentId: razorpay_payment_id,
@@ -64,68 +62,28 @@ exports.verifyRazorpayPayment = async (req, res) => {
   }
 };
 
-exports.createStripeSession = async (req, res) => {
+// PAYPAL PAYMENT SUCCESS (Frontend should call this after PayPal approval)
+exports.processPayPalPayment = async (req, res) => {
   try {
-    const { amount, currency, items } = req.body;
+    const { orderID, amount } = req.body;
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: items.map(item => ({
-        price_data: {
-          currency,
-          product_data: {
-            name: item.name,
-          },
-          unit_amount: item.price * 100,
-        },
-        quantity: item.quantity,
-      })),
-      mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL}/student/dashboard`,
-      cancel_url: `${process.env.FRONTEND_URL}/cart`,
-    });
-
-    res.json({ sessionUrl: session.url });
-  } catch (error) {
-    console.error('Stripe session creation failed:', error);
-    res.status(500).json({ error: 'Payment initiation failed' });
-  }
-};
-
-exports.handleStripeWebhook = async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
-
-      // Update user subscription status
-      await User.findByIdAndUpdate(session.client_reference_id, {
+    await User.findByIdAndUpdate(req.user._id, {
       subscription: 'yes',
       role: 'student'
     });
 
-      // Create payment record
-      await Payment.create({
-        user: session.client_reference_id,
-        amount: session.amount_total / 100,
-        currency: session.currency.toUpperCase(),
-        paymentMethod: 'stripe',
-        paymentId: session.payment_intent,
-        status: 'completed'
-      });
-    }
+    await Payment.create({
+      user: req.user._id,
+      amount,
+      currency: 'INR',
+      paymentMethod: 'paypal',
+      paymentId: orderID,
+      status: 'completed'
+    });
 
-    res.json({ received: true });
+    res.json({ success: true });
   } catch (error) {
-    console.error('Stripe webhook error:', error);
-    res.status(400).json({ error: 'Webhook signature verification failed' });
+    console.error('PayPal payment processing failed:', error);
+    res.status(500).json({ error: 'Payment processing failed' });
   }
 };
