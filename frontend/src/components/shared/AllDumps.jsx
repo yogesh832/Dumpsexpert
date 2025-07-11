@@ -11,7 +11,7 @@ const AllDumps = () => {
           <Button
             key={index}
             variant="none"
-            className="w-full text-xs sm:text-sm md:text-base bg-[#DC143C] hover: text-white text-center"
+            className="w-full text-xs sm:text-sm md:text-base bg-[#012147] hover: text-white text-center"
           >
             {dump}
           </Button>

@@ -141,13 +141,15 @@ const SEOMetaInfo = lazy(() => import("./features/admin/pages/SEOMetaInfo"));
 const SEOSiteMap = lazy(() => import("./features/admin/pages/SEOSiteMap"));
 const Permalink = lazy(() => import("./features/admin/pages/Permalink"));
 
-import AuthProvider from "./layout/AuthProvider";
+// import AuthProvider from "./layout/AuthProvider";
 import StudentOrders from "./features/student/pages/StudentOrders";
 import PdfCoursesPage from "./features/student/pages/PdfCoursesPage";
 import ExamCoursesPage from "./features/student/pages/ExamCoursesPage";
 import ResultHistoryPage from "./features/student/pages/ResultHistoryPage";
 import EditProfile from "./features/student/pages/EditProfile";
+import EditProfileGuest from "./features/guest/components/EditProfile.jsx";
 import ChangePassword from "./features/student/pages/ChangePassword";
+import ChangePasswordGuest from "./features/guest/components/ChangePassword.jsx";
 import Logout from "./features/student/pages/Logout";
 import BlogPosts from "./features/admin/pages/BlogPosts";
 import BlogList from "./features/admin/pages/BlogList";
@@ -337,10 +339,15 @@ const App = () => {
                 path="/student/courses-exam/list"
                 element={<ExamCoursesPage />}
               />
-              <Route path="/student/courses-exam/instructions/:examId" element={<InstructionsPage />} />
+              <Route
+                path="/student/courses-exam/instructions/:examId"
+                element={<InstructionsPage />}
+              />
 
-              
-<Route path="/student/courses-exam/test/:examId" element={<TestPage />} />
+              <Route
+                path="/student/courses-exam/test/:examId"
+                element={<TestPage />}
+              />
 
               {/* <Route path="/student/courses-exam/test" element={<TestPage />} /> */}
               <Route
@@ -356,7 +363,7 @@ const App = () => {
               <Route path="/student/edit-profile" element={<EditProfile />} />
               <Route
                 path="/student/change-password"
-              element={<ChangePassword />}
+                element={<ChangePassword />}
               />
               <Route path="/exams/:id" element={<InstructionsPage />} />
 
@@ -368,6 +375,15 @@ const App = () => {
           <Route element={<PrivateRoute />}>
             <Route element={<PrivateGuestLayout />}>
               <Route path="/guest/dashboard" element={<GuestDashboard />} />
+              <Route
+                path="/guest/edit-profile"
+                element={<EditProfileGuest />}
+              />
+              <Route
+                path="/guest/change-password"
+                element={<ChangePasswordGuest />}
+              />
+              <Route path="/logout" element={<Logout />} />
             </Route>
           </Route>
 

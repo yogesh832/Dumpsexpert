@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { Link } from "react-router";
+import { useParams, Link } from "react-router";
 import { instance } from "../lib/axios";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
@@ -26,7 +25,7 @@ const CategoryProducts = () => {
   }, [categoryName]);
 
   return (
-    <div className="min-h-screen mt-28 px-10">
+    <div className="min-h-screen mt-28 px-4 md:px-10">
       {loading ? (
         <div className="flex justify-center items-center h-60">
           <LoadingSpinner />
@@ -37,30 +36,43 @@ const CategoryProducts = () => {
             {categoryName} Products
           </h1>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <Link
-                to={`/product/${product._id}`}
-                key={product._id}
-                className="border p-4 rounded shadow hover:shadow-md transition-all"
-              >
-                <img
-                  src={product.imageUrl}
-                  alt={product.title}
-                  loading="lazy"
-                  className="w-full h-32 object-cover rounded"
-                />
-                <h2 className="mt-2 font-semibold">{product.title}</h2>
-                <p className="text-gray-600">₹ {product.price}</p>
-              </Link>
-            ))}
+          {products.length > 0 ? (
+            <div className="overflow-x-auto bg-white shadow rounded-lg">
+              <table className="min-w-full text-sm text-left">
+                <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+                  <tr>
+                    <th className="px-4 py-3">SAP Exam. Code</th>
+                    <th className="px-4 py-3">Name</th>
+                    <th className="px-4 py-3">Price</th>
+                    <th className="px-4 py-3">SAP Details</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-800">
+                  {products.map((product) => (
+                    <tr key={product._id} className="border-t hover:bg-gray-50">
+                      <td className="px-4 py-3">{product.sapExamCode}</td>
+                      <td className="px-4 py-3">{product.title}</td>
+                      <td className="px-4 py-3">₹ {product.price}</td>
+                      <td className="px-4 py-3">
+                        <Link
+                          to={`/product/${product._id}`}
+                          className="text-blue-600 hover:underline"
+                        >
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 mt-10">
+              No products available for this category.
+            </p>
+          )}
 
-            {products.length === 0 && (
-              <p className="col-span-full text-center text-gray-500">
-                No products available for this category.
-              </p>
-            )}
-          </div>
+
         </>
       )}
     </div>

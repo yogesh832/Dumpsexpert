@@ -5,6 +5,7 @@ const { signup, signin, logout, forgotPassword, resetPassword } = require("../co
 const { sendOTPToUser, verifyOTP } = require("../controllers/otpController");
 const {authMiddleware} = require("../middlewares/authMiddleware");
 const { validateSignup, validateSignin, validateResetPassword} = require("../middlewares/validationMiddleware");
+const User = require("../models/userSchema");
 
 router.post("/signup", validateSignup, signup);
 router.post("/signin", validateSignin, signin);
@@ -21,12 +22,15 @@ router.get("/dashboard", authMiddleware, (req, res) => {
   res.json({ message: `Welcome ${req.user.email}`, role: req.user.role });
 });
 
-
-
 //route for frontend state restoration
-router.get("/me", authMiddleware, (req, res) => {
-  res.json({ user: req.user });
-  console.log("Token from cookie", req.cookies.token); // inside authMiddleware
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("email role image googleImage");
+    let image = user.googleImage || user.image || null;
+    res.json({ ...req.user, image });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch user info" });
+  }
 });
 
 module.exports = router;
