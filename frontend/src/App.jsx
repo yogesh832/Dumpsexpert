@@ -141,7 +141,7 @@ const SEOMetaInfo = lazy(() => import("./features/admin/pages/SEOMetaInfo"));
 const SEOSiteMap = lazy(() => import("./features/admin/pages/SEOSiteMap"));
 const Permalink = lazy(() => import("./features/admin/pages/Permalink"));
 
-// import AuthProvider from "./layout/AuthProvider";
+import AuthProvider from "./layout/AuthProvider";
 import StudentOrders from "./features/student/pages/StudentOrders";
 import PdfCoursesPage from "./features/student/pages/PdfCoursesPage";
 import ExamCoursesPage from "./features/student/pages/ExamCoursesPage";
