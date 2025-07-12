@@ -8,6 +8,7 @@ import useCartStore from "../store/useCartStore";
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [exams, setExams] = useState([]);
@@ -19,6 +20,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     const fetchProductAndExams = async () => {
+      setLoading(true);
       try {
         const productRes = await axios.get(
           `https://dumpsexpert-2.onrender.com/api/products/${id}`
@@ -26,23 +28,24 @@ const ProductDetails = () => {
         const fetchedProduct = productRes.data.data;
         setProduct(fetchedProduct);
 
-        const examsRes = await axios.get(
-          `https://dumpsexpert-2.onrender.com/api/exams`
-        );
+        const [examsRes, allProductsRes] = await Promise.all([
+          axios.get("https://dumpsexpert-2.onrender.com/api/exams"),
+          axios.get("https://dumpsexpert-2.onrender.com/api/products"),
+        ]);
+
         const linkedExams = examsRes.data.filter(
           (exam) => exam.productId === fetchedProduct._id
         );
         setExams(linkedExams);
 
-        const allProductsRes = await axios.get(
-          "https://dumpsexpert-2.onrender.com/api/products"
+        const related = allProductsRes.data.data.filter(
+          (p) => p._id !== fetchedProduct._id
         );
-        setRelatedProducts(allProductsRes.data.data);
-
-        setLoading(false);
+        setRelatedProducts(related);
       } catch (err) {
         console.error("Error fetching product or exams:", err);
-        toast.error("Failed to load data.");
+        toast.error("Failed to load product details.");
+      } finally {
         setLoading(false);
       }
     };
@@ -61,9 +64,47 @@ const ProductDetails = () => {
       toast.error("Please fill out all fields.");
       return;
     }
+
+    // Ideally, post review to API here
+
     toast.success("Review submitted!");
     setReviewForm({ name: "", comment: "" });
   };
+
+  const handleAddToCart = () => {
+    setIsAdding(true);
+    addToCart(product);
+    toast.success("Added to cart!");
+    setTimeout(() => setIsAdding(false), 1000);
+  };
+
+ const handleSampleDownload = async () => {
+  const response = await fetch(product.samplePdfUrl);
+  const blob = await response.blob();
+  const blobUrl = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = blobUrl;
+  a.download = `${product.title}-Sample.pdf`;
+  a.click();
+  window.URL.revokeObjectURL(blobUrl);
+};
+const handleMainDownload = async () => {
+  try {
+    const response = await fetch(product.mainPdfUrl);
+    if (!response.ok) throw new Error("Failed to fetch file.");
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = `${product.title}-Main.pdf`;
+    a.click();
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (err) {
+    console.error("Error downloading main PDF:", err);
+    toast.error("Unable to download Main PDF.");
+  }
+};
+
 
   if (loading || !product) {
     return (
@@ -76,6 +117,7 @@ const ProductDetails = () => {
   return (
     <div className="min-h-screen pt-28 px-4 md:px-20 pb-20 bg-white">
       <div className="flex flex-col md:flex-row gap-10 items-start">
+        {/* Product Image */}
         <div className="w-full md:w-[40%]">
           <img
             src={product.imageUrl || "/placeholder.png"}
@@ -84,6 +126,7 @@ const ProductDetails = () => {
           />
         </div>
 
+        {/* Product Info */}
         <div className="w-full md:w-[60%] space-y-2 text-sm sm:text-base">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             {product.title}
@@ -120,17 +163,21 @@ const ProductDetails = () => {
           </div>
 
           <div className="mt-4 flex flex-wrap gap-4">
-            <button className="px-5 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm rounded shadow-sm">
+            <button
+              onClick={handleSampleDownload}
+              className="px-5 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm rounded shadow-sm"
+            >
               Download Sample
+            </button>
+            <button
+              onClick={handleMainDownload}
+              className="px-5 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm rounded shadow-sm"
+            >
+              Download main
             </button>
 
             <button
-              onClick={() => {
-                setIsAdding(true);
-                addToCart(product);
-                toast.success("Added to cart!");
-                setTimeout(() => setIsAdding(false), 1000);
-              }}
+              onClick={handleAddToCart}
               disabled={isAdding}
               className={`px-6 py-2 text-sm rounded shadow-md text-white font-semibold ${
                 isAdding ? "bg-green-600" : "bg-orange-500 hover:bg-orange-600"
@@ -140,6 +187,7 @@ const ProductDetails = () => {
             </button>
           </div>
 
+          {/* Description */}
           <div className="mt-6">
             <h2 className="font-semibold text-base">Description:</h2>
             <p className="text-gray-700 mt-1">
@@ -149,7 +197,7 @@ const ProductDetails = () => {
             </p>
           </div>
 
-          {/* 🎯 Exam Linked to Product */}
+          {/* Exams included */}
           {exams.length > 0 && (
             <div className="mt-8">
               <h2 className="text-lg font-bold mb-3">
@@ -182,7 +230,7 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* 🔁 Related Products */}
+      {/* Related Products */}
       {relatedProducts.length > 0 && (
         <div className="mt-20">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">
@@ -210,7 +258,7 @@ const ProductDetails = () => {
         </div>
       )}
 
-      {/* 🧾 Customer Reviews */}
+      {/* Customer Reviews */}
       <div className="mt-16">
         <h2 className="text-2xl font-semibold mb-6 text-gray-900">
           Customer Reviews
@@ -242,7 +290,7 @@ const ProductDetails = () => {
         )}
       </div>
 
-      {/* ✍️ Write a Review */}
+      {/* Review Form */}
       <div className="mt-16 border p-6 rounded-lg shadow-sm bg-gray-50">
         <h3 className="text-xl font-semibold mb-4 text-gray-900">
           Write a Review

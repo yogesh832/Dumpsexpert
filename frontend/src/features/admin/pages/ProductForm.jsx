@@ -18,6 +18,12 @@ const ProductForm = ({ mode }) => {
     mainPdf: null,
   });
 
+  const [existingFiles, setExistingFiles] = useState({
+    imageUrl: "",
+    samplePdfUrl: "",
+    mainPdfUrl: "",
+  });
+
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -47,6 +53,11 @@ const ProductForm = ({ mode }) => {
             image: null,
             samplePdf: null,
             mainPdf: null,
+          });
+          setExistingFiles({
+            imageUrl: p.imageUrl,
+            samplePdfUrl: p.samplePdfUrl,
+            mainPdfUrl: p.mainPdfUrl,
           });
         })
         .catch(() => setError("Failed to load product"));
@@ -112,6 +123,7 @@ const ProductForm = ({ mode }) => {
       navigate("/admin/products/list");
     } catch (err) {
       setError("Failed to delete product");
+      console.log(err);
     }
   };
 
@@ -128,6 +140,7 @@ const ProductForm = ({ mode }) => {
         className="space-y-4"
         encType="multipart/form-data"
       >
+        {/* BASIC FIELDS */}
         <input
           type="text"
           name="sapExamCode"
@@ -197,38 +210,69 @@ const ProductForm = ({ mode }) => {
           <option value="review">Review</option>
         </select>
 
-        {/* Image Upload */}
-        <label className="block text-sm font-medium">Product Image</label>
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleChange}
-          className="w-full"
-          {...(mode === "add" && { required: true })}
-        />
+        {/* FILE UPLOADS */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Product Image</label>
+          {mode === "edit" && existingFiles.imageUrl && (
+            <img
+              src={existingFiles.imageUrl}
+              alt="Product Preview"
+              className="w-40 h-auto rounded border mb-2"
+            />
+          )}
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleChange}
+            className="w-full"
+            {...(mode === "add" && { required: true })}
+          />
+        </div>
 
-        {/* Sample PDF Upload */}
-        <label className="block text-sm font-medium mt-2">Sample PDF</label>
-        <input
-          type="file"
-          name="samplePdf"
-          accept="application/pdf"
-          onChange={handleChange}
-          className="w-full"
-        />
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Sample PDF</label>
+          {mode === "edit" && existingFiles.samplePdfUrl && (
+            <a
+              href={existingFiles.samplePdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              View existing Sample PDF
+            </a>
+          )}
+          <input
+            type="file"
+            name="samplePdf"
+            accept="application/pdf"
+            onChange={handleChange}
+            className="w-full"
+          />
+        </div>
 
-        {/* Main PDF Upload */}
-        <label className="block text-sm font-medium mt-2">Main PDF</label>
-        <input
-          type="file"
-          name="mainPdf"
-          accept="application/pdf"
-          onChange={handleChange}
-          className="w-full"
-        />
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Main PDF</label>
+          {mode === "edit" && existingFiles.mainPdfUrl && (
+            <a
+              href={existingFiles.mainPdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              View existing Main PDF
+            </a>
+          )}
+          <input
+            type="file"
+            name="mainPdf"
+            accept="application/pdf"
+            onChange={handleChange}
+            className="w-full"
+          />
+        </div>
 
-        {/* Submit/Delete */}
+        {/* SUBMIT & DELETE */}
         <div className="flex gap-4 mt-6">
           <button
             type="submit"
