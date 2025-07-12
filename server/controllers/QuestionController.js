@@ -1,16 +1,13 @@
+const mongoose = require("mongoose");
 const Question = require("../models/QuestionSchema");
 
-// Generate unique question code
+// 🔢 Generate unique question code
 const generateQuestionCode = async () => {
   const count = await Question.countDocuments();
-  return `Q-${String(count + 1).padStart(3, '0')}`;
+  return `Q-${String(count + 1).padStart(3, "0")}`;
 };
 
-
-
-// Generate unique question code per exam
-
-
+// ➕ Create a question
 exports.createQuestion = async (req, res) => {
   try {
     const { examId } = req.body;
@@ -19,26 +16,28 @@ exports.createQuestion = async (req, res) => {
       return res.status(400).json({ message: "examId is required" });
     }
 
-    const questionCode = await generateQuestionCode(examId);
-    const question = new Question({ ...req.body, questionCode }); // ✅ create instance
-    const saved = await question.save(); // ✅ save instance
+    const questionCode = await generateQuestionCode();
 
+    const question = new Question({
+      ...req.body,
+      examId: new mongoose.Types.ObjectId(examId), // store as ObjectId
+      questionCode,
+    });
+
+    const saved = await question.save();
     res.status(201).json(saved);
   } catch (err) {
+    console.error("❌ Error creating question:", err.message);
     res.status(400).json({ message: err.message });
   }
 };
 
-
-
-// 🆙 Update a question
+// 🔄 Update a question
 exports.updateQuestion = async (req, res) => {
   try {
-    const updated = await Question.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    const updated = await Question.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.status(200).json(updated);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -65,7 +64,7 @@ exports.getAllQuestions = async (req, res) => {
   }
 };
 
-// 🔍 Get single question
+// 🔍 Get a question by ID
 exports.getQuestionById = async (req, res) => {
   try {
     const question = await Question.findById(req.params.id);
@@ -81,7 +80,8 @@ exports.getQuestionById = async (req, res) => {
 // 📚 Get questions by exam ID
 exports.getQuestionsByExam = async (req, res) => {
   try {
-    const questions = await Question.find({ examId: req.params.examId });
+    const examObjectId = new mongoose.Types.ObjectId(req.params.examId);
+    const questions = await Question.find({ examId: examObjectId });
     res.status(200).json(questions);
   } catch (err) {
     res.status(500).json({ message: err.message });

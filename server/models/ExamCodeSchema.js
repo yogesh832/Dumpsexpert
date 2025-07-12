@@ -4,7 +4,7 @@ const examSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     eachQuestionMark: { type: Number },
-    duration: { type: Number, required: true }, // ✅ required
+    duration: { type: Number, required: true },
     sampleDuration: { type: Number },
     passingScore: { type: Number },
     code: { type: String, unique: true },
@@ -19,6 +19,13 @@ const examSchema = new mongoose.Schema(
     mainInstructions: { type: String },
     sampleInstructions: { type: String },
     lastUpdatedBy: { type: String, required: true },
+
+    // ✅ ADD THIS FIELD:
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
   },
   { timestamps: true }
 );

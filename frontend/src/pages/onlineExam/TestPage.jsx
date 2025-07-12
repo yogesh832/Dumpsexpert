@@ -22,12 +22,14 @@ const TestPage = () => {
 
   const navigate = useNavigate();
   const { examId } = useParams();
+console.log("🧪 examId:", examId);
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const res = await axios.get(`http://localhost:8000/api/questions/byExam/${examId}`);
         setQuestions(res.data);
+console.log("📥 Questions Fetched:", res.data);
 
         const initialStatus = {};
         res.data.forEach(q => initialStatus[q._id] = 'Not Visited');

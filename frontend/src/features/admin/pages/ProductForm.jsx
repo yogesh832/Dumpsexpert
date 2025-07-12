@@ -1,36 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { instance } from '../../../lib/axios';
-import { useNavigate, useParams } from 'react-router';
+import React, { useEffect, useState } from "react";
+import { instance } from "../../../lib/axios";
+import { useNavigate, useParams } from "react-router-dom";
 
 const ProductForm = ({ mode }) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    sapExamCode: '',
-    title: '',
-    price: '',
-    category: '',
-    status: '',
-    action: '',
+    sapExamCode: "",
+    title: "",
+    price: "",
+    category: "",
+    status: "",
+    action: "",
     image: null,
+    samplePdf: null,
+    mainPdf: null,
   });
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
+  // Fetch categories
   useEffect(() => {
     instance
-      .get('/api/product-categories')
+      .get("http://localhost:8000/api/product-categories")
       .then((res) => setCategories(res.data))
       .catch(() => setCategories([]));
   }, []);
 
+  // Fetch product (for edit)
   useEffect(() => {
-    if (mode === 'edit' && id) {
+    if (mode === "edit" && id) {
       instance
-        .get(`/api/products/${id}`)
+        .get(`http://localhost:8000/api/products/${id}`)
         .then((res) => {
           const p = res.data.data;
           setForm({
@@ -41,16 +45,18 @@ const ProductForm = ({ mode }) => {
             status: p.status,
             action: p.action,
             image: null,
+            samplePdf: null,
+            mainPdf: null,
           });
         })
-        .catch(() => setError('Failed to load product'));
+        .catch(() => setError("Failed to load product"));
     }
   }, [mode, id]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === 'image') {
-      setForm((prev) => ({ ...prev, image: files[0] }));
+    if (["image", "samplePdf", "mainPdf"].includes(name)) {
+      setForm((prev) => ({ ...prev, [name]: files[0] }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -58,7 +64,7 @@ const ProductForm = ({ mode }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     const formData = new FormData();
@@ -67,22 +73,22 @@ const ProductForm = ({ mode }) => {
     });
 
     try {
-      if (mode === 'add') {
-        await instance.post('/api/products', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+      if (mode === "add") {
+        await instance.post("http://localhost:8000/api/products", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        await instance.put(`/api/products/${id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+        await instance.put(
+          `http://localhost:8000/api/products/${id}`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
       }
-      navigate('/admin/products/list');
+      navigate("/admin/products/list");
     } catch (err) {
-      setError(err.response?.data?.message || 'Submit failed');
+      setError(err.response?.data?.message || "Submit failed");
     } finally {
       setLoading(false);
     }
@@ -90,27 +96,32 @@ const ProductForm = ({ mode }) => {
 
   const handleDelete = async () => {
     if (!id) return;
-    const confirmDelete = window.confirm('Are you sure you want to delete this product?');
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
     if (!confirmDelete) return;
 
     try {
-      await instance.delete(`/api/products/${id}`);
-      navigate('/admin/products/list');
+      await instance.delete(`http://localhost:8000/api/products/${id}`);
+      navigate("/admin/products/list");
     } catch (err) {
-      setError('Failed to delete product');
-      console.log(err);
+      setError("Failed to delete product");
     }
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow">
       <h2 className="text-xl font-bold mb-4">
-        {mode === 'add' ? 'Add New Product' : 'Edit Product'}
+        {mode === "add" ? "Add New Product" : "Edit Product"}
       </h2>
 
       {error && <p className="text-red-600 mb-3">{error}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4"
+        encType="multipart/form-data"
+      >
         <input
           type="text"
           name="sapExamCode"
@@ -180,25 +191,48 @@ const ProductForm = ({ mode }) => {
           <option value="review">Review</option>
         </select>
 
+        {/* Image Upload */}
+        <label className="block text-sm font-medium">Product Image</label>
         <input
           type="file"
           name="image"
           accept="image/*"
           onChange={handleChange}
           className="w-full"
-          {...(mode === 'add' && { required: true })}
+          {...(mode === "add" && { required: true })}
         />
 
-        <div className="flex gap-4">
+        {/* Sample PDF Upload */}
+        <label className="block text-sm font-medium mt-2">Sample PDF</label>
+        <input
+          type="file"
+          name="samplePdf"
+          accept="application/pdf"
+          onChange={handleChange}
+          className="w-full"
+        />
+
+        {/* Main PDF Upload */}
+        <label className="block text-sm font-medium mt-2">Main PDF</label>
+        <input
+          type="file"
+          name="mainPdf"
+          accept="application/pdf"
+          onChange={handleChange}
+          className="w-full"
+        />
+
+        {/* Submit/Delete */}
+        <div className="flex gap-4 mt-6">
           <button
             type="submit"
             disabled={loading}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
-            {loading ? 'Saving...' : 'Save Product'}
+            {loading ? "Saving..." : "Save Product"}
           </button>
 
-          {mode === 'edit' && (
+          {mode === "edit" && (
             <button
               type="button"
               onClick={handleDelete}

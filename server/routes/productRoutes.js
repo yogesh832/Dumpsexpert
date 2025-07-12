@@ -5,7 +5,7 @@ const multer = require('multer');
 const {
   getAllProducts,
   getProductById,
-  getProductsByCategory,
+  // getProductsByCategory,
   createProduct,
   updateProduct,
   deleteProduct
@@ -17,12 +17,21 @@ const { authMiddleware } = require('../middlewares/authMiddleware');
 const upload = multer({ dest: 'uploads/' });
 
 // 🟢 PUBLIC ROUTES (place specific routes first)
-router.get('/category/:category', getProductsByCategory);
+// router.get('/category/:category', getProductsByCategory);
 router.get('/:id', getProductById);
 router.get('/', getAllProducts);
 
 router.post('/', upload.single('image'), createProduct);
 router.put('/:id', upload.single('image'), updateProduct);
 router.delete('/:id', deleteProduct);
+router.post(
+  "/",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "samplePdf", maxCount: 1 },
+    { name: "mainPdf", maxCount: 1 },
+  ]),
+  createProduct
+);
 
 module.exports = router;

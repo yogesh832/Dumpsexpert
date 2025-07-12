@@ -1,20 +1,15 @@
 const Product = require('../models/productListSchema');
 const { cloudinary } = require('../utils/cloudinary');
 
-// Get all products with pagination and filtering
+// GET: All products
 exports.getAllProducts = async (req, res) => {
   try {
     const { page = 1, limit = 10, category, status } = req.query;
     const query = {};
-
-    // Apply filters if provided
     if (category) query.category = category;
     if (status) query.status = status;
 
-    // Count total documents matching the query
     const totalDocs = await Product.countDocuments(query);
-
-    // Fetch products with pagination
     const products = await Product.find(query)
       .populate('lastUpdatedBy', 'name email')
       .sort({ createdAt: -1 })
@@ -31,62 +26,23 @@ exports.getAllProducts = async (req, res) => {
       hasPrevPage: parseInt(page) > 1
     });
   } catch (error) {
-    console.error('Error retrieving products:', error);
-    res.status(500).json({
-      message: 'Server error while retrieving products',
-      error: error.message
-    });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Get a single product by ID
+// GET: Product by ID
 exports.getProductById = async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    const product = await Product.findById(id)
-      .populate('lastUpdatedBy', 'name email');
-    
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-    
-    res.status(200).json({
-      message: 'Product retrieved successfully',
-      data: product
-    });
+    const product = await Product.findById(req.params.id).populate('lastUpdatedBy', 'name email');
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    res.status(200).json({ message: 'Product retrieved successfully', data: product });
   } catch (error) {
-    console.error('Error retrieving product:', error);
-    res.status(500).json({
-      message: 'Server error while retrieving product',
-      error: error.message
-    });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Get products by category
-exports.getProductsByCategory = async (req, res) => {
-  try {
-    const { category } = req.params;
-    
-    const products = await Product.find({ category, status: 'active' })
-      .populate('lastUpdatedBy', 'name email');
-    
-    res.status(200).json({
-      message: 'Products retrieved successfully',
-      count: products.length,
-      data: products
-    });
-  } catch (error) {
-    console.error('Error retrieving products by category:', error);
-    res.status(500).json({
-      message: 'Server error while retrieving products',
-      error: error.message
-    });
-  }
-};
-
-// Create a new product
+// POST: Create Product
 exports.createProduct = async (req, res) => {
   try {
     const {
@@ -98,19 +54,12 @@ exports.createProduct = async (req, res) => {
       action
     } = req.body;
 
-    const userId = req.user?._id;
+    const hardcodedAdminId = '664c1234567890abcdef1234'; // Replace this later
 
-    // Validate required fields
-    if (!sapExamCode || !title || !price || !category || !status || !action) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-const hardcodedAdminId = '664c1234567890abcdef1234'; // ✅ Replace with a real _id from your User collection
-
-
-    // Upload image to Cloudinary if provided
+    // ✅ Upload image
     let imageUrl = '';
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
+    if (req.files?.image?.[0]) {
+      const result = await cloudinary.uploader.upload(req.files.image[0].path, {
         folder: 'products'
       });
       imageUrl = result.secure_url;
@@ -118,7 +67,26 @@ const hardcodedAdminId = '664c1234567890abcdef1234'; // ✅ Replace with a real 
       return res.status(400).json({ message: 'Product image is required' });
     }
 
-    // Create new product
+    // ✅ Upload sample PDF
+    let samplePdfUrl = '';
+    if (req.files?.samplePdf?.[0]) {
+      const result = await cloudinary.uploader.upload(req.files.samplePdf[0].path, {
+        resource_type: 'raw',
+        folder: 'product_pdfs'
+      });
+      samplePdfUrl = result.secure_url;
+    }
+
+    // ✅ Upload main PDF
+    let mainPdfUrl = '';
+    if (req.files?.mainPdf?.[0]) {
+      const result = await cloudinary.uploader.upload(req.files.mainPdf[0].path, {
+        resource_type: 'raw',
+        folder: 'product_pdfs'
+      });
+      mainPdfUrl = result.secure_url;
+    }
+
     const newProduct = new Product({
       sapExamCode,
       imageUrl,
@@ -127,6 +95,8 @@ const hardcodedAdminId = '664c1234567890abcdef1234'; // ✅ Replace with a real 
       category,
       status,
       action,
+      samplePdfUrl,
+      mainPdfUrl,
       lastUpdatedBy: hardcodedAdminId
     });
 
@@ -137,15 +107,11 @@ const hardcodedAdminId = '664c1234567890abcdef1234'; // ✅ Replace with a real 
       data: newProduct
     });
   } catch (error) {
-    console.error('Error creating product:', error);
-    res.status(500).json({
-      message: 'Server error during product creation',
-      error: error.message
-    });
+    res.status(500).json({ message: 'Server error during product creation', error: error.message });
   }
 };
 
-// Update a product
+// PUT: Update product
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -158,99 +124,70 @@ exports.updateProduct = async (req, res) => {
       action
     } = req.body;
 
-  
-
-    // Find the product first to check if it exists
     const existingProduct = await Product.findById(id);
-    if (!existingProduct) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    if (!existingProduct) return res.status(404).json({ message: 'Product not found' });
 
-    // Prepare update object
     const updates = {
       sapExamCode: sapExamCode || existingProduct.sapExamCode,
       title: title || existingProduct.title,
       price: price || existingProduct.price,
       category: category || existingProduct.category,
       status: status || existingProduct.status,
-      action: action || existingProduct.action,
-      lastUpdatedBy: userId
+      action: action || existingProduct.action
     };
 
-    // Handle image upload if provided
-    if (req.file) {
-      // Delete old image from Cloudinary if it exists
-      if (existingProduct.imageUrl) {
-        try {
-          const publicId = existingProduct.imageUrl.split('/').pop().split('.')[0];
-          await cloudinary.uploader.destroy(`products/${publicId}`);
-        } catch (cloudinaryError) {
-          console.warn('Error deleting old image from Cloudinary:', cloudinaryError);
-          // Continue with the update even if image deletion fails
-        }
-      }
-      
-      // Upload new image
-      const result = await cloudinary.uploader.upload(req.file.path, {
+    // ✅ Upload new image if provided
+    if (req.files?.image?.[0]) {
+      const result = await cloudinary.uploader.upload(req.files.image[0].path, {
         folder: 'products'
       });
       updates.imageUrl = result.secure_url;
     }
 
-    // Update the product
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      updates,
-      { new: true, runValidators: true }
-    ).populate('lastUpdatedBy', 'name email');
+    // ✅ Upload new sample PDF
+    if (req.files?.samplePdf?.[0]) {
+      const result = await cloudinary.uploader.upload(req.files.samplePdf[0].path, {
+        resource_type: 'raw',
+        folder: 'product_pdfs'
+      });
+      updates.samplePdfUrl = result.secure_url;
+    }
+
+    // ✅ Upload new main PDF
+    if (req.files?.mainPdf?.[0]) {
+      const result = await cloudinary.uploader.upload(req.files.mainPdf[0].path, {
+        resource_type: 'raw',
+        folder: 'product_pdfs'
+      });
+      updates.mainPdfUrl = result.secure_url;
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true
+    }).populate('lastUpdatedBy', 'name email');
 
     res.status(200).json({
       message: 'Product updated successfully',
       data: updatedProduct
     });
   } catch (error) {
-    console.error('Error updating product:', error);
-    res.status(500).json({
-      message: 'Server error during product update',
-      error: error.message
-    });
+    res.status(500).json({ message: 'Server error during update', error: error.message });
   }
 };
 
-// Delete a product
-
+// DELETE: Product
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // ✅ No more auth check needed
-
     const product = await Product.findById(id);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-
-    // Delete image from Cloudinary
-    if (product.imageUrl) {
-      try {
-        const publicId = product.imageUrl.split('/').pop().split('.')[0];
-        await cloudinary.uploader.destroy(`products/${publicId}`);
-      } catch (cloudinaryError) {
-        console.warn('Error deleting image from Cloudinary:', cloudinaryError);
-      }
-    }
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
     await Product.findByIdAndDelete(id);
 
-    res.status(200).json({
-      message: 'Product deleted successfully',
-      deletedId: id,
-    });
+    res.status(200).json({ message: 'Product deleted successfully', deletedId: id });
   } catch (error) {
-    console.error('Error deleting product:', error);
-    res.status(500).json({
-      message: 'Server error during product deletion',
-      error: error.message,
-    });
+    res.status(500).json({ message: 'Server error during deletion', error: error.message });
   }
 };

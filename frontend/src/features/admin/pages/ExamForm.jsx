@@ -20,8 +20,27 @@ const ExamForm = ({ exam, setView }) => {
     mainInstructions: "",
     sampleInstructions: "",
     lastUpdatedBy: "",
+    productId: "", // ✅ added productId
   });
 
+  const [products, setProducts] = useState([]); // ✅ to store fetched products
+
+  // 🟡 Fetch all products for dropdown
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/api/products");
+        const productList = res.data?.data || res.data; // ✅ handles { data: [] } or direct []
+        console.log("Fetched products:", productList); // ✅ DEBUG
+        setProducts(productList);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // 🟡 Pre-fill form for editing
   useEffect(() => {
     if (exam) {
       setFormData({
@@ -38,6 +57,7 @@ const ExamForm = ({ exam, setView }) => {
         mainInstructions: exam.mainInstructions || "",
         sampleInstructions: exam.sampleInstructions || "",
         lastUpdatedBy: exam.lastUpdatedBy || "",
+        productId: exam.productId || "", // ✅ prefill if editing
       });
     }
   }, [exam]);
@@ -59,7 +79,10 @@ const ExamForm = ({ exam, setView }) => {
       numberOfQuestions: Number(formData.numberOfQuestions),
       priceUSD: Number(formData.priceUSD),
       priceINR: Number(formData.priceINR),
+      productId: formData.productId, // ✅ Make sure this line is present
     };
+
+    console.log("🧾 Submitting payload to backend:", payload); // 🐞 Log for verification
 
     try {
       if (isEditing) {
@@ -69,7 +92,7 @@ const ExamForm = ({ exam, setView }) => {
       }
       setView("list");
     } catch (err) {
-      console.error("Error saving exam:", err.response?.data || err.message);
+      console.error("❌ Error saving exam:", err.response?.data || err.message);
     }
   };
 
@@ -188,6 +211,27 @@ const ExamForm = ({ exam, setView }) => {
             </div>
           ))}
 
+          {/* 🟢 Product Dropdown */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Exam For Product
+            </label>
+            <select
+              name="productId"
+              value={formData.productId}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2 text-sm shadow-sm"
+              required
+            >
+              <option value="">Select a product</option>
+              {products.map((product) => (
+                <option key={product._id} value={product._id}>
+                  {product.title} -{product.sapExamCode}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Status */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -205,7 +249,7 @@ const ExamForm = ({ exam, setView }) => {
           </div>
         </div>
 
-        {/* Rich Text Editors */}
+        {/* 🟢 Rich Text Instructions */}
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

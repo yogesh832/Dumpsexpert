@@ -1,40 +1,20 @@
-const mongoose = require('mongoose');
 
+const mongoose = require('mongoose');
 const productListSchema = new mongoose.Schema({
-  sapExamCode: {
+  sapExamCode: String,
+  imageUrl: String,
+  title: String,
+  price: String,
+  category: String,
+  status: String,
+  action: String,
+  samplePdfUrl: {
     type: String,
-    required: true,
-    trim: true
+    default: ''
   },
-  imageUrl: {
+  mainPdfUrl: {
     type: String,
-    required: true,
-    trim: true
-  },
-  title: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  price: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  category: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  status: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  action: {
-    type: String,
-    required: true,
-    trim: true
+    default: ''
   },
   lastUpdatedBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -42,5 +22,4 @@ const productListSchema = new mongoose.Schema({
     required: true
   }
 }, { timestamps: true });
-
 module.exports = mongoose.model('Product', productListSchema);

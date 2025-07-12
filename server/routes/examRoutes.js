@@ -7,6 +7,7 @@ router.get("/", examController.getExams);
 
 // ✅ Update this route
 router.get("/byId/:id", examController.getExamById);
+router.get('/byProduct/:productId', examController.getExamsByProduct);
 
 router.get("/:id", examController.getExamById); // still supports direct id fetch
 router.put("/:id", examController.updateExam);
