@@ -8,7 +8,9 @@ const CouponList = () => {
 
   const fetchCoupons = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/coupons");
+      const res = await axios.get(
+        "https://dumpsexpert-2.onrender.com/api/coupons"
+      );
       setCoupons(res.data);
     } catch (err) {
       console.error("Error fetching coupons", err);
@@ -18,7 +20,9 @@ const CouponList = () => {
   const deleteCoupon = async (id) => {
     if (!window.confirm("Are you sure you want to delete this coupon?")) return;
     try {
-      await axios.delete(`http://localhost:8000/api/coupons/${id}`);
+      await axios.delete(
+        `https://dumpsexpert-2.onrender.com/api/coupons/${id}`
+      );
       fetchCoupons(); // refresh list
     } catch (err) {
       console.error("Failed to delete coupon", err);

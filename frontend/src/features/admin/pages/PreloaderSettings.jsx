@@ -10,7 +10,9 @@ const PreloaderSettings = () => {
   useEffect(() => {
     const fetchPreloader = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/preloader");
+        const res = await axios.get(
+          "https://dumpsexpert-2.onrender.com/api/preloader"
+        );
         const data = res.data;
         setActive(data?.active || false);
         setBgColor(data?.backgroundColor || "#FFFFFF");
@@ -41,10 +43,14 @@ const PreloaderSettings = () => {
     }
 
     try {
-      await axios.post("http://localhost:8000/api/preloader/update", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
+      await axios.post(
+        "https://dumpsexpert-2.onrender.com/api/preloader/update",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        }
+      );
       alert("✅ Preloader updated successfully");
     } catch (err) {
       console.error(err);

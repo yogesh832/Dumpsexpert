@@ -16,7 +16,9 @@ const BasicInformation = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/basic-info");
+        const res = await axios.get(
+          "https://dumpsexpert-2.onrender.com/api/basic-info"
+        );
         const data = res.data;
 
         setSiteTitle(data.siteTitle || "");
@@ -24,7 +26,8 @@ const BasicInformation = () => {
 
         if (data.faviconUrl) setFaviconPreview(data.faviconUrl);
         if (data.headerLogoUrl) setHeaderLogoPreview(data.headerLogoUrl);
-        if (data.breadcrumbImageUrl) setBreadcrumbPreview(data.breadcrumbImageUrl);
+        if (data.breadcrumbImageUrl)
+          setBreadcrumbPreview(data.breadcrumbImageUrl);
       } catch (err) {
         console.error("Error fetching settings:", err);
       }
@@ -55,12 +58,16 @@ const BasicInformation = () => {
     if (breadcrumbImage) formData.append("breadcrumbImage", breadcrumbImage);
 
     try {
-      const res = await axios.put("http://localhost:8000/api/basic-info", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axios.put(
+        "https://dumpsexpert-2.onrender.com/api/basic-info",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setMessage("✅ Settings updated successfully!");
       const updated = res.data.data;
@@ -70,7 +77,9 @@ const BasicInformation = () => {
       setHeaderLogoPreview(updated.headerLogoUrl || "");
       setBreadcrumbPreview(updated.breadcrumbImageUrl || "");
     } catch (err) {
-      setMessage("❌ " + (err.response?.data?.message || "Something went wrong"));
+      setMessage(
+        "❌ " + (err.response?.data?.message || "Something went wrong")
+      );
       console.error(err);
     }
   };
@@ -102,7 +111,11 @@ const BasicInformation = () => {
         <div>
           <label className="block mb-1 text-gray-700">Favicon</label>
           {faviconPreview && (
-            <img src={faviconPreview} alt="Favicon Preview" className="h-12 w-12 mb-2" />
+            <img
+              src={faviconPreview}
+              alt="Favicon Preview"
+              className="h-12 w-12 mb-2"
+            />
           )}
           <input
             type="file"
@@ -115,7 +128,11 @@ const BasicInformation = () => {
         <div>
           <label className="block mb-1 text-gray-700">Header Logo</label>
           {headerLogoPreview && (
-            <img src={headerLogoPreview} alt="Header Logo Preview" className="h-16 mb-2" />
+            <img
+              src={headerLogoPreview}
+              alt="Header Logo Preview"
+              className="h-16 mb-2"
+            />
           )}
           <input
             type="file"
@@ -128,7 +145,11 @@ const BasicInformation = () => {
         <div>
           <label className="block mb-1 text-gray-700">Breadcrumb Image</label>
           {breadcrumbPreview && (
-            <img src={breadcrumbPreview} alt="Breadcrumb Preview" className="h-16 mb-2" />
+            <img
+              src={breadcrumbPreview}
+              alt="Breadcrumb Preview"
+              className="h-16 mb-2"
+            />
           )}
           <input
             type="file"
@@ -138,7 +159,10 @@ const BasicInformation = () => {
           />
         </div>
 
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
           Save
         </button>
       </form>

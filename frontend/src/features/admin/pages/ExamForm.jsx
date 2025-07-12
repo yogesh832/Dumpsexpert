@@ -29,7 +29,9 @@ const ExamForm = ({ exam, setView }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/products");
+        const res = await axios.get(
+          "https://dumpsexpert-2.onrender.com/api/products"
+        );
         const productList = res.data?.data || res.data; // ✅ handles { data: [] } or direct []
         console.log("Fetched products:", productList); // ✅ DEBUG
         setProducts(productList);
@@ -86,9 +88,15 @@ const ExamForm = ({ exam, setView }) => {
 
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:8000/api/exams/${exam._id}`, payload);
+        await axios.put(
+          `https://dumpsexpert-2.onrender.com/api/exams/${exam._id}`,
+          payload
+        );
       } else {
-        await axios.post("http://localhost:8000/api/exams", payload);
+        await axios.post(
+          "https://dumpsexpert-2.onrender.com/api/exams",
+          payload
+        );
       }
       setView("list");
     } catch (err) {

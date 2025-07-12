@@ -1,28 +1,34 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router";
 
 const AddProductCategory = () => {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [image, setImage] = useState(null);
-  const [status, setStatus] = useState('Ready');
+  const [status, setStatus] = useState("Ready");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('status', status);
-    formData.append('image', image);
+    formData.append("name", name);
+    formData.append("status", status);
+    formData.append("image", image);
 
     try {
-      await axios.post('http://localhost:8000/api/product-categories', formData);
-      alert('Category added successfully');
-      navigate('/admin/products/categories');
+      await axios.post(
+        "https://dumpsexpert-2.onrender.com/api/product-categories",
+        formData
+      );
+      alert("Category added successfully");
+      navigate("/admin/products/categories");
     } catch (err) {
-      console.error('❌ Error submitting form:', err.response?.data || err.message);
-      alert(err.response?.data?.message || 'Something went wrong.');
+      console.error(
+        "❌ Error submitting form:",
+        err.response?.data || err.message
+      );
+      alert(err.response?.data?.message || "Something went wrong.");
     }
   };
 

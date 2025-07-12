@@ -20,15 +20,23 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchProductAndExams = async () => {
       try {
-        const productRes = await axios.get(`http://localhost:8000/api/products/${id}`);
+        const productRes = await axios.get(
+          `https://dumpsexpert-2.onrender.com/api/products/${id}`
+        );
         const fetchedProduct = productRes.data.data;
         setProduct(fetchedProduct);
 
-        const examsRes = await axios.get(`http://localhost:8000/api/exams`);
-        const linkedExams = examsRes.data.filter(exam => exam.productId === fetchedProduct._id);
+        const examsRes = await axios.get(
+          `https://dumpsexpert-2.onrender.com/api/exams`
+        );
+        const linkedExams = examsRes.data.filter(
+          (exam) => exam.productId === fetchedProduct._id
+        );
         setExams(linkedExams);
 
-        const allProductsRes = await axios.get("http://localhost:8000/api/products");
+        const allProductsRes = await axios.get(
+          "https://dumpsexpert-2.onrender.com/api/products"
+        );
         setRelatedProducts(allProductsRes.data.data);
 
         setLoading(false);
@@ -82,16 +90,31 @@ const ProductDetails = () => {
           </h1>
 
           <ul className="mt-4 space-y-1 text-gray-800">
-            <li><strong>Exam Code:</strong> {product.sapExamCode}</li>
-            <li><strong>Exam Name:</strong> {product.title}</li>
-            <li><strong>Total Questions:</strong> 80</li>
-            <li><strong>Passing Score:</strong> 73%</li>
-            <li><strong>Duration:</strong> 180 Minutes</li>
-            <li><strong>Last Updated:</strong> {new Date(product.updatedAt).toDateString()}</li>
+            <li>
+              <strong>Exam Code:</strong> {product.sapExamCode}
+            </li>
+            <li>
+              <strong>Exam Name:</strong> {product.title}
+            </li>
+            <li>
+              <strong>Total Questions:</strong> 80
+            </li>
+            <li>
+              <strong>Passing Score:</strong> 73%
+            </li>
+            <li>
+              <strong>Duration:</strong> 180 Minutes
+            </li>
+            <li>
+              <strong>Last Updated:</strong>{" "}
+              {new Date(product.updatedAt).toDateString()}
+            </li>
           </ul>
 
           <div className="mt-4 text-lg font-semibold">
-            <span className="text-blue-600 text-xl font-bold">₹ {product.price}</span>
+            <span className="text-blue-600 text-xl font-bold">
+              ₹ {product.price}
+            </span>
             <span className="line-through text-gray-500 ml-2">₹ 6000.00</span>
             <span className="text-green-600 ml-2 text-sm">(33% off)</span>
           </div>
@@ -120,19 +143,32 @@ const ProductDetails = () => {
           <div className="mt-6">
             <h2 className="font-semibold text-base">Description:</h2>
             <p className="text-gray-700 mt-1">
-              Dumpsxpert Provides 100% updated SAP Project Manager - SAP Activate Exam Questions and answers PDF which helps you to Pass Your SAP Certification Exam in First Attempt.
+              Dumpsxpert Provides 100% updated SAP Project Manager - SAP
+              Activate Exam Questions and answers PDF which helps you to Pass
+              Your SAP Certification Exam in First Attempt.
             </p>
           </div>
 
           {/* 🎯 Exam Linked to Product */}
           {exams.length > 0 && (
             <div className="mt-8">
-              <h2 className="text-lg font-bold mb-3">📚 Exams Included in this Product:</h2>
+              <h2 className="text-lg font-bold mb-3">
+                📚 Exams Included in this Product:
+              </h2>
               {exams.map((exam) => (
-                <div key={exam._id} className="mb-3 p-3 border rounded bg-gray-50">
-                  <p><strong>Name:</strong> {exam.name}</p>
-                  <p><strong>Duration:</strong> {exam.duration} mins</p>
-                  <p><strong>Questions:</strong> {exam.numberOfQuestions}</p>
+                <div
+                  key={exam._id}
+                  className="mb-3 p-3 border rounded bg-gray-50"
+                >
+                  <p>
+                    <strong>Name:</strong> {exam.name}
+                  </p>
+                  <p>
+                    <strong>Duration:</strong> {exam.duration} mins
+                  </p>
+                  <p>
+                    <strong>Questions:</strong> {exam.numberOfQuestions}
+                  </p>
                   <button
                     onClick={() => navigate(`/student/test/${exam._id}`)}
                     className="mt-2 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded"
@@ -149,7 +185,9 @@ const ProductDetails = () => {
       {/* 🔁 Related Products */}
       {relatedProducts.length > 0 && (
         <div className="mt-20">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">Related Products</h2>
+          <h2 className="text-2xl font-bold mb-6 text-gray-800">
+            Related Products
+          </h2>
           <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
             {relatedProducts.map((item) => (
               <div
@@ -161,7 +199,9 @@ const ProductDetails = () => {
                   alt={item.title}
                   className="h-36 w-full object-contain mb-3 rounded"
                 />
-                <h3 className="text-sm font-semibold mb-1 truncate">{item.title}</h3>
+                <h3 className="text-sm font-semibold mb-1 truncate">
+                  {item.title}
+                </h3>
                 <p className="text-xs text-gray-500">{item.sapExamCode}</p>
                 <p className="text-xs text-gray-600 mt-1">₹ {item.price}</p>
               </div>
@@ -172,14 +212,23 @@ const ProductDetails = () => {
 
       {/* 🧾 Customer Reviews */}
       <div className="mt-16">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-900">Customer Reviews</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-gray-900">
+          Customer Reviews
+        </h2>
         {product.reviews?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {product.reviews.map((review, index) => (
-              <div key={index} className="bg-gray-50 p-4 rounded-md border shadow-sm">
+              <div
+                key={index}
+                className="bg-gray-50 p-4 rounded-md border shadow-sm"
+              >
                 <div className="flex justify-between items-center mb-1">
-                  <span className="font-semibold text-gray-800">{review.user}</span>
-                  <span className="text-yellow-500 font-medium">⭐ {review.rating}/5</span>
+                  <span className="font-semibold text-gray-800">
+                    {review.user}
+                  </span>
+                  <span className="text-yellow-500 font-medium">
+                    ⭐ {review.rating}/5
+                  </span>
                 </div>
                 <p className="text-gray-700 text-sm">{review.comment}</p>
                 <p className="text-xs text-gray-400 mt-1">
@@ -195,7 +244,9 @@ const ProductDetails = () => {
 
       {/* ✍️ Write a Review */}
       <div className="mt-16 border p-6 rounded-lg shadow-sm bg-gray-50">
-        <h3 className="text-xl font-semibold mb-4 text-gray-900">Write a Review</h3>
+        <h3 className="text-xl font-semibold mb-4 text-gray-900">
+          Write a Review
+        </h3>
         <form className="grid gap-4" onSubmit={handleSubmitReview}>
           <input
             type="text"

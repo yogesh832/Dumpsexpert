@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import axios from 'axios';
-import './TestPage.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router";
+import axios from "axios";
+import "./TestPage.css";
 
 // Utility to clean HTML
 const stripHtml = (html) => {
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   div.innerHTML = html;
-  return div.textContent || div.innerText || '';
+  return div.textContent || div.innerText || "";
 };
 
 const TestPage = () => {
@@ -22,20 +22,22 @@ const TestPage = () => {
 
   const navigate = useNavigate();
   const { examId } = useParams();
-console.log("🧪 examId:", examId);
+  console.log("🧪 examId:", examId);
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/questions/byExam/${examId}`);
+        const res = await axios.get(
+          `https://dumpsexpert-2.onrender.com/api/questions/byExam/${examId}`
+        );
         setQuestions(res.data);
-console.log("📥 Questions Fetched:", res.data);
+        console.log("📥 Questions Fetched:", res.data);
 
         const initialStatus = {};
-        res.data.forEach(q => initialStatus[q._id] = 'Not Visited');
+        res.data.forEach((q) => (initialStatus[q._id] = "Not Visited"));
         setStatusMap(initialStatus);
       } catch (err) {
-        console.error('❌ Failed to load questions:', err);
+        console.error("❌ Failed to load questions:", err);
       }
     };
     if (examId) fetchQuestions();
@@ -49,7 +51,7 @@ console.log("📥 Questions Fetched:", res.data);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
           handleSubmit();
@@ -64,25 +66,25 @@ console.log("📥 Questions Fetched:", res.data);
   useEffect(() => {
     const blockAction = (e) => {
       e.preventDefault();
-      alert('❌ Copy, paste, and cut are disabled during the test.');
+      alert("❌ Copy, paste, and cut are disabled during the test.");
     };
-    document.addEventListener('copy', blockAction);
-    document.addEventListener('paste', blockAction);
-    document.addEventListener('cut', blockAction);
+    document.addEventListener("copy", blockAction);
+    document.addEventListener("paste", blockAction);
+    document.addEventListener("cut", blockAction);
     return () => {
-      document.removeEventListener('copy', blockAction);
-      document.removeEventListener('paste', blockAction);
-      document.removeEventListener('cut', blockAction);
+      document.removeEventListener("copy", blockAction);
+      document.removeEventListener("paste", blockAction);
+      document.removeEventListener("cut", blockAction);
     };
   }, []);
 
   useEffect(() => {
     const disableRightClick = (e) => {
       e.preventDefault();
-      alert('❌ Right-click is disabled during the test.');
+      alert("❌ Right-click is disabled during the test.");
     };
-    document.addEventListener('contextmenu', disableRightClick);
-    return () => document.removeEventListener('contextmenu', disableRightClick);
+    document.addEventListener("contextmenu", disableRightClick);
+    return () => document.removeEventListener("contextmenu", disableRightClick);
   }, []);
 
   useEffect(() => {
@@ -93,25 +95,26 @@ console.log("📥 Questions Fetched:", res.data);
         if (blurCount < 5) {
           alert(`⚠️ Do not switch tabs. ${5 - blurCount} warnings left.`);
         } else {
-          alert('❌ Test auto-submitted due to tab switches.');
+          alert("❌ Test auto-submitted due to tab switches.");
           setAutoSubmitTriggered(true);
         }
       }
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
 
   const handleAnswer = (qId, option) => {
-    const question = questions.find(q => q._id === qId);
-    const isCheckbox = question?.questionType === 'checkbox';
+    const question = questions.find((q) => q._id === qId);
+    const isCheckbox = question?.questionType === "checkbox";
 
-    setAnswers(prev => {
+    setAnswers((prev) => {
       let updated;
       if (isCheckbox) {
         const current = Array.isArray(prev[qId]) ? prev[qId] : [];
         updated = current.includes(option)
-          ? current.filter(o => o !== option)
+          ? current.filter((o) => o !== option)
           : [...current, option];
       } else {
         updated = option;
@@ -121,29 +124,29 @@ console.log("📥 Questions Fetched:", res.data);
       return { ...prev, [qId]: updated };
     });
 
-    setStatusMap(prev => ({ ...prev, [qId]: 'Answered' }));
+    setStatusMap((prev) => ({ ...prev, [qId]: "Answered" }));
   };
 
   const markReview = (qId) => {
-    setStatusMap(prev => ({ ...prev, [qId]: 'Review' }));
+    setStatusMap((prev) => ({ ...prev, [qId]: "Review" }));
   };
 
   const skip = (qId) => {
-    setStatusMap(prev => ({ ...prev, [qId]: 'Skipped' }));
-    setCurrent(prev => (prev + 1) % questions.length);
+    setStatusMap((prev) => ({ ...prev, [qId]: "Skipped" }));
+    setCurrent((prev) => (prev + 1) % questions.length);
   };
 
   const goToQuestion = (index) => {
     setCurrent(index);
     const qId = questions[index]._id;
-    if (statusMap[qId] === 'Not Visited') {
-      setStatusMap(prev => ({ ...prev, [qId]: 'Visited' }));
+    if (statusMap[qId] === "Not Visited") {
+      setStatusMap((prev) => ({ ...prev, [qId]: "Visited" }));
     }
   };
 
   const formatTime = (sec) => {
-    const min = String(Math.floor(sec / 60)).padStart(2, '0');
-    const secStr = String(sec % 60).padStart(2, '0');
+    const min = String(Math.floor(sec / 60)).padStart(2, "0");
+    const secStr = String(sec % 60).padStart(2, "0");
     return `${min}:${secStr}`;
   };
 
@@ -155,9 +158,14 @@ console.log("📥 Questions Fetched:", res.data);
     let wrongAnswers = 0;
 
     questions.forEach((q) => {
-      const correct = q.correctAnswers.sort().join(',');
-      const user = (Array.isArray(userAnswers[q._id]) ? userAnswers[q._id] : [userAnswers[q._id]])
-        .sort().join(',');
+      const correct = q.correctAnswers.sort().join(",");
+      const user = (
+        Array.isArray(userAnswers[q._id])
+          ? userAnswers[q._id]
+          : [userAnswers[q._id]]
+      )
+        .sort()
+        .join(",");
       if (correct !== user) {
         wrongAnswers++;
       }
@@ -170,7 +178,9 @@ console.log("📥 Questions Fetched:", res.data);
       attempted: Object.keys(userAnswers).length,
       wrong: wrongAnswers,
       correct: questions.length - wrongAnswers,
-      percentage: Math.round(((questions.length - wrongAnswers) / questions.length) * 100),
+      percentage: Math.round(
+        ((questions.length - wrongAnswers) / questions.length) * 100
+      ),
       duration,
       completedAt: new Date().toISOString(),
       questions,
@@ -178,12 +188,18 @@ console.log("📥 Questions Fetched:", res.data);
     };
 
     try {
-      const res = await axios.post("http://localhost:8000/api/results/save", resultData);
-      navigate('/student/courses-exam/result', {
+      const res = await axios.post(
+        "https://dumpsexpert-2.onrender.com/api/results/save",
+        resultData
+      );
+      navigate("/student/courses-exam/result", {
         state: { ...resultData, attempt: res.data.attempt || 1 },
       });
     } catch (error) {
-      console.error("❌ Failed to save result:", error.response?.data || error.message);
+      console.error(
+        "❌ Failed to save result:",
+        error.response?.data || error.message
+      );
       alert("Failed to save result. Try again.");
     }
   };
@@ -216,9 +232,13 @@ console.log("📥 Questions Fetched:", res.data);
           {currentQuestion.options.map((opt, i) => (
             <label key={i} className="option flex items-start gap-2">
               <input
-                type={currentQuestion.questionType === 'checkbox' ? 'checkbox' : 'radio'}
+                type={
+                  currentQuestion.questionType === "checkbox"
+                    ? "checkbox"
+                    : "radio"
+                }
                 checked={
-                  currentQuestion.questionType === 'checkbox'
+                  currentQuestion.questionType === "checkbox"
                     ? Array.isArray(selected) && selected.includes(opt.label)
                     : selected === opt.label
                 }
@@ -241,9 +261,24 @@ console.log("📥 Questions Fetched:", res.data);
         </div>
 
         <div className="btns mt-6 flex gap-4">
-          <button onClick={() => markReview(currentQuestion._id)} className="bg-yellow-500 text-white px-3 py-1 rounded">Mark for Review</button>
-          <button onClick={() => skip(currentQuestion._id)} className="bg-gray-400 text-white px-3 py-1 rounded">Skip</button>
-          <button onClick={() => setCurrent((prev) => (prev + 1) % questions.length)} className="bg-blue-600 text-white px-4 py-1 rounded">Next</button>
+          <button
+            onClick={() => markReview(currentQuestion._id)}
+            className="bg-yellow-500 text-white px-3 py-1 rounded"
+          >
+            Mark for Review
+          </button>
+          <button
+            onClick={() => skip(currentQuestion._id)}
+            className="bg-gray-400 text-white px-3 py-1 rounded"
+          >
+            Skip
+          </button>
+          <button
+            onClick={() => setCurrent((prev) => (prev + 1) % questions.length)}
+            className="bg-blue-600 text-white px-4 py-1 rounded"
+          >
+            Next
+          </button>
         </div>
       </div>
 
@@ -253,9 +288,9 @@ console.log("📥 Questions Fetched:", res.data);
           {questions.map((q, i) => (
             <div
               key={q._id}
-              className={`q-btn text-sm px-2 py-1 rounded cursor-pointer text-center ${
-                statusMap[q._id]?.toLowerCase()
-              }`}
+              className={`q-btn text-sm px-2 py-1 rounded cursor-pointer text-center ${statusMap[
+                q._id
+              ]?.toLowerCase()}`}
               onClick={() => goToQuestion(i)}
             >
               {i + 1}
@@ -266,7 +301,12 @@ console.log("📥 Questions Fetched:", res.data);
 
       <div className="bottom-bar fixed bottom-0 left-0 right-0 bg-white border-t py-3 px-6 flex justify-between items-center shadow-lg">
         <span className="font-semibold">Time Left: {formatTime(timeLeft)}</span>
-        <button onClick={handleSubmit} className="bg-green-600 text-white px-4 py-2 rounded">Submit Test</button>
+        <button
+          onClick={handleSubmit}
+          className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Submit Test
+        </button>
       </div>
     </div>
   );

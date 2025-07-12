@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
+import axios from "axios";
 
 const EditProductCategory = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [image, setImage] = useState(null);
-  const [status, setStatus] = useState('Ready');
-  const [preview, setPreview] = useState('');
+  const [status, setStatus] = useState("Ready");
+  const [preview, setPreview] = useState("");
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/product-categories/${id}`);
+        const res = await axios.get(
+          `https://dumpsexpert-2.onrender.com/api/product-categories/${id}`
+        );
         setName(res.data.name);
-        setStatus(res.data.status || 'Ready');
+        setStatus(res.data.status || "Ready");
         setPreview(res.data.image);
       } catch (err) {
-        console.error('❌ Failed to load category:', err);
-        alert('Failed to load category');
+        console.error("❌ Failed to load category:", err);
+        alert("Failed to load category");
       }
     };
 
@@ -31,17 +33,23 @@ const EditProductCategory = () => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('status', status);
-    if (image) formData.append('image', image);
+    formData.append("name", name);
+    formData.append("status", status);
+    if (image) formData.append("image", image);
 
     try {
-      await axios.put(`http://localhost:8000/api/product-categories/${id}`, formData);
-      alert('Category updated successfully');
-      navigate('/products/categories');
+      await axios.put(
+        `https://dumpsexpert-2.onrender.com/api/product-categories/${id}`,
+        formData
+      );
+      alert("Category updated successfully");
+      navigate("/products/categories");
     } catch (err) {
-      console.error('❌ Error updating category:', err.response?.data || err.message);
-      alert(err.response?.data?.message || 'Update failed');
+      console.error(
+        "❌ Error updating category:",
+        err.response?.data || err.message
+      );
+      alert(err.response?.data?.message || "Update failed");
     }
   };
 
@@ -71,7 +79,11 @@ const EditProductCategory = () => {
         {preview && (
           <div>
             <p className="text-sm text-gray-600">Current Image:</p>
-            <img src={preview} alt="Category Preview" className="w-20 h-auto mb-2" />
+            <img
+              src={preview}
+              alt="Category Preview"
+              className="w-20 h-auto mb-2"
+            />
           </div>
         )}
 

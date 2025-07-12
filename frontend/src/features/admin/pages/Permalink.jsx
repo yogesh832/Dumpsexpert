@@ -9,9 +9,12 @@ const Permalink = () => {
   // Fetch permalinks
   const fetchPermalinks = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/permalinks", {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        "https://dumpsexpert-2.onrender.com/api/permalinks",
+        {
+          withCredentials: true,
+        }
+      );
       setPages(res.data);
     } catch (error) {
       console.error("Failed to load permalinks:", error);
@@ -29,9 +32,13 @@ const Permalink = () => {
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      await axios.put("http://localhost:8000/api/permalinks", pages, {
-        withCredentials: true,
-      });
+      await axios.put(
+        "https://dumpsexpert-2.onrender.com/api/permalinks",
+        pages,
+        {
+          withCredentials: true,
+        }
+      );
       alert("Permalinks updated successfully!");
     } catch (error) {
       alert("Update failed.");
@@ -44,7 +51,7 @@ const Permalink = () => {
   const handleSeed = async () => {
     try {
       await axios.post(
-        "http://localhost:8000/api/permalinks/seed",
+        "https://dumpsexpert-2.onrender.com/api/permalinks/seed",
         {},
         {
           withCredentials: true,

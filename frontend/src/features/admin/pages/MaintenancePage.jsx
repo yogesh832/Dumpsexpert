@@ -13,7 +13,9 @@ const MaintenancePage = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/maintenance-page/");
+        const res = await axios.get(
+          "https://dumpsexpert-2.onrender.com/api/maintenance-page/"
+        );
         const data = res.data;
         if (data) {
           setMaintenanceMode(data.maintenanceMode);
@@ -46,7 +48,7 @@ const MaintenancePage = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/maintenance-page/update",
+        "https://dumpsexpert-2.onrender.com/api/maintenance-page/update",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

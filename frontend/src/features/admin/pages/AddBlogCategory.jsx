@@ -47,13 +47,16 @@ const AddBlogCategoryForm = () => {
     console.log("Submitting formData:", formData);
 
     try {
-      const response = await fetch("http://localhost:8000/api/blog/blog-categories", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://dumpsexpert-2.onrender.com/api/blog/blog-categories",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await response.json();
 
@@ -89,7 +92,9 @@ const AddBlogCategoryForm = () => {
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-5">
         {/* Section Name */}
         <div>
-          <label className="block font-medium text-gray-700">Section Name</label>
+          <label className="block font-medium text-gray-700">
+            Section Name
+          </label>
           <input
             type="text"
             name="sectionName"
@@ -142,7 +147,9 @@ const AddBlogCategoryForm = () => {
 
         {/* Meta Keywords */}
         <div>
-          <label className="block font-medium text-gray-700">Meta Keywords</label>
+          <label className="block font-medium text-gray-700">
+            Meta Keywords
+          </label>
           <input
             type="text"
             name="metaKeywords"
@@ -155,7 +162,9 @@ const AddBlogCategoryForm = () => {
 
         {/* Meta Description */}
         <div>
-          <label className="block font-medium text-gray-700">Meta Description</label>
+          <label className="block font-medium text-gray-700">
+            Meta Description
+          </label>
           <textarea
             name="metaDescription"
             value={formData.metaDescription}
@@ -169,7 +178,9 @@ const AddBlogCategoryForm = () => {
 
         {/* Schema */}
         <div>
-          <label className="block font-medium text-gray-700">JSON-LD Schema</label>
+          <label className="block font-medium text-gray-700">
+            JSON-LD Schema
+          </label>
           <textarea
             name="schema"
             value={formData.schema}

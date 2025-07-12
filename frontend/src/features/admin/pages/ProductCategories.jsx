@@ -12,7 +12,9 @@ const ProductCategories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/product-categories");
+        const res = await axios.get(
+          "https://dumpsexpert-2.onrender.com/api/product-categories"
+        );
         const responseData = res.data;
 
         if (Array.isArray(responseData)) {
@@ -38,7 +40,9 @@ const ProductCategories = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        await axios.delete(`http://localhost:8000/api/product-categories/${id}`);
+        await axios.delete(
+          `https://dumpsexpert-2.onrender.com/api/product-categories/${id}`
+        );
         setCategories((prev) => prev.filter((cat) => cat._id !== id));
       } catch (err) {
         alert("Failed to delete category");
@@ -78,7 +82,9 @@ const ProductCategories = () => {
       ) : error ? (
         <p className="text-center text-red-500">{error}</p>
       ) : filtered.length === 0 ? (
-        <p className="text-center text-gray-500">No matching categories found.</p>
+        <p className="text-center text-gray-500">
+          No matching categories found.
+        </p>
       ) : (
         <table className="w-full border text-sm">
           <thead className="bg-gray-100">
@@ -105,9 +111,13 @@ const ProductCategories = () => {
                 </td>
                 <td className="border p-2">{cat.name}</td>
                 <td className="border p-2 text-center">
-                  <span className={`px-2 py-1 rounded text-xs text-white ${
-                    cat.status === "Publish" ? "bg-green-500" : "bg-yellow-500"
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded text-xs text-white ${
+                      cat.status === "Publish"
+                        ? "bg-green-500"
+                        : "bg-yellow-500"
+                    }`}
+                  >
                     {cat.status || "Ready"}
                   </span>
                 </td>

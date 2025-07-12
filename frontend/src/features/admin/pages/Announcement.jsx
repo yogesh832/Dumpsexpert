@@ -11,7 +11,9 @@ const Announcement = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/announcement");
+        const res = await axios.get(
+          "https://dumpsexpert-2.onrender.com/api/announcement"
+        );
         const data = res.data;
         setActive(data?.active || false);
         setDelay(data?.delay?.toFixed(2) || "2.00");
@@ -40,10 +42,14 @@ const Announcement = () => {
     if (imageFile) formData.append("image", imageFile);
 
     try {
-      await axios.post("http://localhost:8000/api/announcement/update", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
+      await axios.post(
+        "https://dumpsexpert-2.onrender.com/api/announcement/update",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        }
+      );
       alert("✅ Announcement updated successfully!");
     } catch (err) {
       console.error(err);
@@ -67,11 +73,23 @@ const Announcement = () => {
             checked={active}
             onChange={() => setActive(!active)}
           />
-          <div className={`w-14 h-7 flex items-center rounded-full p-1 duration-300 ease-in-out ${active ? "bg-green-500" : "bg-red-500"}`}>
-            <div className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${active ? "translate-x-7" : ""}`}></div>
+          <div
+            className={`w-14 h-7 flex items-center rounded-full p-1 duration-300 ease-in-out ${
+              active ? "bg-green-500" : "bg-red-500"
+            }`}
+          >
+            <div
+              className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
+                active ? "translate-x-7" : ""
+              }`}
+            ></div>
           </div>
         </label>
-        <span className={`ml-4 px-3 py-1 rounded text-white text-sm ${active ? "bg-green-600" : "bg-red-600"}`}>
+        <span
+          className={`ml-4 px-3 py-1 rounded text-white text-sm ${
+            active ? "bg-green-600" : "bg-red-600"
+          }`}
+        >
           {active ? "Active" : "Dactive"}
         </span>
       </div>
@@ -83,7 +101,11 @@ const Announcement = () => {
         </label>
         {imagePreview && (
           <div className="mb-4">
-            <img src={imagePreview} alt="Preview" className="w-64 h-auto rounded shadow" />
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="w-64 h-auto rounded shadow"
+            />
           </div>
         )}
         <input
@@ -92,7 +114,10 @@ const Announcement = () => {
           onChange={handleImageUpload}
           className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         />
-        <p className="text-xs text-gray-400 mt-1">Upload 960x519 (Pixel) image for best quality. Only JPG, JPEG, PNG allowed.</p>
+        <p className="text-xs text-gray-400 mt-1">
+          Upload 960x519 (Pixel) image for best quality. Only JPG, JPEG, PNG
+          allowed.
+        </p>
       </div>
 
       {/* Delay */}

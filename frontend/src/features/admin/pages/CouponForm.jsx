@@ -17,7 +17,9 @@ const CouponForm = () => {
   useEffect(() => {
     const fetchCoupon = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:8000/api/coupons/${id}`);
+        const { data } = await axios.get(
+          `https://dumpsexpert-2.onrender.com/api/coupons/${id}`
+        );
         setForm({
           name: data.name,
           discount: data.discount,
@@ -40,31 +42,36 @@ const CouponForm = () => {
     }));
   };
 
-// CouponForm.jsx (only relevant part shown)
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  // CouponForm.jsx (only relevant part shown)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const payload = {
-      name: form.name.trim().toUpperCase(),
-      discount: Number(form.discount),
-      startDate: new Date(form.startDate),
-      endDate: new Date(form.endDate),
-    };
+    try {
+      const payload = {
+        name: form.name.trim().toUpperCase(),
+        discount: Number(form.discount),
+        startDate: new Date(form.startDate),
+        endDate: new Date(form.endDate),
+      };
 
-    if (id) {
-      await axios.put(`http://localhost:8000/api/coupons/${id}`, payload);
-    } else {
-      await axios.post(`http://localhost:8000/api/coupons`, payload);
+      if (id) {
+        await axios.put(
+          `https://dumpsexpert-2.onrender.com/api/coupons/${id}`,
+          payload
+        );
+      } else {
+        await axios.post(
+          `https://dumpsexpert-2.onrender.com/api/coupons`,
+          payload
+        );
+      }
+
+      navigate("/admin/coupons/list");
+    } catch (error) {
+      console.error("Error saving coupon", error);
+      alert(error.response?.data?.error || "Failed to save coupon");
     }
-
-    navigate("/admin/coupons/list");
-  } catch (error) {
-    console.error("Error saving coupon", error);
-    alert(error.response?.data?.error || "Failed to save coupon");
-  }
-};
-
+  };
 
   return (
     <div className="max-w-xl mx-auto p-6">

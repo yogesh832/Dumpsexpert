@@ -17,89 +17,100 @@ const ResultPage = () => {
       return;
     }
 
-const saveResult = async () => {
-  try {
-    const studentId = localStorage.getItem("studentId");
-    if (!studentId) throw new Error("Missing student ID");
+    const saveResult = async () => {
+      try {
+        const studentId = localStorage.getItem("studentId");
+        if (!studentId) throw new Error("Missing student ID");
 
-    // ✅ Fetch exam config using examId from URL
-    const examRes = await axios.get(`http://localhost:8000/api/exams/${state.examCode}`);
-    const exam = examRes.data;
-setExamConfig(exam);
-console.log(exam);
-    const perQ = exam.eachQuestionMark; // Each question marks (4)
-    const passingScore = exam.passingScore; // Passing marks (33)
-    const totalQs = exam.numberOfQuestions; // Total questions (20)
-    const negativeMark = exam.negativeMark || 0; // Optional negative marks (default to 0)
-  const code = exam.code; // Exam code
-    let correct = 0;
-    let wrong = 0;
-    let attempted = 0;
-    let totalMarks = 0;
+        // ✅ Fetch exam config using examId from URL
+        const examRes = await axios.get(
+          `https://dumpsexpert-2.onrender.com/api/exams/${state.examCode}`
+        );
+        const exam = examRes.data;
+        setExamConfig(exam);
+        console.log(exam);
+        const perQ = exam.eachQuestionMark; // Each question marks (4)
+        const passingScore = exam.passingScore; // Passing marks (33)
+        const totalQs = exam.numberOfQuestions; // Total questions (20)
+        const negativeMark = exam.negativeMark || 0; // Optional negative marks (default to 0)
+        const code = exam.code; // Exam code
+        let correct = 0;
+        let wrong = 0;
+        let attempted = 0;
+        let totalMarks = 0;
 
-    state.questions.forEach((q) => {
-      const userAns = state.userAnswers[q._id];
-      const correctAns = q.correctAnswers;
+        state.questions.forEach((q) => {
+          const userAns = state.userAnswers[q._id];
+          const correctAns = q.correctAnswers;
 
-      if (userAns) {
-        attempted += 1;
-        const userKey = Array.isArray(userAns) ? userAns.sort().join(",") : userAns;
-        const correctKey = correctAns.sort().join(",");
+          if (userAns) {
+            attempted += 1;
+            const userKey = Array.isArray(userAns)
+              ? userAns.sort().join(",")
+              : userAns;
+            const correctKey = correctAns.sort().join(",");
 
-        if (userKey === correctKey) {
-          correct += 1;
-          totalMarks += perQ;
-        } else {
-          wrong += 1;
-          totalMarks -= negativeMark;
-        }
+            if (userKey === correctKey) {
+              correct += 1;
+              totalMarks += perQ;
+            } else {
+              wrong += 1;
+              totalMarks -= negativeMark;
+            }
+          }
+        });
+
+        const percentage = Math.max(0, (totalMarks / (totalQs * perQ)) * 100);
+        const isPass = totalMarks >= passingScore;
+
+        // 🌟 Save result to DB
+        const res = await axios.post(
+          "https://dumpsexpert-2.onrender.com/api/results/save",
+          {
+            studentId,
+            examCode: state.examCode,
+            totalQuestions: totalQs,
+            attempted,
+            code: code,
+            wrong,
+            correct,
+            percentage: percentage.toFixed(2),
+            duration: state.duration,
+            completedAt: state.completedAt,
+            userAnswers: state.userAnswers,
+            questions: state.questions,
+          }
+        );
+
+        setAttempt(res.data.attempt);
+        setResultData({
+          correct,
+          wrong,
+          attempted,
+          totalMarks,
+          percentage: percentage.toFixed(2),
+          isPass,
+        });
+
+        console.log("✅ Result saved to DB");
+      } catch (error) {
+        console.error(
+          "❌ Failed to save result:",
+          error.response?.data || error
+        );
+      } finally {
+        setSaving(false);
       }
-    });
-
-    const percentage = Math.max(0, (totalMarks / (totalQs * perQ)) * 100);
-    const isPass = totalMarks >= passingScore;
-
-    // 🌟 Save result to DB
-    const res = await axios.post("http://localhost:8000/api/results/save", {
-      studentId,
-      examCode: state.examCode,
-      totalQuestions: totalQs,
-      attempted,
-      code:code,
-      wrong,
-      correct,
-      percentage: percentage.toFixed(2),
-      duration: state.duration,
-      completedAt: state.completedAt,
-      userAnswers: state.userAnswers,
-      questions: state.questions,
-    });
-
-    setAttempt(res.data.attempt);
-    setResultData({
-      correct,
-      wrong,
-      attempted,
-      totalMarks,
-      percentage: percentage.toFixed(2),
-      isPass,
-    });
-
-    console.log("✅ Result saved to DB");
-  } catch (error) {
-    console.error("❌ Failed to save result:", error.response?.data || error);
-  } finally {
-    setSaving(false);
-  }
-};
-
+    };
 
     saveResult();
   }, [state, navigate]);
 
   if (!state) return null;
   if (saving)
-    return <p className="saving-msg text-center text-lg">Saving your result...</p>;
+    return (
+      <p className="saving-msg text-center text-lg">Saving your result...</p>
+    );
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -141,7 +152,9 @@ console.log(exam);
           </div>
           <div className="bg-gray-100 p-4 rounded-lg text-center">
             <h3 className="font-medium text-gray-700">Wrong Answers</h3>
-            <p className="text-xl font-semibold text-red-500">{resultData.wrong}</p>
+            <p className="text-xl font-semibold text-red-500">
+              {resultData.wrong}
+            </p>
           </div>
           <div className="bg-gray-100 p-4 rounded-lg text-center">
             <h3 className="font-medium text-gray-700">Correct</h3>

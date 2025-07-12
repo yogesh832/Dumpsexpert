@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState('');
-  const [error, setError] = useState('');
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,28 +14,34 @@ const ProductList = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/products');
+      const res = await axios.get(
+        "https://dumpsexpert-2.onrender.com/api/products"
+      );
       setProducts(res.data.data || []);
     } catch (err) {
-      console.error('Fetch failed:', err);
-      setError('Failed to load products');
+      console.error("Fetch failed:", err);
+      setError("Failed to load products");
     }
   };
 
   const handleDelete = async (id) => {
-    const confirm = window.confirm('Are you sure you want to delete this product?');
+    const confirm = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
     if (!confirm) return;
 
     try {
-      await axios.delete(`http://localhost:8000/api/products/${id}`);
+      await axios.delete(
+        `https://dumpsexpert-2.onrender.com/api/products/${id}`
+      );
       setProducts((prev) => prev.filter((p) => p._id !== id));
     } catch (err) {
-      console.error('Delete failed:', err);
-      setError('Failed to delete product');
+      console.error("Delete failed:", err);
+      setError("Failed to delete product");
     }
   };
 
-  const filtered = products.filter(p =>
+  const filtered = products.filter((p) =>
     p.title.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -52,7 +58,7 @@ const ProductList = () => {
             className="border px-3 py-1 rounded"
           />
           <button
-            onClick={() => navigate('/admin/products/add')}
+            onClick={() => navigate("/admin/products/add")}
             className="bg-blue-600 text-white px-4 py-1 rounded"
           >
             + Add Product
@@ -90,13 +96,21 @@ const ProductList = () => {
                 <td className="p-2 border">{product.price}</td>
                 <td className="p-2 border">{product.category}</td>
                 <td className="p-2 border">
-                  <span className={`px-2 py-1 text-white text-xs rounded ${product.status === 'active' ? 'bg-green-500' : 'bg-yellow-500'}`}>
+                  <span
+                    className={`px-2 py-1 text-white text-xs rounded ${
+                      product.status === "active"
+                        ? "bg-green-500"
+                        : "bg-yellow-500"
+                    }`}
+                  >
                     {product.status}
                   </span>
                 </td>
                 <td className="p-2 border space-x-1">
                   <button
-                    onClick={() => navigate(`/admin/products/edit/${product._id}`)}
+                    onClick={() =>
+                      navigate(`/admin/products/edit/${product._id}`)
+                    }
                     className="bg-green-500 text-white px-2 py-1 rounded text-xs"
                   >
                     Edit

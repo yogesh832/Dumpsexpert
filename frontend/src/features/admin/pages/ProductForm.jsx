@@ -25,7 +25,7 @@ const ProductForm = ({ mode }) => {
   // Fetch categories
   useEffect(() => {
     instance
-      .get("http://localhost:8000/api/product-categories")
+      .get("https://dumpsexpert-2.onrender.com/api/product-categories")
       .then((res) => setCategories(res.data))
       .catch(() => setCategories([]));
   }, []);
@@ -34,7 +34,7 @@ const ProductForm = ({ mode }) => {
   useEffect(() => {
     if (mode === "edit" && id) {
       instance
-        .get(`http://localhost:8000/api/products/${id}`)
+        .get(`https://dumpsexpert-2.onrender.com/api/products/${id}`)
         .then((res) => {
           const p = res.data.data;
           setForm({
@@ -74,12 +74,16 @@ const ProductForm = ({ mode }) => {
 
     try {
       if (mode === "add") {
-        await instance.post("http://localhost:8000/api/products", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await instance.post(
+          "https://dumpsexpert-2.onrender.com/api/products",
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
       } else {
         await instance.put(
-          `http://localhost:8000/api/products/${id}`,
+          `https://dumpsexpert-2.onrender.com/api/products/${id}`,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -102,7 +106,9 @@ const ProductForm = ({ mode }) => {
     if (!confirmDelete) return;
 
     try {
-      await instance.delete(`http://localhost:8000/api/products/${id}`);
+      await instance.delete(
+        `https://dumpsexpert-2.onrender.com/api/products/${id}`
+      );
       navigate("/admin/products/list");
     } catch (err) {
       setError("Failed to delete product");

@@ -11,7 +11,9 @@ const BlogCategory = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/blog-categories");
+        const res = await axios.get(
+          "https://dumpsexpert-2.onrender.com/api/blog-categories"
+        );
         if (Array.isArray(res.data)) {
           setCategories(res.data);
         } else {
@@ -39,7 +41,9 @@ const BlogCategory = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="text-xl font-semibold text-gray-700 mb-4">Blog Category</div>
+      <div className="text-xl font-semibold text-gray-700 mb-4">
+        Blog Category
+      </div>
 
       <div className="bg-white rounded shadow p-4">
         <div className="flex justify-between items-center mb-4">
@@ -49,9 +53,13 @@ const BlogCategory = () => {
               <option>English</option>
               <option>Hindi</option>
             </select>
-            <button className="bg-red-500 text-white px-3 py-1 rounded text-sm">Bulk Delete</button>
+            <button className="bg-red-500 text-white px-3 py-1 rounded text-sm">
+              Bulk Delete
+            </button>
             <Link to="/admin/blog/category/add">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm">+ Add</button>
+              <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                + Add
+              </button>
             </Link>
           </div>
         </div>
@@ -80,46 +88,54 @@ const BlogCategory = () => {
         {/* Table */}
         <div className="overflow-auto">
           <table className="min-w-full border text-sm text-left">
-<thead className="bg-gray-100">
-  <tr>
-    <th className="border p-2"><input type="checkbox" /></th>
-    <th className="border p-2">Image</th> {/* 👈 New column */}
-    <th className="border p-2">Section Name</th>
-    <th className="border p-2">Category</th>
-    <th className="border p-2">Meta Title</th>
-    <th className="border p-2">Action</th>
-  </tr>
-</thead>
-<tbody>
-  {currentItems.map((cat) => (
-    <tr key={cat._id} className="hover:bg-gray-50">
-      <td className="border p-2"><input type="checkbox" /></td>
-      <td className="border p-2">
-        <img
-          src={cat.imageUrl}
-          alt={cat.sectionName}
-          className="w-12 h-12 object-cover rounded"
-        />
-      </td>
-      <td className="border p-2">{cat.sectionName}</td>
-      <td className="border p-2">{cat.category?.name || "N/A"}</td>
-      <td className="border p-2">{cat.metaTitle}</td>
-      <td className="border p-2 space-x-2">
-        <Link to={`/admin/blog/category/edit/${cat._id}`}>
-          <button className="bg-green-500 text-white px-3 py-1 rounded text-xs">Edit</button>
-        </Link>
-        <button
-          onClick={() => handleDelete(cat._id)}
-          className="bg-red-500 text-white px-3 py-1 rounded text-xs"
-        >
-          Delete
-        </button>
-        <Link to="/admin/blog/list">
-          <button className="bg-indigo-500 text-white px-3 py-1 rounded text-xs">Manage Blogs</button>
-        </Link>
-      </td>
-    </tr>
-  ))}
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border p-2">
+                  <input type="checkbox" />
+                </th>
+                <th className="border p-2">Image</th> {/* 👈 New column */}
+                <th className="border p-2">Section Name</th>
+                <th className="border p-2">Category</th>
+                <th className="border p-2">Meta Title</th>
+                <th className="border p-2">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.map((cat) => (
+                <tr key={cat._id} className="hover:bg-gray-50">
+                  <td className="border p-2">
+                    <input type="checkbox" />
+                  </td>
+                  <td className="border p-2">
+                    <img
+                      src={cat.imageUrl}
+                      alt={cat.sectionName}
+                      className="w-12 h-12 object-cover rounded"
+                    />
+                  </td>
+                  <td className="border p-2">{cat.sectionName}</td>
+                  <td className="border p-2">{cat.category?.name || "N/A"}</td>
+                  <td className="border p-2">{cat.metaTitle}</td>
+                  <td className="border p-2 space-x-2">
+                    <Link to={`/admin/blog/category/edit/${cat._id}`}>
+                      <button className="bg-green-500 text-white px-3 py-1 rounded text-xs">
+                        Edit
+                      </button>
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(cat._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Delete
+                    </button>
+                    <Link to="/admin/blog/list">
+                      <button className="bg-indigo-500 text-white px-3 py-1 rounded text-xs">
+                        Manage Blogs
+                      </button>
+                    </Link>
+                  </td>
+                </tr>
+              ))}
 
               {currentItems.length === 0 && (
                 <tr>
@@ -146,7 +162,9 @@ const BlogCategory = () => {
               key={i}
               onClick={() => setCurrentPage(i + 1)}
               className={`px-3 py-1 border rounded ${
-                currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-white hover:bg-gray-100"
+                currentPage === i + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-white hover:bg-gray-100"
               }`}
             >
               {i + 1}

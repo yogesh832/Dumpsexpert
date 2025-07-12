@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FaFacebookF,
   FaTwitter,
   FaInstagram,
   FaLinkedinIn,
   FaYoutube,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
 const iconMap = {
   facebook: <FaFacebookF />,
@@ -18,11 +18,11 @@ const iconMap = {
 
 const SocialLinks = () => {
   const [socialLinks, setSocialLinks] = useState([]);
-  const [selectedIcon, setSelectedIcon] = useState('facebook');
-  const [url, setUrl] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState("facebook");
+  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const api = 'http://localhost:8000/api/social-links';
+  const api = "https://dumpsexpert-2.onrender.com/api/social-links";
 
   // Fetch all links on component load
   useEffect(() => {
@@ -35,7 +35,7 @@ const SocialLinks = () => {
       const res = await axios.get(api);
       setSocialLinks(res.data);
     } catch (err) {
-      console.error('Error fetching links:', err);
+      console.error("Error fetching links:", err);
     } finally {
       setLoading(false);
     }
@@ -51,22 +51,22 @@ const SocialLinks = () => {
         url: url.trim(),
       });
       setSocialLinks([...socialLinks, res.data]);
-      setUrl('');
+      setUrl("");
     } catch (err) {
-      console.error('Error adding link:', err.response?.data || err.message);
-      alert('Failed to add link.');
+      console.error("Error adding link:", err.response?.data || err.message);
+      alert("Failed to add link.");
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this link?')) return;
+    if (!window.confirm("Are you sure you want to delete this link?")) return;
 
     try {
       await axios.delete(`${api}/${id}`);
       setSocialLinks(socialLinks.filter((link) => link._id !== id));
     } catch (err) {
-      console.error('Error deleting link:', err);
-      alert('Failed to delete link.');
+      console.error("Error deleting link:", err);
+      alert("Failed to delete link.");
     }
   };
 
@@ -96,7 +96,10 @@ const SocialLinks = () => {
           className="border px-3 py-2 rounded flex-1"
         />
 
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
           Add
         </button>
       </form>
@@ -121,7 +124,9 @@ const SocialLinks = () => {
               {socialLinks.map((link, index) => (
                 <tr key={link._id}>
                   <td className="border px-4 py-2 text-center">{index + 1}</td>
-                  <td className="border px-4 py-2 text-center text-xl">{iconMap[link.icon]}</td>
+                  <td className="border px-4 py-2 text-center text-xl">
+                    {iconMap[link.icon]}
+                  </td>
                   <td className="border px-4 py-2 break-words">{link.url}</td>
                   <td className="border px-4 py-2 text-center">
                     <button

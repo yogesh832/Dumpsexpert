@@ -13,7 +13,9 @@ const ResultHistoryPage = () => {
         const studentId = localStorage.getItem("studentId");
         if (!studentId) throw new Error("Missing student ID");
 
-        const res = await axios.get(`http://localhost:8000/api/results/history/${studentId}`);
+        const res = await axios.get(
+          `https://dumpsexpert-2.onrender.com/api/results/history/${studentId}`
+        );
         setHistory(res.data);
         console.log(history);
       } catch (err) {
@@ -26,7 +28,8 @@ const ResultHistoryPage = () => {
     fetchHistory();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading result history...</p>;
+  if (loading)
+    return <p className="text-center mt-10">Loading result history...</p>;
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg text-black">
@@ -41,10 +44,14 @@ const ResultHistoryPage = () => {
               className="flex justify-between items-center border-b pb-4 pt-2"
             >
               <div>
-                <p className="font-semibold text-blue-700">Attempt: {result.attempt}</p>
+                <p className="font-semibold text-blue-700">
+                  Attempt: {result.attempt}
+                </p>
                 <p className="text-sm">Exam Code: {result.code}</p>
                 <p className="text-sm">Percentage: {result.percentage}%</p>
-                <p className="text-sm">Date: {new Date(result.completedAt).toLocaleDateString()}</p>
+                <p className="text-sm">
+                  Date: {new Date(result.completedAt).toLocaleDateString()}
+                </p>
                 <span
                   className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${
                     result.percentage >= 33
