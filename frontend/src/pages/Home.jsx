@@ -15,7 +15,7 @@ const Home = () => {
       {/* <SEOTester /> */}
       <HeroSection />
       <AllOtherDumps />
-      <BlogSection />
+      {/* <BlogSection /> */}
       <AllDumps />
       <PopularDumps />
       <UnlockGoals />

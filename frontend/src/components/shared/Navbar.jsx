@@ -44,7 +44,7 @@ const Navbar = () => {
     { label: "About Us", path: "/about" },
     { label: "IT Dumps", path: "/dumps", hasDropdown: true },
     { label: "Contact", path: "/contact" },
-    { label: "Blogs", path: "/blogs" },
+    // { label: "Blogs", path: "/blogs" },
     {
       label: "Cart",
       path: "/cart",

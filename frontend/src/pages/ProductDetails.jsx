@@ -78,33 +78,32 @@ const ProductDetails = () => {
     setTimeout(() => setIsAdding(false), 1000);
   };
 
- const handleSampleDownload = async () => {
-  const response = await fetch(product.samplePdfUrl);
-  const blob = await response.blob();
-  const blobUrl = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = blobUrl;
-  a.download = `${product.title}-Sample.pdf`;
-  a.click();
-  window.URL.revokeObjectURL(blobUrl);
-};
-const handleMainDownload = async () => {
-  try {
-    const response = await fetch(product.mainPdfUrl);
-    if (!response.ok) throw new Error("Failed to fetch file.");
+  const handleSampleDownload = async () => {
+    const response = await fetch(product.samplePdfUrl);
     const blob = await response.blob();
     const blobUrl = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = blobUrl;
-    a.download = `${product.title}-Main.pdf`;
+    a.download = `${product.title}-Sample.pdf`;
     a.click();
     window.URL.revokeObjectURL(blobUrl);
-  } catch (err) {
-    console.error("Error downloading main PDF:", err);
-    toast.error("Unable to download Main PDF.");
-  }
-};
-
+  };
+  const handleMainDownload = async () => {
+    try {
+      const response = await fetch(product.mainPdfUrl);
+      if (!response.ok) throw new Error("Failed to fetch file.");
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `${product.title}-Main.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Error downloading main PDF:", err);
+      toast.error("Unable to download Main PDF.");
+    }
+  };
 
   if (loading || !product) {
     return (
