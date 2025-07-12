@@ -22,7 +22,7 @@ const SocialLinks = () => {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const api = "https://dumpsexpert-2.onrender.com/api/social-links";
+  const api = "http://localhost:8000/api/social-links";
 
   // Fetch all links on component load
   useEffect(() => {

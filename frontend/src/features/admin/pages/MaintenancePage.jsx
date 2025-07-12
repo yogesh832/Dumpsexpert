@@ -14,7 +14,7 @@ const MaintenancePage = () => {
     const fetchSettings = async () => {
       try {
         const res = await axios.get(
-          "https://dumpsexpert-2.onrender.com/api/maintenance-page/"
+          "http://localhost:8000/api/maintenance-page/"
         );
         const data = res.data;
         if (data) {
@@ -48,7 +48,7 @@ const MaintenancePage = () => {
 
     try {
       const res = await axios.post(
-        "https://dumpsexpert-2.onrender.com/api/maintenance-page/update",
+        "http://localhost:8000/api/maintenance-page/update",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

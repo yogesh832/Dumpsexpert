@@ -10,9 +10,7 @@ const ExamCoursesPage = () => {
     const fetchExams = async () => {
       console.log("📡 Fetching exams...");
       try {
-        const response = await axios.get(
-          "https://dumpsexpert-2.onrender.com/api/exams"
-        ); // adjust if different
+        const response = await axios.get("http://localhost:8000/api/exams"); // adjust if different
         console.log("✅ Data fetched:", response.data);
         setExamCourses(response.data);
       } catch (error) {

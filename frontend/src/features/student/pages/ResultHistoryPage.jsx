@@ -14,7 +14,7 @@ const ResultHistoryPage = () => {
         if (!studentId) throw new Error("Missing student ID");
 
         const res = await axios.get(
-          `https://dumpsexpert-2.onrender.com/api/results/history/${studentId}`
+          `http://localhost:8000/api/results/history/${studentId}`
         );
         setHistory(res.data);
         console.log(history);

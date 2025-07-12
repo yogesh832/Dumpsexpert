@@ -25,9 +25,7 @@ const MenuBuilder = () => {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const res = await axios.get(
-          "https://dumpsexpert-2.onrender.com/api/menu-builder"
-        );
+        const res = await axios.get("http://localhost:8000/api/menu-builder");
         setMainMenu(res.data.mainMenu || []);
         setPremadeMenu(res.data.premadeMenu || []);
       } catch (err) {
@@ -48,7 +46,7 @@ const MenuBuilder = () => {
 
     try {
       const res = await axios.post(
-        "https://dumpsexpert-2.onrender.com/api/menu-builder/add",
+        "http://localhost:8000/api/menu-builder/add",
         {
           type: "mainMenu",
           item: newItem,
@@ -74,14 +72,11 @@ const MenuBuilder = () => {
     }
 
     try {
-      const res = await axios.put(
-        "https://dumpsexpert-2.onrender.com/api/menu-builder",
-        {
-          mainMenu,
-          premadeMenu,
-          userId,
-        }
-      );
+      const res = await axios.put("http://localhost:8000/api/menu-builder", {
+        mainMenu,
+        premadeMenu,
+        userId,
+      });
       console.log(res.data);
       setMessage("✅ Menu updated!");
     } catch (err) {

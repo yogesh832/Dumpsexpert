@@ -28,7 +28,7 @@ const TestPage = () => {
     const fetchQuestions = async () => {
       try {
         const res = await axios.get(
-          `https://dumpsexpert-2.onrender.com/api/questions/byExam/${examId}`
+          `http://localhost:8000/api/questions/byExam/${examId}`
         );
         setQuestions(res.data);
         console.log("📥 Questions Fetched:", res.data);
@@ -189,7 +189,7 @@ const TestPage = () => {
 
     try {
       const res = await axios.post(
-        "https://dumpsexpert-2.onrender.com/api/results/save",
+        "http://localhost:8000/api/results/save",
         resultData
       );
       navigate("/student/courses-exam/result", {

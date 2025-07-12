@@ -11,9 +11,7 @@ const Announcement = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(
-          "https://dumpsexpert-2.onrender.com/api/announcement"
-        );
+        const res = await axios.get("http://localhost:8000/api/announcement");
         const data = res.data;
         setActive(data?.active || false);
         setDelay(data?.delay?.toFixed(2) || "2.00");
@@ -43,7 +41,7 @@ const Announcement = () => {
 
     try {
       await axios.post(
-        "https://dumpsexpert-2.onrender.com/api/announcement/update",
+        "http://localhost:8000/api/announcement/update",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

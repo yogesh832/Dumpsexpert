@@ -12,7 +12,7 @@ const BlogCategory = () => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(
-          "https://dumpsexpert-2.onrender.com/api/blog-categories"
+          "http://localhost:8000/api/blog-categories"
         );
         if (Array.isArray(res.data)) {
           setCategories(res.data);

@@ -18,7 +18,7 @@ const CouponForm = () => {
     const fetchCoupon = async () => {
       try {
         const { data } = await axios.get(
-          `https://dumpsexpert-2.onrender.com/api/coupons/${id}`
+          `http://localhost:8000/api/coupons/${id}`
         );
         setForm({
           name: data.name,
@@ -55,15 +55,9 @@ const CouponForm = () => {
       };
 
       if (id) {
-        await axios.put(
-          `https://dumpsexpert-2.onrender.com/api/coupons/${id}`,
-          payload
-        );
+        await axios.put(`http://localhost:8000/api/coupons/${id}`, payload);
       } else {
-        await axios.post(
-          `https://dumpsexpert-2.onrender.com/api/coupons`,
-          payload
-        );
+        await axios.post(`http://localhost:8000/api/coupons`, payload);
       }
 
       navigate("/admin/coupons/list");

@@ -48,7 +48,7 @@ const AddBlogCategoryForm = () => {
 
     try {
       const response = await fetch(
-        "https://dumpsexpert-2.onrender.com/api/blog/blog-categories",
+        "http://localhost:8000/api/blog/blog-categories",
         {
           method: "POST",
           headers: {

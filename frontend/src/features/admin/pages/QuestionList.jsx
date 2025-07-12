@@ -23,7 +23,7 @@ const QuestionList = ({ exam, setView, setSelectedQuestion }) => {
   const fetchQuestions = async () => {
     try {
       const res = await axios.get(
-        `https://dumpsexpert-2.onrender.com/api/questions/byExam/${exam._id}`
+        `http://localhost:8000/api/questions/byExam/${exam._id}`
       );
       setQuestions(Array.isArray(res.data) ? res.data : []);
       console.log(questions);
@@ -36,9 +36,7 @@ const QuestionList = ({ exam, setView, setSelectedQuestion }) => {
   const deleteQuestion = async (id) => {
     if (!window.confirm("Delete this question?")) return;
     try {
-      await axios.delete(
-        `https://dumpsexpert-2.onrender.com/api/questions/${id}`
-      );
+      await axios.delete(`http://localhost:8000/api/questions/${id}`);
       fetchQuestions();
     } catch (err) {
       console.error("Delete failed", err);

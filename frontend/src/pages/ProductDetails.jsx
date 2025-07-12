@@ -23,14 +23,14 @@ const ProductDetails = () => {
       setLoading(true);
       try {
         const productRes = await axios.get(
-          `https://dumpsexpert-2.onrender.com/api/products/${id}`
+          `http://localhost:8000/api/products/${id}`
         );
         const fetchedProduct = productRes.data.data;
         setProduct(fetchedProduct);
 
         const [examsRes, allProductsRes] = await Promise.all([
-          axios.get("https://dumpsexpert-2.onrender.com/api/exams"),
-          axios.get("https://dumpsexpert-2.onrender.com/api/products"),
+          axios.get("http://localhost:8000/api/exams"),
+          axios.get("http://localhost:8000/api/products"),
         ]);
 
         const linkedExams = examsRes.data.filter(

@@ -15,7 +15,7 @@ const EditProductCategory = () => {
     const fetchCategory = async () => {
       try {
         const res = await axios.get(
-          `https://dumpsexpert-2.onrender.com/api/product-categories/${id}`
+          `http://localhost:8000/api/product-categories/${id}`
         );
         setName(res.data.name);
         setStatus(res.data.status || "Ready");
@@ -39,7 +39,7 @@ const EditProductCategory = () => {
 
     try {
       await axios.put(
-        `https://dumpsexpert-2.onrender.com/api/product-categories/${id}`,
+        `http://localhost:8000/api/product-categories/${id}`,
         formData
       );
       alert("Category updated successfully");

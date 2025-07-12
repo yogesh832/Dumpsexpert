@@ -13,7 +13,7 @@ const ProductCategories = () => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(
-          "https://dumpsexpert-2.onrender.com/api/product-categories"
+          "http://localhost:8000/api/product-categories"
         );
         const responseData = res.data;
 
@@ -41,7 +41,7 @@ const ProductCategories = () => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
         await axios.delete(
-          `https://dumpsexpert-2.onrender.com/api/product-categories/${id}`
+          `http://localhost:8000/api/product-categories/${id}`
         );
         setCategories((prev) => prev.filter((cat) => cat._id !== id));
       } catch (err) {

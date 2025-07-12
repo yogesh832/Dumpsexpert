@@ -95,7 +95,7 @@ const QuestionForm = ({ exam = {}, question, setView }) => {
     formData.append("file", file);
     try {
       const res = await axios.post(
-        "https://dumpsexpert-2.onrender.com/api/questions/upload",
+        "http://localhost:8000/api/questions/upload",
         formData
       );
       setImageFn(res.data.secure_url);
@@ -149,14 +149,11 @@ const QuestionForm = ({ exam = {}, question, setView }) => {
     try {
       if (question) {
         await axios.put(
-          `https://dumpsexpert-2.onrender.com/api/questions/${question._id}`,
+          `http://localhost:8000/api/questions/${question._id}`,
           payload
         );
       } else {
-        await axios.post(
-          "https://dumpsexpert-2.onrender.com/api/questions",
-          payload
-        );
+        await axios.post("http://localhost:8000/api/questions", payload);
       }
       setView("manageQuestions");
     } catch (err) {

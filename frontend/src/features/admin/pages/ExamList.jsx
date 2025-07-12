@@ -6,7 +6,7 @@ const ExamList = ({ setView, setSelectedExam }) => {
 
   useEffect(() => {
     axios
-      .get("https://dumpsexpert-2.onrender.com/api/exams")
+      .get("http://localhost:8000/api/exams")
       .then((res) => setExams(res.data))
       .catch(console.error);
   }, []);
@@ -14,7 +14,7 @@ const ExamList = ({ setView, setSelectedExam }) => {
   const handleDelete = (id) => {
     if (!window.confirm("Delete this exam?")) return;
     axios
-      .delete(`https://dumpsexpert-2.onrender.com/api/exams/${id}`)
+      .delete(`http://localhost:8000/api/exams/${id}`)
       .then(() => setExams(exams.filter((e) => e._id !== id)))
       .catch(console.error);
   };

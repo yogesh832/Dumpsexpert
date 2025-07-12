@@ -16,9 +16,7 @@ const BasicInformation = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await axios.get(
-          "https://dumpsexpert-2.onrender.com/api/basic-info"
-        );
+        const res = await axios.get("http://localhost:8000/api/basic-info");
         const data = res.data;
 
         setSiteTitle(data.siteTitle || "");
@@ -59,7 +57,7 @@ const BasicInformation = () => {
 
     try {
       const res = await axios.put(
-        "https://dumpsexpert-2.onrender.com/api/basic-info",
+        "http://localhost:8000/api/basic-info",
         formData,
         {
           headers: {

@@ -13,15 +13,12 @@ const OrdersAll = () => {
 
   const fetchOrders = async (page) => {
     try {
-      const res = await axios.get(
-        "https://dumpsexpert-2.onrender.com/api/orders",
-        {
-          params: {
-            page,
-            limit: itemsPerPage,
-          },
-        }
-      );
+      const res = await axios.get("http://localhost:8000/api/orders", {
+        params: {
+          page,
+          limit: itemsPerPage,
+        },
+      });
 
       const { data, pagination } = res.data;
       setOrders(data);

@@ -14,9 +14,7 @@ const ProductList = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(
-        "https://dumpsexpert-2.onrender.com/api/products"
-      );
+      const res = await axios.get("http://localhost:8000/api/products");
       setProducts(res.data.data || []);
     } catch (err) {
       console.error("Fetch failed:", err);
@@ -31,9 +29,7 @@ const ProductList = () => {
     if (!confirm) return;
 
     try {
-      await axios.delete(
-        `https://dumpsexpert-2.onrender.com/api/products/${id}`
-      );
+      await axios.delete(`http://localhost:8000/api/products/${id}`);
       setProducts((prev) => prev.filter((p) => p._id !== id));
     } catch (err) {
       console.error("Delete failed:", err);

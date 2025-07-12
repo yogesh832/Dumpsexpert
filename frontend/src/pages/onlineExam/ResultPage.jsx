@@ -24,7 +24,7 @@ const ResultPage = () => {
 
         // ✅ Fetch exam config using examId from URL
         const examRes = await axios.get(
-          `https://dumpsexpert-2.onrender.com/api/exams/${state.examCode}`
+          `http://localhost:8000/api/exams/${state.examCode}`
         );
         const exam = examRes.data;
         setExamConfig(exam);
@@ -64,23 +64,20 @@ const ResultPage = () => {
         const isPass = totalMarks >= passingScore;
 
         // 🌟 Save result to DB
-        const res = await axios.post(
-          "https://dumpsexpert-2.onrender.com/api/results/save",
-          {
-            studentId,
-            examCode: state.examCode,
-            totalQuestions: totalQs,
-            attempted,
-            code: code,
-            wrong,
-            correct,
-            percentage: percentage.toFixed(2),
-            duration: state.duration,
-            completedAt: state.completedAt,
-            userAnswers: state.userAnswers,
-            questions: state.questions,
-          }
-        );
+        const res = await axios.post("http://localhost:8000/api/results/save", {
+          studentId,
+          examCode: state.examCode,
+          totalQuestions: totalQs,
+          attempted,
+          code: code,
+          wrong,
+          correct,
+          percentage: percentage.toFixed(2),
+          duration: state.duration,
+          completedAt: state.completedAt,
+          userAnswers: state.userAnswers,
+          questions: state.questions,
+        });
 
         setAttempt(res.data.attempt);
         setResultData({

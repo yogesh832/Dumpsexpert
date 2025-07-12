@@ -18,7 +18,7 @@ const AddProductCategory = () => {
 
     try {
       await axios.post(
-        "https://dumpsexpert-2.onrender.com/api/product-categories",
+        "http://localhost:8000/api/product-categories",
         formData
       );
       alert("Category added successfully");
