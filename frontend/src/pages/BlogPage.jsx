@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { instance } from "../lib/axios";
-import { Link } from "react-router";
+import { Link } from "react-router"; // ✅ Use react-router-dom
 
 const BlogPage = () => {
   const [blogsData, setBlogsData] = useState([]);
@@ -46,27 +46,29 @@ const BlogPage = () => {
 
             {/* Category Cards */}
             <div className="flex flex-wrap py-10 justify-center gap-4">
-              {blogsData.map((item) => (
-                <Link
-                  to={`/blogs/category/${item.category.name.toLowerCase()}`}
-                  key={item._id}
-                  className="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all flex flex-col items-center text-center overflow-hidden w-[160px] sm:w-[170px] md:w-[180px] lg:w-[180px]"
-                >
-                  <div className="h-28 md:h-32 w-full overflow-hidden">
-                    <img
-                      src={item.category.image}
-                      alt={item.category.name}
-                      loading="lazy"
-                      className="w-full h-full object-contain p-2"
-                    />
-                  </div>
-                  <div className="px-2 pb-3">
-                    <h3 className="text-sm sm:text-base font-medium capitalize text-gray-800 truncate">
-                      {item.category.name}
-                    </h3>
-                  </div>
-                </Link>
-              ))}
+              {blogsData
+                .filter(item => item?.category)
+                .map((item) => (
+                  <Link
+                    to={`/blogs/category/${item.category.toLowerCase()}`}
+                    key={item._id}
+                    className="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all flex flex-col items-center text-center overflow-hidden w-[160px] sm:w-[170px] md:w-[180px] lg:w-[180px]"
+                  >
+                    <div className="h-28 md:h-32 w-full overflow-hidden">
+                      <img
+                        src={item.imageUrl}
+                        alt={item.category}
+                        loading="lazy"
+                        className="w-full h-full object-contain p-2"
+                      />
+                    </div>
+                    <div className="px-2 pb-3">
+                      <h3 className="text-sm sm:text-base font-medium capitalize text-gray-800 truncate">
+                        {item.category}
+                      </h3>
+                    </div>
+                  </Link>
+                ))}
             </div>
           </>
         )}
