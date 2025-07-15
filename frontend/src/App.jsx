@@ -164,6 +164,10 @@ import AddProductCategory from "./features/admin/pages/AddProductCategory.jsx";
 import EditProductCategory from "./features/admin/pages/EditProductCategory";
 import ProductForm from "./features/admin/pages/ProductForm.jsx";
 import SEOTesterPage from "./pages/SEOTesterPage";
+import BlogPage from "./pages/BlogPage.jsx";
+import CategoryBlogProducts from "./pages/CategoryBlogProducts.jsx";
+const EditBlogCategory = lazy(() => import("./features/admin/pages/EditBlogCategory"));
+const ManageBlogsByCategory = lazy(() => import("./features/admin/pages/ManageBlogsByCategory"));
 
 const App = () => {
   return (
@@ -175,10 +179,16 @@ const App = () => {
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<AboutUs />} />
+            <Route path="/blogs" element={<BlogPage />} />
+
             <Route path="/dumps" element={<ITDumps />} />
             <Route
               path="/courses/:categoryName"
               element={<CategoryProducts />}
+            />
+            <Route
+              path="/blogs/category/:categoryName"
+              element={<CategoryBlogProducts />}
             />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/contact" element={<Contact />} />
@@ -298,10 +308,13 @@ const App = () => {
                   <Route index element={<BlogManagement />} />
                   <Route path="category" element={<BlogCategory />} />
                   <Route path="category/add" element={<AddBlogCategory />} />
+                  <Route path="category/edit/:id" element={<EditBlogCategory />} />
                   <Route path="archive" element={<BlogArchive />} />
                   <Route path="posts" element={<BlogPosts />} />
                   <Route path="list" element={<BlogList />} />
-                  <Route path="edit" element={<EditBlog />} />
+                  <Route path="add" element={<EditBlog />} />
+                  <Route path="edit/:id" element={<EditBlog />} />
+                  <Route path="manage/:categoryId" element={<ManageBlogsByCategory />} />
                 </Route>
 
                 <Route path="subscribers">

@@ -72,6 +72,10 @@ app.use(
   })
 );
 
+// Static folder for locally stored uploads (fallback when Cloudinary credentials are missing)
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser());

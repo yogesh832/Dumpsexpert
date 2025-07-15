@@ -10,6 +10,10 @@ const blogListSchema = new mongoose.Schema({
       message: 'Invalid image URL'
     }
   },
+  imagePublicId: {
+    type: String,
+    required: false
+  },
   title: {
     type: String,
     required: true,
@@ -29,9 +33,9 @@ const blogListSchema = new mongoose.Schema({
     unique: true
   },
   category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'BlogCategoryList',
-    required: true
+    type: String,
+    required: true,
+    trim: true
   },
   content: {
     type: String,
@@ -73,14 +77,14 @@ const blogListSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['unpublish', 'publish'],
     required: true,
+    enum: ['publish', 'unpublish'],
     default: 'unpublish'
   },
   lastUpdatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false
   }
 }, { timestamps: true });
 

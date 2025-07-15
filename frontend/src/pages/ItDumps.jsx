@@ -84,31 +84,30 @@ const ITDumps = () => {
             </div>
 
             {/* Cards Grid */}
-         {/* Cards Flexbox Layout - 5 per row max */}
-<div className="flex flex-wrap py-10 justify-center gap-4">
-  {dumpsData.map((item) => (
-    <Link
-      to={`/courses/${item.name.toLowerCase()}`}
-      key={item._id}
-      className="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all flex flex-col items-center text-center overflow-hidden w-[160px] sm:w-[170px] md:w-[180px] lg:w-[180px]"
-    >
-      <div className="h-28 md:h-32 w-full overflow-hidden">
-        <img
-          src={item.image}
-          alt={item.name}
-          loading="lazy"
-          className="w-full h-full object-contain p-2"
-        />
-      </div>
-      <div className="px-2 pb-3">
-        <h3 className="text-sm sm:text-base font-medium capitalize text-gray-800 truncate">
-          {item.name}
-        </h3>
-      </div>
-    </Link>
-  ))}
-</div>
-
+            {/* Cards Flexbox Layout - 5 per row max */}
+            <div className="flex flex-wrap py-10 justify-center gap-4">
+              {dumpsData.map((item) => (
+                <Link
+                  to={`/courses/${item.name.toLowerCase()}`}
+                  key={item._id}
+                  className="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all flex flex-col items-center text-center overflow-hidden w-[160px] sm:w-[170px] md:w-[180px] lg:w-[180px]"
+                >
+                  <div className="h-28 md:h-32 w-full overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      loading="lazy"
+                      className="w-full h-full object-contain p-2"
+                    />
+                  </div>
+                  <div className="px-2 pb-3">
+                    <h3 className="text-sm sm:text-base font-medium capitalize text-gray-800 truncate">
+                      {item.name}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </>
         )}
       </div>

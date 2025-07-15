@@ -8,8 +8,7 @@ const blogCategorySchema = new mongoose.Schema({
     unique: true,
   },
   category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ProductCategory',
+    type: String,
     required: true,
   },
   imageUrl: {
@@ -54,4 +53,4 @@ const blogCategorySchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-module.exports = mongoose.model('AddBlogCategory', blogCategorySchema);
+module.exports = mongoose.model('BlogCategory', blogCategorySchema);

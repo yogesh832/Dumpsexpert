@@ -1,31 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router"; // fixed import
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import useBlogStore from '../../../store/blogStore';
 
 const BlogCategory = () => {
-  const [categories, setCategories] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+  const { blogCategories, setBlogCategories, deleteBlogCategory, fetchBlogCategories, loading, error } = useBlogStore();
+  const categories = Array.isArray(blogCategories) ? blogCategories : [];
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:8000/api/blog-categories"
-        );
-        if (Array.isArray(res.data)) {
-          setCategories(res.data);
-        } else {
-          console.error("Unexpected response format:", res.data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch blog categories:", err);
-      }
-    };
+    console.log('Fetching blog categories...');
+    fetchBlogCategories();
+  }, [fetchBlogCategories]);
 
-    fetchCategories();
-  }, []);
+  console.log('Current blogCategories:', blogCategories);
+
+  useEffect(() => {
+    if (categories.length === 0) {
+      fetchBlogCategories();
+    }
+  }, [categories.length, fetchBlogCategories]);
 
   const filtered = categories.filter((cat) =>
     cat.sectionName?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -35,149 +33,162 @@ const BlogCategory = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = filtered.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleDelete = (id) => {
-    setCategories(categories.filter((c) => c._id !== id));
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:8000/api/blog-categories/${id}`, {
+        withCredentials: true
+      });
+      if (response.status === 200) {
+        deleteBlogCategory(id);
+        toast.success('Category deleted successfully');
+      }
+    } catch (err) {
+      console.error('Failed to delete category:', err);
+      toast.error('Failed to delete category');
+    }
   };
+
+  const handleEdit = (id) => {
+    navigate(`/admin/blog/category/edit/${id}`);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (blogCategories.length === 0) {
+    return <div>No blog categories found. <button onClick={() => fetchBlogCategories()}>Retry</button></div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-10 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="text-xl font-semibold text-gray-700 mb-4">
-        Blog Category
-      </div>
+      <div className="text-xl font-semibold text-gray-700 mb-4">Blog Category</div>
 
       <div className="bg-white rounded shadow p-4">
         <div className="flex justify-between items-center mb-4">
           <div className="text-lg font-semibold">Blog Category List</div>
-          <div className="flex items-center gap-2">
-            <select className="border px-2 py-1 rounded text-sm">
-              <option>English</option>
-              <option>Hindi</option>
-            </select>
-            <button className="bg-red-500 text-white px-3 py-1 rounded text-sm">
-              Bulk Delete
-            </button>
-            <Link to="/admin/blog/category/add">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm">
-                + Add
-              </button>
-            </Link>
-          </div>
+          <Link
+            to="/admin/blog/category/add"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add New Category
+          </Link>
         </div>
 
-        {/* Search & Filter */}
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center gap-2 text-sm">
-            Show
-            <select className="border px-2 py-1 rounded">
-              <option>10</option>
-            </select>
-            entries
-          </div>
+        <div className="mb-4">
           <input
             type="text"
-            placeholder="Search section..."
+            placeholder="Search by section name..."
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border px-3 py-1 rounded text-sm"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border rounded"
           />
         </div>
 
-        {/* Table */}
-        <div className="overflow-auto">
-          <table className="min-w-full border text-sm text-left">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border p-2">
-                  <input type="checkbox" />
-                </th>
-                <th className="border p-2">Image</th> {/* 👈 New column */}
-                <th className="border p-2">Section Name</th>
-                <th className="border p-2">Category</th>
-                <th className="border p-2">Meta Title</th>
-                <th className="border p-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((cat) => (
-                <tr key={cat._id} className="hover:bg-gray-50">
-                  <td className="border p-2">
-                    <input type="checkbox" />
-                  </td>
-                  <td className="border p-2">
-                    <img
-                      src={cat.imageUrl}
-                      alt={cat.sectionName}
-                      className="w-12 h-12 object-cover rounded"
-                    />
-                  </td>
-                  <td className="border p-2">{cat.sectionName}</td>
-                  <td className="border p-2">{cat.category?.name || "N/A"}</td>
-                  <td className="border p-2">{cat.metaTitle}</td>
-                  <td className="border p-2 space-x-2">
-                    <Link to={`/admin/blog/category/edit/${cat._id}`}>
-                      <button className="bg-green-500 text-white px-3 py-1 rounded text-xs">
+        {filtered.length === 0 ? (
+          <div className="text-center py-4 text-gray-500">No categories found</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-200 text-gray-700">
+                  <th className="p-3 rounded-tl">Section Name</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3">Image</th>
+                  <th className="p-3 rounded-tr">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.map((cat) => (
+                  <tr key={cat._id} className="border-b hover:bg-gray-50">
+                    <td className="p-3">{cat.sectionName}</td>
+                    <td className="p-3">{cat.category}</td>
+                    <td className="p-3">
+                      {cat.imageUrl ? (
+                        <img
+                          src={cat.imageUrl}
+                          alt={cat.sectionName}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      ) : (
+                        'No Image'
+                      )}
+                    </td>
+                    <td className="px-6 py-4 border border-gray-300 text-center">
+                      <button
+                        onClick={() => handleEdit(cat._id)}
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded mr-2"
+                      >
                         Edit
                       </button>
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(cat._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded text-xs"
-                    >
-                      Delete
-                    </button>
-                    <Link to="/admin/blog/list">
-                      <button className="bg-indigo-500 text-white px-3 py-1 rounded text-xs">
+                      <button
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to delete this category?')) {
+                            handleDelete(cat._id);
+                          }
+                        }}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded mr-2"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => {
+                          const categoryValue = cat.category || cat.sectionName || cat.name || cat.title || '';
+                          if (categoryValue) {
+                            const encodedValue = encodeURIComponent(categoryValue);
+                            navigate(`/admin/blog/list?category=${encodedValue}`);
+                          } else {
+                            console.error('No valid category value found for category:', cat);
+                            toast.error('Unable to manage blogs: Category value not found');
+                          }
+                        }}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                      >
                         Manage Blogs
                       </button>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-              {currentItems.length === 0 && (
-                <tr>
-                  <td colSpan="5" className="text-center p-4 text-gray-500">
-                    No blog categories found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="mt-4 flex justify-center gap-2">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-          >
-            Prev
-          </button>
-          {[...Array(totalPages)].map((_, i) => (
+        {totalPages > 1 && (
+          <div className="mt-4 flex justify-center">
             <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 border rounded ${
-                currentPage === i + 1
-                  ? "bg-blue-500 text-white"
-                  : "bg-white hover:bg-gray-100"
-              }`}
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 mx-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200"
             >
-              {i + 1}
+              Prev
             </button>
-          ))}
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-          >
-            Next
-          </button>
-        </div>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`px-3 py-1 mx-1 border rounded ${page === currentPage ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'}`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 mx-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
