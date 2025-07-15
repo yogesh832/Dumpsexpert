@@ -16,7 +16,6 @@ const AddBlog = () => {
 
   const [formData, setFormData] = useState({
     title: "",
-    language: "en",
     slug: "",
     category: decodedInitialCategory,
     content: "",
@@ -82,22 +81,32 @@ const AddBlog = () => {
         }
       }
 
+      const blogData = {
+        title: formData.title,
+        content: formData.content,
+        category: formData.category || '',
+        imageUrl: formData.image ? formData.image.name : '',
+        status: 'publish',
+        metaTitle: formData.metaTitle || formData.title,
+        metaKeywords: formData.metaKeywords || 'default keywords',
+        metaDescription: formData.metaDescription || 'default description',
+        schema: schemaDataObj ? JSON.stringify(schemaDataObj) : '{}'
+      };
+
       const blogFormData = new FormData();
-      blogFormData.append('title', formData.title);
-      blogFormData.append('content', formData.content);
+      blogFormData.append('title', blogData.title);
+      blogFormData.append('content', blogData.content);
       if (formData.image) {
         blogFormData.append('image', formData.image);
       }
-      blogFormData.append('category', formData.category || ''); // Use category string value instead of ID
-      blogFormData.append('status', formData.status);
-      blogFormData.append('metaTitle', formData.metaTitle);
-      blogFormData.append('metaKeywords', formData.metaKeywords);
-      blogFormData.append('metaDescription', formData.metaDescription);
-      if (schemaDataObj) {
-        blogFormData.append('schema', JSON.stringify(schemaDataObj));
-      }
+      blogFormData.append('category', blogData.category);
+      blogFormData.append('status', blogData.status);
+      blogFormData.append('metaTitle', blogData.metaTitle);
+      blogFormData.append('metaKeywords', blogData.metaKeywords);
+      blogFormData.append('metaDescription', blogData.metaDescription);
+      blogFormData.append('schema', blogData.schema);
 
-      const response = await axios.post('http://localhost:8000/api/blogs', blogFormData, {
+      const response = await axios.post('http://localhost:8000/api/blogs/create', blogFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         withCredentials: true
       });
@@ -139,17 +148,6 @@ const AddBlog = () => {
           required
           className="w-full border px-3 py-2 rounded-md"
         />
-        <select
-          name="language"
-          value={formData.language}
-          onChange={handleChange}
-          required
-          className="w-full border px-3 py-2 rounded-md"
-        >
-          <option value="en">English</option>
-          <option value="es">Spanish</option>
-          <option value="fr">French</option>
-        </select>
         <div className="mb-4 w-full">
           <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">
             Blog Category <span className="text-red-500">*</span>

@@ -461,7 +461,6 @@ const sidebarItems = [
         to: "/admin/blog",
         children: [
           { label: "Category", to: "/admin/blog/category" },
-          { label: "Archive", to: "/admin/blog/archive" },
           { label: "Posts", to: "/admin/blog/posts" },
         ],
       },

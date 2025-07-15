@@ -181,22 +181,22 @@ const BlogList = () => {
       return;
     }
 
-    const submissionData = new FormData();
-    Object.keys(editingBlog).forEach((key) => {
-      submissionData.append(key, editingBlog[key]);
-    });
+    const blogData = {
+      title: editingBlog.title,
+      content: editingBlog.content,
+      category: editingBlog.category,
+      imageUrl: editingBlog.imageUrl,
+      status: editingBlog.status,
+      metaTitle: editingBlog.metaTitle,
+      metaKeywords: editingBlog.metaKeywords,
+      metaDescription: editingBlog.metaDescription,
+      schema: editingBlog.schema
+    };
 
     try {
-      const response = await axios.post(
-        'http://localhost:8000/api/blogs/create',
-        submissionData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          withCredentials: true
-        }
-      );
+      const response = await axios.post('http://localhost:8000/api/blogs/create', blogData, {
+        withCredentials: true
+      });
 
       console.log('Response from backend:', response.data);
       setLocalBlogs([...blogs, response.data.data]);
