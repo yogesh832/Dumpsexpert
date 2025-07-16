@@ -12,15 +12,22 @@ const { parser } = require('../utils/cloudinary');
 
 
 
-
-// ✅ Specific routes FIRST
+// Get all blogs with optional filtering
 router.get('/all', getAllBlogs);
-router.get('/slug/:slug', getBlogBySlug);
-router.post('/create', parser.single('image'), createBlog);
-router.put('/:id', parser.single('image'), updateBlog);
-router.delete('/:id', deleteBlog);
 
-// ❗ Generic dynamic route LAST
+// Get a specific blog by ID (for admin)
 router.get('/:id', getBlogById);
+
+// Get a specific blog by slug (for public view)
+router.get('/slug/:slug', getBlogBySlug);
+
+// Create a new blog
+router.post('/create', parser.single('image'), createBlog);
+
+// Update a blog
+router.put('/:id', parser.single('image'), updateBlog);
+
+// Delete a blog
+router.delete('/:id', deleteBlog);
 
 module.exports = router;

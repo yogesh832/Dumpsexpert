@@ -1,17 +1,16 @@
-const AddBlogCategory = require("../models/blogCategorySchema");
-const { deleteFromCloudinary } = require("../utils/cloudinary");
+const BlogCategory = require('../models/blogCategorySchema');
+const { deleteFromCloudinary } = require('../utils/cloudinary');
 
-
-
+// Get Blog Category by ID
 const getBlogCategoryById = async (req, res) => {
   try {
-    const blog = await AddBlogCategory.findById(req.params.id);
-    if (!blog) return res.status(404).json({ error: "Not Found" });
+    const category = await BlogCategory.findById(req.params.id);
+    if (!category) return res.status(404).json({ error: 'Not Found' });
 
-    return res.status(200).json(blog);
+    return res.status(200).json(category);
   } catch (err) {
-    console.error("❌ Error in getBlogCategoryById:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error('❌ Error in getBlogCategoryById:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
@@ -19,8 +18,7 @@ const getBlogCategoryById = async (req, res) => {
 const createBlogCategory = async (req, res) => {
   try {
     const {
-      language,
-      title,
+      sectionName,
       category,
       metaTitle,
       metaKeywords,
@@ -32,8 +30,8 @@ const createBlogCategory = async (req, res) => {
       return res.status(400).json({ error: 'Image file is required' });
     }
 
-    const newCategory = new AddBlogCategory({
-      sectionName: title,
+    const newCategory = new BlogCategory({
+      sectionName,
       category,
       imageUrl: req.file.path,
       imagePublicId: req.file.filename,
@@ -51,20 +49,21 @@ const createBlogCategory = async (req, res) => {
   }
 };
 
+// Get All Blog Categories
 const getAllBlogCategories = async (req, res) => {
   try {
-    const categories = await AddBlogCategory.find().populate('category');
+    const categories = await BlogCategory.find();
     res.status(200).json(categories);
   } catch (err) {
-    console.error('Fetch Error:', err);
+    console.error('❌ Error fetching all blog categories:', err);
     res.status(500).json({ error: 'Internal Server Error', details: err.message });
   }
 };
 
-
 // Update Blog Category
 const updateBlogCategory = async (req, res) => {
   try {
+    const categoryId = req.params.id;
     const {
       sectionName,
       category,
@@ -74,25 +73,6 @@ const updateBlogCategory = async (req, res) => {
       schema,
     } = req.body;
 
-    if (
-      !sectionName ||
-      !category ||
-      !metaTitle ||
-      !metaKeywords ||
-      !metaDescription ||
-      !schema
-    ) {
-      return res.status(400).json({ error: "All required fields must be provided" });
-    }
-
-    const blog = await AddBlogCategory.findById(req.params.id);
-    if (!blog) return res.status(404).json({ error: "Blog category not found" });
-
-    // If a new image is uploaded, delete the old one from Cloudinary
-    if (req.file) {
-      await deleteFromCloudinary(blog.imagePublicId);
-    }
-
     const updateData = {
       sectionName,
       category,
@@ -100,39 +80,49 @@ const updateBlogCategory = async (req, res) => {
       metaKeywords,
       metaDescription,
       schema,
-      lastUpdatedBy: req.user?._id || req.body.lastUpdatedBy,
     };
 
     if (req.file) {
+      // If new image is uploaded, delete the old one if it exists
+      const oldCategory = await BlogCategory.findById(categoryId);
+      if (oldCategory && oldCategory.imagePublicId) {
+        await deleteFromCloudinary(oldCategory.imagePublicId);
+      }
       updateData.imageUrl = req.file.path;
       updateData.imagePublicId = req.file.filename;
     }
 
-    const updated = await AddBlogCategory.findByIdAndUpdate(req.params.id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedCategory = await BlogCategory.findByIdAndUpdate(categoryId, updateData, { new: true });
+    if (!updatedCategory) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
 
-    return res.status(200).json({ message: "Updated successfully", data: updated });
+    res.status(200).json(updatedCategory);
   } catch (err) {
-    console.error("❌ Error in updateBlogCategory:", err);
-    return res.status(500).json({ error: "Update failed", details: err.message });
+    console.error('Update Error:', err);
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
   }
 };
 
 // Delete Blog Category
 const deleteBlogCategory = async (req, res) => {
   try {
-    const blog = await AddBlogCategory.findById(req.params.id);
-    if (!blog) return res.status(404).json({ error: "Blog category not found" });
+    const categoryId = req.params.id;
+    const category = await BlogCategory.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
 
-    await deleteFromCloudinary(blog.imagePublicId);
-    await blog.deleteOne();
+    // Delete associated image from Cloudinary if it exists
+    if (category.imagePublicId) {
+      await deleteFromCloudinary(category.imagePublicId);
+    }
 
-    return res.status(200).json({ message: "Deleted successfully" });
+    await BlogCategory.findByIdAndDelete(categoryId);
+    res.status(200).json({ message: 'Category deleted successfully' });
   } catch (err) {
-    console.error("❌ Error in deleteBlogCategory:", err);
-    return res.status(500).json({ error: "Delete failed", details: err.message });
+    console.error('Delete Error:', err);
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
   }
 };
 
@@ -143,4 +133,3 @@ module.exports = {
   updateBlogCategory,
   deleteBlogCategory,
 };
-
