@@ -4,11 +4,15 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import useCartStore from "../store/useCartStore";
+import { FaCheckCircle } from "react-icons/fa";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules"; // ✅ Correct module import
+import "swiper/css";
+import "swiper/css/navigation";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [exams, setExams] = useState([]);
@@ -19,301 +23,403 @@ const ProductDetails = () => {
   const addToCart = useCartStore((state) => state.addToCart);
 
   useEffect(() => {
-    const fetchProductAndExams = async () => {
-      setLoading(true);
+    const fetchData = async () => {
       try {
-        const productRes = await axios.get(
+        const { data: productRes } = await axios.get(
           `http://localhost:8000/api/products/${id}`
         );
-        const fetchedProduct = productRes.data.data;
-        setProduct(fetchedProduct);
-
+        setProduct(productRes.data);
+        console.log(isAdding);
         const [examsRes, allProductsRes] = await Promise.all([
-          axios.get("http://localhost:8000/api/exams"),
+          axios.get(
+            `http://localhost:8000/api/exams/byProduct/${productRes.data._id}`
+          ),
           axios.get("http://localhost:8000/api/products"),
         ]);
 
-        const linkedExams = examsRes.data.filter(
-          (exam) => exam.productId === fetchedProduct._id
-        );
-        setExams(linkedExams);
+        setExams(examsRes.data[0]); // expected to be an array
+        console.log("exams", exams);
 
         const related = allProductsRes.data.data.filter(
-          (p) => p._id !== fetchedProduct._id
+          (p) => p._id !== productRes.data._id
         );
         setRelatedProducts(related);
-      } catch (err) {
-        console.error("Error fetching product or exams:", err);
+      } catch (error) {
         toast.error("Failed to load product details.");
+        console.log(error);
       } finally {
         setLoading(false);
       }
     };
 
-    if (id) fetchProductAndExams();
+    if (id) fetchData();
   }, [id]);
 
-  const handleReviewChange = (e) => {
-    const { name, value } = e.target;
-    setReviewForm((prev) => ({ ...prev, [name]: value }));
+  const handleDownload = async (url, filename) => {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    } catch {
+      toast.error("Failed to download.");
+    }
+  };
+
+  const handleAddToCart = (type = "regular") => {
+    setIsAdding(true);
+    const item = {
+      ...product,
+      title: type === "combo" ? `${product.title} - Combo` : product.title,
+      type,
+      samplePdfUrl: product.samplePdfUrl,
+      mainPdfUrl: product.mainPdfUrl,
+      price:
+        type === "combo"
+          ? product.comboPriceInr || product.comboPriceUsd
+          : product.dumpsPriceInr || product.dumpsPriceUsd,
+    };
+
+    addToCart(item);
+    toast.success("Added to cart!");
+    setTimeout(() => setIsAdding(false), 1000);
   };
 
   const handleSubmitReview = (e) => {
     e.preventDefault();
     if (!reviewForm.name || !reviewForm.comment) {
-      toast.error("Please fill out all fields.");
+      toast.error("All fields are required.");
       return;
     }
-
-    // Ideally, post review to API here
-
     toast.success("Review submitted!");
     setReviewForm({ name: "", comment: "" });
   };
 
-  const handleAddToCart = () => {
-    setIsAdding(true);
-    addToCart(product);
-    toast.success("Added to cart!");
-    setTimeout(() => setIsAdding(false), 1000);
+  const calculateDiscount = (mrp, price) => {
+    if (!mrp || !price || mrp <= price) return 0;
+    const discount = ((mrp - price) / mrp) * 100;
+    return Math.round(discount); // round to nearest integer
   };
 
-  const handleSampleDownload = async () => {
-    const response = await fetch(product.samplePdfUrl);
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = `${product.title}-Sample.pdf`;
-    a.click();
-    window.URL.revokeObjectURL(blobUrl);
-  };
-  const handleMainDownload = async () => {
-    try {
-      const response = await fetch(product.mainPdfUrl);
-      if (!response.ok) throw new Error("Failed to fetch file.");
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = `${product.title}-Main.pdf`;
-      a.click();
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-      console.error("Error downloading main PDF:", err);
-      toast.error("Unable to download Main PDF.");
-    }
-  };
-
-  if (loading || !product) {
-    return (
-      <div className="min-h-screen mt-34 flex justify-center items-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
+  if (loading || !product) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen pt-28 px-4 md:px-20 pb-20 bg-white">
-      <div className="flex flex-col md:flex-row gap-10 items-start">
-        {/* Product Image */}
-        <div className="w-full md:w-[40%]">
+    <div className="min-h-screen bg-white pt-34 px-4 md:px-20 text-gray-800">
+      <div className="flex flex-col md:flex-row gap-10">
+        <div className="md:w-[40%]">
           <img
-            src={product.imageUrl || "/placeholder.png"}
-            alt="product"
-            className="rounded-xl shadow-md w-full object-contain max-h-[400px]"
+            src={product.imageUrl}
+            alt={product.title}
+            className="w-full rounded-xl object-contain shadow-md max-h-[400px]"
           />
+
+          {/* Feature list UI */}
+          <div className="flex flex-row flex-wrap justify-center gap-8 bg-white border border-gray-200 shadow-sm rounded-xl px-6 py-5 mt-8 max-w-4xl mx-auto text-gray-900 text-sm sm:text-base font-medium">
+            <div className="flex flex-col gap-3 min-w-[220px]">
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-blue-600 text-xl" />
+                <span>Instant Download After Purchase</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-blue-600 text-xl" />
+                <span>100% Real & Updated Dumps</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-blue-600 text-xl" />
+                <span>100% Money Back Guarantee</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 min-w-[220px]">
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-blue-600 text-xl" />
+                <span>90 Days Free Updates</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-blue-600 text-xl" />
+                <span>24/7 Customer Support</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Product Info */}
-        <div className="w-full md:w-[60%] space-y-2 text-sm sm:text-base">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            {product.title}
-          </h1>
+      <div className="md:w-[60%] space-y-2">
+  <h1 className="text-3xl font-bold">{product.title || "N/A"}</h1>
 
-          <ul className="mt-4 space-y-1 text-gray-800">
-            <li>
-              <strong>Exam Code:</strong> {product.sapExamCode}
-            </li>
-            <li>
-              <strong>Exam Name:</strong> {product.title}
-            </li>
-            <li>
-              <strong>Total Questions:</strong> 80
-            </li>
-            <li>
-              <strong>Passing Score:</strong> 73%
-            </li>
-            <li>
-              <strong>Duration:</strong> 180 Minutes
-            </li>
-            <li>
-              <strong>Last Updated:</strong>{" "}
-              {new Date(product.updatedAt).toDateString()}
-            </li>
-          </ul>
+  <p className="text-sm">
+    Exam Code: <strong>{product.sapExamCode || "N/A"}</strong>
+  </p>
 
-          <div className="mt-4 text-lg font-semibold">
-            <span className="text-blue-600 text-xl font-bold">
-              ₹ {product.price}
-            </span>
-            <span className="line-through text-gray-500 ml-2">₹ 6000.00</span>
-            <span className="text-green-600 ml-2 text-sm">(33% off)</span>
-          </div>
+  <p className="text-sm">
+    Category: <strong>{product.category ? product.category.toUpperCase() : "N/A"}</strong>
+  </p>
+{exams && exams._id && (<>
+  <p className="text-sm">
+    Exam Duration: <strong>{exams?.duration ?? "N/A"}</strong> Minutes
+  </p>
 
-          <div className="mt-4 flex flex-wrap gap-4">
-            <button
-              onClick={handleSampleDownload}
-              className="px-5 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm rounded shadow-sm"
-            >
-              Download Sample
-            </button>
-            <button
-              onClick={handleMainDownload}
-              className="px-5 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm rounded shadow-sm"
-            >
-              Download main
-            </button>
+  <p className="text-sm">
+    Total Questions: <strong>{exams?.numberOfQuestions ?? "N/A"}</strong>
+  </p>
 
-            <button
-              onClick={handleAddToCart}
-              disabled={isAdding}
-              className={`px-6 py-2 text-sm rounded shadow-md text-white font-semibold ${
-                isAdding ? "bg-green-600" : "bg-orange-500 hover:bg-orange-600"
-              }`}
-            >
-              {isAdding ? "Added ✓" : "🛒 Go to Cart"}
-            </button>
-          </div>
+  <p className="text-sm">
+    Passing Score: <strong>{exams?.passingScore ?? "N/A"}</strong>%
+  </p>
+  </>
+)}
+  <p className="text-sm">
+    Updated on:{" "}
+    {product.updatedAt
+      ? new Date(product.updatedAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        })
+      : "N/A"}
+  </p>
+
+
+   {/* Pricing & buttons */}
+<div className="mt-4 space-y-4">
+  {/* Regular PDF */}
+  <div className="flex justify-between items-center">
+    <div>
+      <p className="font-semibold">Downloadable File</p>
+      <p className="text-blue-600 font-bold">
+        ₹{product.dumpsPriceInr ?? "N/A"}
+        <span className="text-red-500 ml-2 line-through">
+          ₹{product.dumpsMrpInr ?? "N/A"}
+        </span>{" "}
+        <span className="text-gray-600 text-sm">
+          (
+          {calculateDiscount(
+            product.dumpsMrpInr,
+            product.dumpsPriceInr
+          )}
+          % off)
+        </span>
+      </p>
+      <p>
+        ${" "}
+        <span className="text-blue-400 font-bold">
+          {product.dumpsPriceUsd ?? "N/A"}
+        </span>{" "}
+        <span className="text-red-400 font-bold line-through">
+          ${product.dumpsMrpUsd ?? "N/A"}
+        </span>{" "}
+        <span className="text-gray-400 font-bold text-sm">
+          (
+          {calculateDiscount(
+            product.dumpsMrpUsd,
+            product.dumpsPriceUsd
+          )}
+          % off)
+        </span>
+      </p>
+    </div>
+    <div className="flex items-center gap-2">
+      {product.samplePdfUrl && (
+        <button
+          onClick={() =>
+            handleDownload(
+              product.samplePdfUrl,
+              `${product.title}-Sample.pdf`
+            )
+          }
+          className="bg-gray-800 text-white px-3 py-1 rounded text-sm"
+        >
+          Download Sample
+        </button>
+      )}
+      <button
+        onClick={() => handleAddToCart("regular")}
+        className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold px-4 py-2 rounded"
+      >
+        🛒 Add to Cart
+      </button>
+    </div>
+  </div>
+
+  {/* Online Exam */}
+  {exams && exams._id && (
+    <div className="flex justify-between items-center">
+      <div>
+        <p className="font-semibold">Online Exam Questions</p>
+        <p className="text-blue-600 font-bold">
+          ₹ <span>{exams.priceINR ?? "N/A"}</span>{" "}
+          <span className="text-red-600 font-bold line-through">
+            ₹{exams.mrpINR ?? "N/A"}
+          </span>{" "}
+          <span className="text-gray-600 font-bold text-sm">
+            ({calculateDiscount(exams.mrpINR, exams.priceINR)}% off)
+          </span>
+        </p>
+        <p>
+          ${" "}
+          <span className="text-blue-400 font-bold">
+            {exams.priceUSD ?? "N/A"}
+          </span>{" "}
+          <span className="text-red-400 font-bold line-through">
+            ${exams.mrpUSD ?? "N/A"}
+          </span>{" "}
+          <span className="text-gray-400 font-bold text-sm">
+            ({calculateDiscount(exams.mrpUSD, exams.priceUSD)}% off)
+          </span>
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => navigate(`/student/test/${exams._id}`)}
+          className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+        >
+          Try Online Exam
+        </button>
+        <button
+          onClick={() => handleAddToCart("regular")}
+          className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold px-4 py-2 rounded"
+        >
+          🛒 Add to Cart
+        </button>
+      </div>
+    </div>
+  )}
+
+  {/* Combo */}
+  {exams && exams._id && product.comboPriceInr && (
+    <div className="flex justify-between items-center">
+      <div>
+        <p className="font-semibold">Get Combo (PDF + Online Exam)</p>
+        <p className="text-blue-600 font-bold">
+          ₹ <span>{product.comboPriceInr}</span>{" "}
+          <span className="text-red-600 font-bold line-through">
+            ₹{product.comboMrpInr}
+          </span>{" "}
+          <span className="text-gray-600 font-bold text-sm">
+            ({calculateDiscount(product.comboMrpInr, product.comboPriceInr)}% off)
+          </span>
+        </p>
+        <p>
+          ${" "}
+          <span className="text-blue-400 font-bold">
+            {product.comboPriceUsd ?? "N/A"}
+          </span>{" "}
+          <span className="text-red-400 font-bold line-through">
+            ${product.comboMrpUsd ?? "N/A"}
+          </span>{" "}
+          <span className="text-gray-400 font-bold text-sm">
+            ({calculateDiscount(product.comboMrpUsd, product.comboPriceUsd)}% off)
+          </span>
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => handleAddToCart("combo")}
+          className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold px-4 py-2 rounded"
+        >
+          🛒 Add to Cart
+        </button>
+      </div>
+    </div>
+  )}
+</div>
+
 
           {/* Description */}
           <div className="mt-6">
-            <h2 className="font-semibold text-base">Description:</h2>
-            <p className="text-gray-700 mt-1">
-              Dumpsxpert Provides 100% updated SAP Project Manager - SAP
-              Activate Exam Questions and answers PDF which helps you to Pass
-              Your SAP Certification Exam in First Attempt.
-            </p>
+            <h2 className="text-lg font-semibold mb-2">Description:</h2>
+            {product.Description ? (
+              <div
+                className="prose max-w-none text-sm text-gray-800"
+                dangerouslySetInnerHTML={{ __html: product.Description }}
+              />
+            ) : (
+              <p className="text-sm text-gray-600">No description available.</p>
+            )}
           </div>
-
-          {/* Exams included */}
-          {exams.length > 0 && (
-            <div className="mt-8">
-              <h2 className="text-lg font-bold mb-3">
-                📚 Exams Included in this Product:
-              </h2>
-              {exams.map((exam) => (
-                <div
-                  key={exam._id}
-                  className="mb-3 p-3 border rounded bg-gray-50"
-                >
-                  <p>
-                    <strong>Name:</strong> {exam.name}
-                  </p>
-                  <p>
-                    <strong>Duration:</strong> {exam.duration} mins
-                  </p>
-                  <p>
-                    <strong>Questions:</strong> {exam.numberOfQuestions}
-                  </p>
-                  <button
-                    onClick={() => navigate(`/student/test/${exam._id}`)}
-                    className="mt-2 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded"
-                  >
-                    Start Exam
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
+      </div>
+
+      {/* Long Description */}
+      <div className="my-10">
+        <h2 className="text-lg font-semibold mb-2">Detailed Overview:</h2>
+        {product.longDescription ? (
+          <div
+            className="prose max-w-none text-sm text-gray-800"
+            dangerouslySetInnerHTML={{ __html: product.longDescription }}
+          />
+        ) : (
+          <p className="text-sm text-gray-600">No additional information.</p>
+        )}
       </div>
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
-        <div className="mt-20">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">
-            Related Products
-          </h2>
-          <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
+        <div className="mt-16">
+          <h2 className="text-xl font-bold mb-4">Related Products</h2>
+          <Swiper
+            modules={[Navigation]}
+            spaceBetween={20}
+            slidesPerView={2}
+            navigation
+            breakpoints={{
+              640: { slidesPerView: 2 },
+              768: { slidesPerView: 3 },
+              1024: { slidesPerView: 4 },
+            }}
+            className="relative"
+          >
             {relatedProducts.map((item) => (
-              <div
-                key={item._id}
-                className="min-w-[180px] w-[200px] bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition-all"
-              >
-                <img
-                  src={item.imageUrl || "/placeholder.png"}
-                  alt={item.title}
-                  className="h-36 w-full object-contain mb-3 rounded"
-                />
-                <h3 className="text-sm font-semibold mb-1 truncate">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-gray-500">{item.sapExamCode}</p>
-                <p className="text-xs text-gray-600 mt-1">₹ {item.price}</p>
-              </div>
+              <SwiperSlide key={item._id}>
+                <div
+                  onClick={() => navigate(`/product/${item._id}`)}
+                  className="bg-white border rounded-lg shadow-sm p-4 cursor-pointer hover:shadow-md transition"
+                >
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="h-36 object-contain w-full rounded mb-2"
+                  />
+                  <h3 className="text-sm font-semibold truncate">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1">
+                    ₹ {item.dumpsPriceInr}
+                  </p>
+                </div>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
       )}
 
-      {/* Customer Reviews */}
+      {/* Review */}
       <div className="mt-16">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-900">
-          Customer Reviews
-        </h2>
-        {product.reviews?.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {product.reviews.map((review, index) => (
-              <div
-                key={index}
-                className="bg-gray-50 p-4 rounded-md border shadow-sm"
-              >
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-semibold text-gray-800">
-                    {review.user}
-                  </span>
-                  <span className="text-yellow-500 font-medium">
-                    ⭐ {review.rating}/5
-                  </span>
-                </div>
-                <p className="text-gray-700 text-sm">{review.comment}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {new Date(review.date).toLocaleDateString()}
-                </p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-500">No reviews yet.</p>
-        )}
-      </div>
-
-      {/* Review Form */}
-      <div className="mt-16 border p-6 rounded-lg shadow-sm bg-gray-50">
-        <h3 className="text-xl font-semibold mb-4 text-gray-900">
-          Write a Review
-        </h3>
-        <form className="grid gap-4" onSubmit={handleSubmitReview}>
+        <h2 className="text-xl font-semibold mb-4">Write a Review</h2>
+        <form className="grid gap-3 max-w-xl" onSubmit={handleSubmitReview}>
           <input
-            type="text"
             name="name"
             value={reviewForm.name}
-            onChange={handleReviewChange}
-            placeholder="Your Name"
-            className="border p-3 rounded outline-blue-400"
+            onChange={(e) =>
+              setReviewForm({ ...reviewForm, name: e.target.value })
+            }
+            placeholder="Your name"
+            className="border p-3 rounded"
           />
           <textarea
             name="comment"
             value={reviewForm.comment}
-            onChange={handleReviewChange}
-            placeholder="Your review"
-            rows="3"
-            className="border p-3 rounded outline-blue-400"
-          ></textarea>
+            onChange={(e) =>
+              setReviewForm({ ...reviewForm, comment: e.target.value })
+            }
+            placeholder="Your comment"
+            rows="4"
+            className="border p-3 rounded"
+          />
           <button
             type="submit"
-            className="w-fit px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
           >
             Submit Review
           </button>

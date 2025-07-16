@@ -19,6 +19,7 @@ const CategoryProducts = () => {
         );
         setProducts(filtered);
         setLoading(false);
+        console.log(res.data.data);
       })
       .catch((err) => {
         console.error("Failed to fetch products:", err);
@@ -103,7 +104,7 @@ const CategoryProducts = () => {
                           Starting at:
                         </span>
                         <span className="text-black font-semibold">
-                          ₹{product.price} (~${(product.price / 74).toFixed(2)})
+                          ₹{product.dumpsPriceInr} (${product.dumpsPriceUsd}  )
                         </span>
                       </td>
                       <td className="px-4 py-3">

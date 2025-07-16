@@ -11,6 +11,13 @@ const examSchema = new mongoose.Schema(
     numberOfQuestions: { type: Number, required: true },
     priceUSD: { type: Number },
     priceINR: { type: Number },
+    mrpUSD: {
+      type: Number,
+    },
+    mrpINR: {
+      type: Number,
+    },
+
     status: {
       type: String,
       enum: ["unpublished", "published"],

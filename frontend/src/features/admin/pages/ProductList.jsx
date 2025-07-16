@@ -89,7 +89,7 @@ const ProductList = () => {
                   />
                 </td>
                 <td className="p-2 border">{product.title}</td>
-                <td className="p-2 border">{product.price}</td>
+                <td className="p-2 border">{product.dumpsPriceInr}</td>
                 <td className="p-2 border">{product.category}</td>
                 <td className="p-2 border">
                   <span

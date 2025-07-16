@@ -16,6 +16,8 @@ const ExamForm = ({ exam, setView }) => {
     numberOfQuestions: "",
     priceUSD: "",
     priceINR: "",
+    mrpUSD: "",
+    mrpINR: "",
     status: "unpublished",
     mainInstructions: "",
     sampleInstructions: "",
@@ -53,6 +55,8 @@ const ExamForm = ({ exam, setView }) => {
         numberOfQuestions: exam.numberOfQuestions || "",
         priceUSD: exam.priceUSD || "",
         priceINR: exam.priceINR || "",
+        mrpUSD: exam.mrpUSD || "",
+        mrpINR: exam.mrpINR || "",
         status: exam.status || "unpublished",
         mainInstructions: exam.mainInstructions || "",
         sampleInstructions: exam.sampleInstructions || "",
@@ -79,6 +83,8 @@ const ExamForm = ({ exam, setView }) => {
       numberOfQuestions: Number(formData.numberOfQuestions),
       priceUSD: Number(formData.priceUSD),
       priceINR: Number(formData.priceINR),
+      mrpUSD: Number(formData.mrpUSD),
+      mrpINR: Number(formData.mrpINR),
       productId: formData.productId, // ✅ Make sure this line is present
     };
 
@@ -182,6 +188,19 @@ const ExamForm = ({ exam, setView }) => {
               placeholder: "e.g. 799",
               type: "number",
             },
+            {
+              name: "mrpUSD", // ✅ Fixed
+              label: "MRP ($)",
+              placeholder: "e.g. 10",
+              type: "number",
+            },
+            {
+              name: "mrpINR", // ✅ Fixed
+              label: "MRP (₹)",
+              placeholder: "e.g. 799",
+              type: "number",
+            },
+
             {
               name: "lastUpdatedBy",
               label: "Updated By",

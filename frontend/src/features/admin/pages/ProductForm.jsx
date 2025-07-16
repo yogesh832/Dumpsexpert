@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { instance } from "../../../lib/axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const ProductForm = ({ mode }) => {
   const { id } = useParams();
@@ -16,6 +17,22 @@ const ProductForm = ({ mode }) => {
     image: null,
     samplePdf: null,
     mainPdf: null,
+    dumpsPriceInr: "",
+    dumpsPriceUsd: "",
+    dumpsMrpInr: "",
+    dumpsMrpUsd: "",
+    comboPriceInr: "",
+    comboPriceUsd: "",
+    comboMrpInr: "",
+    comboMrpUsd: "",
+    sku: "",
+    longDescription: "",
+    Description: "",
+    slug: "",
+    metaTitle: "",
+    metaKeywords: "",
+    metaDescription: "",
+    schema: "",
   });
 
   const [existingFiles, setExistingFiles] = useState({
@@ -28,39 +45,32 @@ const ProductForm = ({ mode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch categories
   useEffect(() => {
-    instance
-      .get("http://localhost:8000/api/product-categories")
-      .then((res) => setCategories(res.data))
+    fetch("http://localhost:8000/api/product-categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
       .catch(() => setCategories([]));
   }, []);
 
-  // Fetch product (for edit)
   useEffect(() => {
     if (mode === "edit" && id) {
-      instance
-        .get(`http://localhost:8000/api/products/${id}`)
+      fetch(`http://localhost:8000/api/products/${id}`)
+        .then((res) => res.json())
         .then((res) => {
-          const p = res.data.data;
-          setForm({
-            sapExamCode: p.sapExamCode,
-            title: p.title,
-            price: p.price,
-            category: p.category,
-            status: p.status,
-            action: p.action,
+          const p = res.data;
+          setForm((prev) => ({
+            ...prev,
+            ...p,
             image: null,
             samplePdf: null,
             mainPdf: null,
-          });
+          }));
           setExistingFiles({
             imageUrl: p.imageUrl,
             samplePdfUrl: p.samplePdfUrl,
             mainPdfUrl: p.mainPdfUrl,
           });
-        })
-        .catch(() => setError("Failed to load product"));
+        });
     }
   }, [mode, id]);
 
@@ -84,22 +94,24 @@ const ProductForm = ({ mode }) => {
     });
 
     try {
-      if (mode === "add") {
-        await instance.post("http://localhost:8000/api/products", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      } else {
-        await instance.put(
-          `http://localhost:8000/api/products/${id}`,
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
+      const res = await fetch(
+        mode === "add"
+          ? "http://localhost:8000/api/products"
+          : `http://localhost:8000/api/products/${id}`,
+        {
+          method: mode === "add" ? "POST" : "PUT",
+          body: formData,
+        }
+      );
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Something went wrong");
       }
+
       navigate("/admin/products/list");
     } catch (err) {
-      setError(err.response?.data?.message || "Submit failed");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -107,34 +119,29 @@ const ProductForm = ({ mode }) => {
 
   const handleDelete = async () => {
     if (!id) return;
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this product?"
-    );
-    if (!confirmDelete) return;
+    const confirm = window.confirm("Delete this product?");
+    if (!confirm) return;
 
     try {
-      await instance.delete(`http://localhost:8000/api/products/${id}`);
+      const res = await fetch(`http://localhost:8000/api/products/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete");
       navigate("/admin/products/list");
     } catch (err) {
-      setError("Failed to delete product");
-      console.log(err);
+      setError(err.message);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow">
       <h2 className="text-xl font-bold mb-4">
-        {mode === "add" ? "Add New Product" : "Edit Product"}
+        {mode === "add" ? "Add Product" : "Edit Product"}
       </h2>
 
       {error && <p className="text-red-600 mb-3">{error}</p>}
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4"
-        encType="multipart/form-data"
-      >
-        {/* BASIC FIELDS */}
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
           name="sapExamCode"
@@ -144,7 +151,6 @@ const ProductForm = ({ mode }) => {
           className="w-full border px-4 py-2 rounded"
           required
         />
-
         <input
           type="text"
           name="title"
@@ -155,14 +161,77 @@ const ProductForm = ({ mode }) => {
           required
         />
 
+        <h3 className="font-semibold mt-4">Dumps Pricing</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            name="dumpsPriceInr"
+            placeholder="Dumps Price INR"
+            value={form.dumpsPriceInr}
+            onChange={handleChange}
+            className="border px-2 py-1 rounded"
+          />
+          <input
+            name="dumpsPriceUsd"
+            placeholder="Dumps Price USD"
+            value={form.dumpsPriceUsd}
+            onChange={handleChange}
+            className="border px-2 py-1 rounded"
+          />
+          <input
+            name="dumpsMrpInr"
+            placeholder="Dumps MRP INR"
+            value={form.dumpsMrpInr}
+            onChange={handleChange}
+            className="border px-2 py-1 rounded"
+          />
+          <input
+            name="dumpsMrpUsd"
+            placeholder="Dumps MRP USD"
+            value={form.dumpsMrpUsd}
+            onChange={handleChange}
+            className="border px-2 py-1 rounded"
+          />
+        </div>
+
+        <h3 className="font-semibold mt-4">Combo Pricing</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            name="comboPriceInr"
+            placeholder="Combo Price INR"
+            value={form.comboPriceInr}
+            onChange={handleChange}
+            className="border px-2 py-1 rounded"
+          />
+          <input
+            name="comboPriceUsd"
+            placeholder="Combo Price USD"
+            value={form.comboPriceUsd}
+            onChange={handleChange}
+            className="border px-2 py-1 rounded"
+          />
+          <input
+            name="comboMrpInr"
+            placeholder="Combo MRP INR"
+            value={form.comboMrpInr}
+            onChange={handleChange}
+            className="border px-2 py-1 rounded"
+          />
+          <input
+            name="comboMrpUsd"
+            placeholder="Combo MRP USD"
+            value={form.comboMrpUsd}
+            onChange={handleChange}
+            className="border px-2 py-1 rounded"
+          />
+        </div>
+
         <input
-          type="text"
-          name="price"
-          value={form.price}
+          name="sku"
+          placeholder="SKU"
+          value={form.sku}
           onChange={handleChange}
-          placeholder="Price"
-          className="w-full border px-4 py-2 rounded"
           required
+          className="border w-full px-3 py-2 rounded"
         />
 
         <select
@@ -188,8 +257,8 @@ const ProductForm = ({ mode }) => {
           required
         >
           <option value="">Select Status</option>
-          <option value="active">Publish</option>
-          <option value="inactive">Unpublish</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
         </select>
 
         <select
@@ -197,22 +266,17 @@ const ProductForm = ({ mode }) => {
           value={form.action}
           onChange={handleChange}
           className="w-full border px-4 py-2 rounded"
-          required
         >
           <option value="">Select Action</option>
           <option value="edit">Edit</option>
           <option value="review">Review</option>
         </select>
 
-        {/* FILE UPLOADS */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium">Product Image</label>
+        {/* File Uploads */}
+        <div>
+          <label>Product Image</label>
           {mode === "edit" && existingFiles.imageUrl && (
-            <img
-              src={existingFiles.imageUrl}
-              alt="Product Preview"
-              className="w-40 h-auto rounded border mb-2"
-            />
+            <img src={existingFiles.imageUrl} alt="" className="w-32 mb-2" />
           )}
           <input
             type="file"
@@ -224,16 +288,11 @@ const ProductForm = ({ mode }) => {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium">Sample PDF</label>
+        <div>
+          <label>Sample PDF</label>
           {mode === "edit" && existingFiles.samplePdfUrl && (
-            <a
-              href={existingFiles.samplePdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline"
-            >
-              View existing Sample PDF
+            <a href={existingFiles.samplePdfUrl} target="_blank" rel="noreferrer">
+              View Existing
             </a>
           )}
           <input
@@ -245,16 +304,11 @@ const ProductForm = ({ mode }) => {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium">Main PDF</label>
+        <div>
+          <label>Main PDF</label>
           {mode === "edit" && existingFiles.mainPdfUrl && (
-            <a
-              href={existingFiles.mainPdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline"
-            >
-              View existing Main PDF
+            <a href={existingFiles.mainPdfUrl} target="_blank" rel="noreferrer">
+              View Existing
             </a>
           )}
           <input
@@ -266,7 +320,67 @@ const ProductForm = ({ mode }) => {
           />
         </div>
 
-        {/* SUBMIT & DELETE */}
+        {/* CKEditor for descriptions */}
+        <div>
+          <label className="block mb-1">Description</label>
+          <CKEditor
+            editor={ClassicEditor}
+            data={form.Description}
+            onChange={(_, editor) =>
+              setForm((prev) => ({ ...prev, Description: editor.getData() }))
+            }
+          />
+        </div>
+
+        <div>
+          <label className="block mb-1">Long Description</label>
+          <CKEditor
+            editor={ClassicEditor}
+            data={form.longDescription}
+            onChange={(_, editor) =>
+              setForm((prev) => ({ ...prev, longDescription: editor.getData() }))
+            }
+          />
+        </div>
+
+        {/* SEO Fields */}
+        <input
+          name="slug"
+          placeholder="Slug"
+          value={form.slug}
+          onChange={handleChange}
+          required
+          className="border w-full px-3 py-2 rounded"
+        />
+        <input
+          name="metaTitle"
+          placeholder="Meta Title"
+          value={form.metaTitle}
+          onChange={handleChange}
+          className="border w-full px-3 py-2 rounded"
+        />
+        <textarea
+          name="metaKeywords"
+          placeholder="Meta Keywords"
+          value={form.metaKeywords}
+          onChange={handleChange}
+          className="border w-full px-3 py-2 rounded"
+        />
+        <textarea
+          name="metaDescription"
+          placeholder="Meta Description"
+          value={form.metaDescription}
+          onChange={handleChange}
+          className="border w-full px-3 py-2 rounded"
+        />
+        <textarea
+          name="schema"
+          placeholder="Schema"
+          value={form.schema}
+          onChange={handleChange}
+          className="border w-full px-3 py-2 rounded"
+        />
+
         <div className="flex gap-4 mt-6">
           <button
             type="submit"

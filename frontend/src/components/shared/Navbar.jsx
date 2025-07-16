@@ -28,7 +28,7 @@ const Navbar = () => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(
-          "https://dumpsexpert-2.onrender.com/api/product-categories"
+          "http://localhost:8000/api/product-categories"
         );
         setCategories(res.data);
       } catch (error) {

@@ -10,14 +10,7 @@ const {
 } = require('../controllers/blogController');
 const { parser } = require('../utils/cloudinary');
 
-console.log({
-  getAllBlogs,
-  getBlogById,
-  getBlogBySlug,
-  createBlog,
-  updateBlog,
-  deleteBlog
-});
+
 
 
 // ✅ Specific routes FIRST
