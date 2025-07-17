@@ -403,16 +403,7 @@ const sidebarItems = [
           { label: "Scripts", to: "/admin/settings/scripts" },
         ],
       },
-      {
-        label: "Payment",
-        to: "/admin/payment",
-        children: [
-          { label: "Payment Settings", to: "/admin/payment" },
-          { label: "Currencies", to: "/admin/payment/currencies" },
-          { label: "Payment Gateway", to: "/admin/payment/gateway" },
-          { label: "Shipping Method", to: "/admin/payment/shipping" },
-        ],
-      },
+  
       {
         label: "Products",
         to: "/admin/products",
@@ -451,11 +442,7 @@ const sidebarItems = [
         to: "/admin/exam",
         children: [{ label: "Exam Code", to: "/admin/exam/code" }],
       },
-      {
-        label: "Media",
-        to: "/admin/media",
-        children: [{ label: "Media List", to: "/admin/media/list" }],
-      },
+    
       {
         label: "Blog",
         to: "/admin/blog",

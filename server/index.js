@@ -46,7 +46,7 @@ const Question = require("./models/QuestionSchema");
 const permalinkRoutes = require('./routes/permalinkRoutes');
 
 const seedPermalinkRoutes = require('./routes/seedPermalinks');
-
+const reviewRoutes = require('./routes/review.routes');
 require("./utils/passport");
 
 // Allowed frontend origins
@@ -116,6 +116,7 @@ app.use("/api/announcement", announcementRoutes);
 app.use("/api/preloader", preloaderRoutes);
 app.use('/api/permalinks', permalinkRoutes);
 app.use("/api/seed-permalinks", seedPermalinkRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 
 

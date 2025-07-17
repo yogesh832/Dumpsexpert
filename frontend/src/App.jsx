@@ -166,6 +166,7 @@ import ProductForm from "./features/admin/pages/ProductForm.jsx";
 import SEOTesterPage from "./pages/SEOTesterPage";
 import BlogPage from "./pages/BlogPage.jsx";
 import CategoryBlogProducts from "./pages/CategoryBlogProducts.jsx";
+import BlogDetail from "./pages/BlogDetail.jsx";
 const EditBlogCategory = lazy(() => import("./features/admin/pages/EditBlogCategory"));
 const ManageBlogsByCategory = lazy(() => import("./features/admin/pages/ManageBlogsByCategory"));
 
@@ -180,6 +181,8 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/blogs" element={<BlogPage />} />
+{/* <Route path="/blogs/:id" element={<BlogDetail />} /> */}
+<Route path="/blogs/:slug" element={<BlogDetail />} />
 
             <Route path="/dumps" element={<ITDumps />} />
             <Route
@@ -304,6 +307,9 @@ const App = () => {
                   <Route path="list" element={<MediaManagement />} />
                 </Route>
 
+{/* Outside the blog route */}
+<Route path="/admin/blog/edit/:id" element={<EditBlog />} />
+
                 <Route path="blog">
                   <Route index element={<BlogManagement />} />
                   <Route path="category" element={<BlogCategory />} />
@@ -313,7 +319,8 @@ const App = () => {
                   <Route path="posts" element={<BlogPosts />} />
                   <Route path="list" element={<BlogList />} />
                   <Route path="add" element={<EditBlog />} />
-                  <Route path="edit/:id" element={<EditBlog />} />
+
+
                   <Route path="manage/:categoryId" element={<ManageBlogsByCategory />} />
                 </Route>
 

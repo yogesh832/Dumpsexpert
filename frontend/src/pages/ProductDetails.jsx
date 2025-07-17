@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import useCartStore from "../store/useCartStore";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaStar } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules"; // ✅ Correct module import
 import "swiper/css";
@@ -18,7 +18,8 @@ const ProductDetails = () => {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
-  const [reviewForm, setReviewForm] = useState({ name: "", comment: "" });
+  const [reviews, setReviews] = useState({ name: "", comment: "" });
+const [reviewForm, setReviewForm] = useState({ name: "", comment: "", rating: 0 });
 
   const addToCart = useCartStore((state) => state.addToCart);
 
@@ -29,6 +30,11 @@ const ProductDetails = () => {
           `http://localhost:8000/api/products/${id}`
         );
         setProduct(productRes.data);
+
+        const reviewsRes = await axios.get(`http://localhost:8000/api/reviews/${productRes.data._id}`);
+setReviews(reviewsRes.data);
+
+
         console.log(isAdding);
         const [examsRes, allProductsRes] = await Promise.all([
           axios.get(
@@ -87,21 +93,35 @@ const ProductDetails = () => {
     setTimeout(() => setIsAdding(false), 1000);
   };
 
-  const handleSubmitReview = (e) => {
-    e.preventDefault();
-    if (!reviewForm.name || !reviewForm.comment) {
-      toast.error("All fields are required.");
-      return;
-    }
-    toast.success("Review submitted!");
-    setReviewForm({ name: "", comment: "" });
-  };
+ 
 
   const calculateDiscount = (mrp, price) => {
     if (!mrp || !price || mrp <= price) return 0;
     const discount = ((mrp - price) / mrp) * 100;
     return Math.round(discount); // round to nearest integer
   };
+
+const handleSubmitReview = async (e) => {
+  e.preventDefault();
+  try {
+    const { data } = await axios.post(`http://localhost:8000/api/reviews/${product._id}`, reviewForm);
+    toast.success("Review submitted!");
+    setReviewForm({ name: "", comment: "", rating: 0 });
+    setReviews(prev => [data.review, ...prev]); // prepend new review
+  } catch (err) {
+    toast.error("Failed to submit review.");
+    console.log(err);
+  }
+};
+
+
+
+    const handleRating = (value) => {
+    setReviewForm({ ...reviewForm, rating: value });
+  };
+
+
+
 
   if (loading || !product) return <LoadingSpinner />;
 
@@ -287,7 +307,7 @@ const ProductDetails = () => {
   )}
 
   {/* Combo */}
-  {exams && exams._id && product.comboPriceInr && (
+  {exams && exams._id && (
     <div className="flex justify-between items-center">
       <div>
         <p className="font-semibold">Get Combo (PDF + Online Exam)</p>
@@ -393,38 +413,78 @@ const ProductDetails = () => {
           </Swiper>
         </div>
       )}
+      {reviews.length > 0 && (
+  <div className="mt-10 max-w-xl">
+    <h3 className="text-lg font-semibold mb-4">User Reviews</h3>
+    <ul className="space-y-4">
+      {reviews.map((r, i) => (
+        <li key={i} className="border rounded p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-1">
+            {[...Array(5)].map((_, idx) => (
+              <FaStar
+                key={idx}
+                className={`text-sm ${idx < r.rating ? "text-yellow-400" : "text-gray-300"}`}
+              />
+            ))}
+          </div>
+          <p className="font-medium">{r.name}</p>
+          <p className="text-gray-600 text-sm">{r.comment}</p>
+          <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString()}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 
       {/* Review */}
-      <div className="mt-16">
-        <h2 className="text-xl font-semibold mb-4">Write a Review</h2>
-        <form className="grid gap-3 max-w-xl" onSubmit={handleSubmitReview}>
-          <input
-            name="name"
-            value={reviewForm.name}
-            onChange={(e) =>
-              setReviewForm({ ...reviewForm, name: e.target.value })
-            }
-            placeholder="Your name"
-            className="border p-3 rounded"
-          />
-          <textarea
-            name="comment"
-            value={reviewForm.comment}
-            onChange={(e) =>
-              setReviewForm({ ...reviewForm, comment: e.target.value })
-            }
-            placeholder="Your comment"
-            rows="4"
-            className="border p-3 rounded"
-          />
-          <button
-            type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-          >
-            Submit Review
-          </button>
-        </form>
-      </div>
+       <div className="mt-16">
+      <h2 className="text-xl font-semibold mb-4">Write a Review</h2>
+      <form className="grid gap-3 max-w-xl" onSubmit={handleSubmitReview}>
+        <input
+          name="name"
+          value={reviewForm.name}
+          onChange={(e) =>
+            setReviewForm({ ...reviewForm, name: e.target.value })
+          }
+          placeholder="Your name"
+          className="border p-3 rounded"
+        />
+        <textarea
+          name="comment"
+          value={reviewForm.comment}
+          onChange={(e) =>
+            setReviewForm({ ...reviewForm, comment: e.target.value })
+          }
+          placeholder="Your comment"
+          rows="4"
+          className="border p-3 rounded"
+        />
+
+        {/* Star Rating UI */}
+        <div className="flex items-center gap-2">
+          {[1, 2, 3, 4, 5].map((value) => (
+            <FaStar
+              key={value}
+              onClick={() => handleRating(value)}
+              className={`cursor-pointer text-2xl ${
+                value <= reviewForm.rating ? "text-yellow-400" : "text-gray-300"
+              }`}
+            />
+          ))}
+          <span className="text-sm text-gray-600">
+            {reviewForm.rating > 0 ? `${reviewForm.rating} Star(s)` : "Rate us"}
+          </span>
+        </div>
+
+        <button
+          type="submit"
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+        >
+          Submit Review
+        </button>
+      </form>
+    </div>
     </div>
   );
 };

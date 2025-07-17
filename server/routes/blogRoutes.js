@@ -6,6 +6,7 @@ const {
   getBlogBySlug,
   createBlog,
   updateBlog,
+  
   deleteBlog
 } = require('../controllers/blogController');
 const { parser } = require('../utils/cloudinary');
@@ -16,7 +17,7 @@ const { parser } = require('../utils/cloudinary');
 router.get('/all', getAllBlogs);
 
 // Get a specific blog by ID (for admin)
-router.get('/:id', getBlogById);
+router.get('/id/:id', getBlogById);
 
 // Get a specific blog by slug (for public view)
 router.get('/slug/:slug', getBlogBySlug);

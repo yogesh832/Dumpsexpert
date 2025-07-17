@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
 import useBlogStore from '../../../store/blogStore';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import 'react-toastify/dist/ReactToastify.css';
 
 const BlogPosts = () => {
@@ -13,9 +15,8 @@ const BlogPosts = () => {
 
   const [formData, setFormData] = useState({
     title: '',
-    slug: '',
-    excerpt: '',
     content: '',
+     slug: '',
     category: categoryId ? decodeURIComponent(categoryId) : '',
     image: null,
     status: 'draft',
@@ -29,14 +30,12 @@ const BlogPosts = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [errors, setErrors] = useState({});
 
-  // Fetch categories if not already loaded
   useEffect(() => {
     if (categories.length === 0) {
       fetchBlogCategories();
     }
   }, [categories.length, fetchBlogCategories]);
 
-  // Clean up preview URL to avoid memory leaks
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -105,22 +104,17 @@ const BlogPosts = () => {
     }
 
     try {
-      let schemaDataObj = null;
-      if (formData.schemaData) {
-        schemaDataObj = JSON.parse(formData.schemaData);
-      }
+      const schemaDataObj = JSON.parse(formData.schemaData || '{}');
 
       const blogData = {
         title: formData.title,
         content: formData.content,
         category: formData.category || '',
-        excerpt: formData.excerpt || '',
-        slug: formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
         status: formData.status === 'draft' ? 'unpublish' : 'publish',
         metaTitle: formData.metaTitle || formData.title,
         metaKeywords: formData.metaKeywords || 'default keywords',
         metaDescription: formData.metaDescription || 'default description',
-        schema: schemaDataObj ? JSON.stringify(schemaDataObj) : '{}',
+        schema: JSON.stringify(schemaDataObj),
       };
 
       const blogFormData = new FormData();
@@ -141,10 +135,7 @@ const BlogPosts = () => {
         toast.success('Blog post added successfully');
         navigate(`/admin/blog/category/${encodeURIComponent(formData.category)}`);
       } else {
-        let errorMessage = 'Error adding blog post';
-        if (response.data.message) errorMessage += `: ${response.data.message}`;
-        if (response.data.error) errorMessage += ` - ${response.data.error}`;
-        toast.error(errorMessage);
+        toast.error("Error adding blog post");
       }
     } catch (error) {
       console.error('Error creating blog:', error);
@@ -174,9 +165,8 @@ const BlogPosts = () => {
           />
           {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Slug</label>
-          <input
+        <div className="mb-4">
+             <input
             type="text"
             name="slug"
             value={formData.slug}
@@ -185,28 +175,21 @@ const BlogPosts = () => {
             placeholder="Leave blank to auto-generate"
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Excerpt</label>
-          <textarea
-            name="excerpt"
-            value={formData.excerpt}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            rows="2"
-          />
-        </div>
+
         <div>
           <label className="block text-sm font-medium mb-1">Content <span className="text-red-500">*</span></label>
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            rows="8"
-            required
+          <CKEditor
+            editor={ClassicEditor}
+            data={formData.content}
+            onChange={(event, editor) => {
+              const data = editor.getData();
+              setFormData((prev) => ({ ...prev, content: data }));
+            }}
           />
           {errors.content && <p className="text-red-500 text-sm">{errors.content}</p>}
         </div>
+
+
         <div>
           <label className="block text-sm font-medium mb-1">Category <span className="text-red-500">*</span></label>
           <input
@@ -258,6 +241,7 @@ const BlogPosts = () => {
           />
           {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
         </div>
+
         <div>
           <label className="block text-sm font-medium mb-1">Meta Title <span className="text-red-500">*</span></label>
           <input

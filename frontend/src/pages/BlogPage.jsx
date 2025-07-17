@@ -1,77 +1,160 @@
-import React, { useState, useEffect } from "react";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { instance } from "../lib/axios";
-import { Link } from "react-router"; // ✅ Use react-router-dom
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+import BlogCard from "../components/ui/BlogCard";
+
+const BASE_URL = "http://localhost:8000";
 
 const BlogPage = () => {
-  const [blogsData, setBlogsData] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [blogs, setBlogs] = useState([]);
+  const [recentPosts, setRecentPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/blog-categories`);
+        const valid = res.data?.filter((c) => !!c.category);
+        setCategories(valid);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
       setLoading(true);
       try {
-        const res = await instance.get("/api/blog-categories");
-        setBlogsData(res.data || []);
+        const categoryQuery = selectedCategory
+          ? `&category=${selectedCategory.toLowerCase()}`
+          : "";
+
+        const res = await axios.get(
+          `${BASE_URL}/api/blogs/all?page=1&limit=20${categoryQuery}`
+        );
+        const allBlogs = res.data?.data || [];
+        console.log("Blog data:", allBlogs);
+
+       const publishedBlogs = allBlogs.filter((blog) => blog.status === "publish");
+
+// Show blogs only for selected category (if any)
+const filteredBlogs = selectedCategory
+  ? publishedBlogs.filter((b) => b.category?.toLowerCase() === selectedCategory.toLowerCase())
+  : publishedBlogs;
+
+setBlogs(filteredBlogs);
+
+// Always take top 5 most recent posts from all published blogs
+const recent = [...publishedBlogs]
+  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  .slice(0, 10);
+setRecentPosts(recent);
+
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error fetching blogs:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
+    fetchBlogs();
+  }, [selectedCategory]);
 
   return (
-    <div className="relative min-h-screen w-full pt-34 pb-10 px-4 md:px-8">
-      <div className="relative z-10 w-full max-w-7xl mx-auto">
-        {loading ? (
-          <div className="flex justify-center items-center h-60">
-            <LoadingSpinner />
-          </div>
-        ) : blogsData.length === 0 ? (
-          <div className="text-center text-gray-500 mt-10">No blogs found.</div>
-        ) : (
-          <>
-            {/* Blog Section Title */}
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-4">
-              Explore Top IT Certification Blog Categories
-            </h1>
+    <div className="min-h-screen bg-white">
+      {/* Header Banner */}
+      <div
+        className="w-full h-80 bg-cover bg-center py-14 px-4 text-white"
+        style={{
+          backgroundImage: `url(https://t3.ftcdn.net/jpg/03/16/91/28/360_F_316912806_RCeHVmUx5LuBMi7MKYTY5arkE4I0DcpU.jpg)`,
+        }}
+      >
+        <h1 className="text-4xl pt-24 font-bold text-center mb-6">OUR BLOGS</h1>
 
-            {/* Intro Paragraph */}
-            <p className="text-center text-gray-600 max-w-3xl mx-auto mb-10 text-sm sm:text-base">
-              Stay informed with the latest updates, tips, and strategies on IT certifications. Whether you're preparing for your next exam or exploring new certifications, our blog categories help you navigate your learning journey.
+        {/* Categories Buttons */}
+        <div className="flex flex-wrap justify-center gap-2">
+          <button
+            onClick={() => setSelectedCategory("")}
+            className={`px-4 py-1 rounded-full border ${
+              selectedCategory === ""
+                ? "bg-white text-black font-semibold"
+                : "bg-transparent border-white"
+            }`}
+          >
+            All
+          </button>
+
+          {categories.map((cat) => (
+            <button
+              key={cat._id}
+              onClick={() => setSelectedCategory(cat.category)}
+              className={`px-4 py-1 rounded-full border ${
+                selectedCategory === cat.category
+                  ? "bg-white text-black font-semibold"
+                  : "bg-transparent border-white"
+              }`}
+            >
+              {cat.category}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col lg:flex-row gap-10">
+        {/* Blog Cards */}
+        <div className="w-full lg:w-3/4 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+            <p className="text-center text-gray-500 col-span-full">
+              Loading blogs...
             </p>
+          ) : blogs.length === 0 ? (
+            <p className="text-gray-600 italic col-span-full">No blogs found.</p>
+          ) : (
+            blogs.map((blog) => (
+         <BlogCard
+  key={blog._id}
+  slug={blog.slug} // updated here
+  title={blog.title}
+  description={blog.metaDescription}
+  date={new Date(blog.createdAt).toLocaleDateString()}
+  imageUrl={blog.imageUrl}
+/>
 
-            {/* Category Cards */}
-            <div className="flex flex-wrap py-10 justify-center gap-4">
-              {blogsData
-                .filter(item => item?.category)
-                .map((item) => (
+
+            ))
+          )}
+        </div>
+
+        {/* Sidebar */}
+        <div className="w-full lg:w-1/4 space-y-8">
+          <input
+            type="text"
+            placeholder="Search blog..."
+            className="w-full px-4 py-2 border border-gray-300 rounded"
+          />
+
+          {/* Recent Posts */}
+          <div>
+            <h4 className="text-lg font-semibold mb-2">Recent Posts</h4>
+            <ul className="text-sm space-y-2">
+              {recentPosts.map((post) => (
+                <li key={post._id}>
                   <Link
-                    to={`/blogs/category/${item.category.toLowerCase()}`}
-                    key={item._id}
-                    className="bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all flex flex-col items-center text-center overflow-hidden w-[160px] sm:w-[170px] md:w-[180px] lg:w-[180px]"
+                    to={`/blogs/${post.slug}`}
+                    className="text-blue-600 hover:underline block"
                   >
-                    <div className="h-28 md:h-32 w-full overflow-hidden">
-                      <img
-                        src={item.imageUrl}
-                        alt={item.category}
-                        loading="lazy"
-                        className="w-full h-full object-contain p-2"
-                      />
-                    </div>
-                    <div className="px-2 pb-3">
-                      <h3 className="text-sm sm:text-base font-medium capitalize text-gray-800 truncate">
-                        {item.category}
-                      </h3>
-                    </div>
+                    {post.title}
                   </Link>
-                ))}
-            </div>
-          </>
-        )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
