@@ -387,22 +387,22 @@ const sidebarItems = [
           { label: "Preloader", to: "/admin/web-customization/preloader" },
         ],
       },
-      {
-        label: "Settings",
-        to: "/admin/settings",
-        children: [
-          // { label: "General Settings", to: "/admin/settings/general" },
-          {
-            label: "Email Configuration",
-            to: "/admin/settings/email-config",
-            children: [
-              { label: "Mail From Admin", to: "/admin/settings/email-config/from-admin" },
-              { label: "Mail To Admin", to: "/admin/settings/email-config/to-admin" },
-            ],
-          },
-          { label: "Scripts", to: "/admin/settings/scripts" },
-        ],
-      },
+      // {
+      //   label: "Settings",
+      //   to: "/admin/settings",
+      //   children: [
+      //     // { label: "General Settings", to: "/admin/settings/general" },
+      //     {
+      //       label: "Email Configuration",
+      //       to: "/admin/settings/email-config",
+      //       children: [
+      //         { label: "Mail From Admin", to: "/admin/settings/email-config/from-admin" },
+      //         { label: "Mail To Admin", to: "/admin/settings/email-config/to-admin" },
+      //       ],
+      //     },
+      //     { label: "Scripts", to: "/admin/settings/scripts" },
+      //   ],
+      // },
   
       {
         label: "Products",
@@ -428,15 +428,15 @@ const sidebarItems = [
           { label: "Rejected Orders", to: "/admin/orders/rejected" },
         ],
       },
-      {
-        label: "Order Reports",
-        to: "/admin/order-reports",
-        children: [
-          { label: "All Order Report", to: "/admin/order-reports/all" },
-          { label: "Product Sale Report", to: "/admin/order-reports/sale" },
-        ],
-      },
-      { label: "Customers", to: "/admin/customers" },
+      // {
+      //   label: "Order Reports",
+      //   to: "/admin/order-reports",
+      //   children: [
+      //     { label: "All Order Report", to: "/admin/order-reports/all" },
+      //     { label: "Product Sale Report", to: "/admin/order-reports/sale" },
+      //   ],
+      // },
+      // { label: "Customers", to: "/admin/customers" },
       {
         label: "Exam",
         to: "/admin/exam",
