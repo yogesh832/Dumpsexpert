@@ -167,6 +167,9 @@ import SEOTesterPage from "./pages/SEOTesterPage";
 import BlogPage from "./pages/BlogPage.jsx";
 import CategoryBlogProducts from "./pages/CategoryBlogProducts.jsx";
 import BlogDetail from "./pages/BlogDetail.jsx";
+import ManageFaq from "./pages/ManageFaq.jsx";
+import AdminGeneralFAQs from "./features/admin/components/AdminGeneralFAQs.jsx";
+import SampleInstructionsPage from "./pages/onlineExam/SampleInstructionsPage.jsx";
 const EditBlogCategory = lazy(() => import("./features/admin/pages/EditBlogCategory"));
 const ManageBlogsByCategory = lazy(() => import("./features/admin/pages/ManageBlogsByCategory"));
 
@@ -193,7 +196,7 @@ const App = () => {
               path="/blogs/category/:categoryName"
               element={<CategoryBlogProducts />}
             />
-            <Route path="/product/:id" element={<ProductDetails />} />
+<Route path="/product/:slug" element={<ProductDetails />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Login />} />
@@ -280,6 +283,8 @@ const App = () => {
                   <Route path="add" element={<CouponForm />} />
                   <Route path="edit/:id" element={<CouponForm />} />
                 </Route>
+<Route path="/admin/products/:id/faq" element={<ManageFaq />} />
+<Route path="/admin/general-faqs" element={<AdminGeneralFAQs />} />
 
                 <Route path="orders">
                   <Route index element={<OrdersManagement />} />
@@ -363,6 +368,10 @@ const App = () => {
               <Route
                 path="/student/courses-exam/instructions/:examId"
                 element={<InstructionsPage />}
+              />
+              <Route
+                path="/student/courses-exam/sample-instructions/:examId"
+                element={<SampleInstructionsPage />}
               />
 
               <Route

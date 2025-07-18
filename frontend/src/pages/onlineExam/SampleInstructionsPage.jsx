@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 import "./InstructionsPage.css";
 
-const InstructionsPage = () => {
+const SampleInstructionsPage = () => {
   const [agreed, setAgreed] = useState(false);
-  const [mainInstructions, setMainInstructions] = useState("");
+  const [sampleInstructions, setSampleInstructions] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -15,11 +15,11 @@ const InstructionsPage = () => {
   useEffect(() => {
     const fetchInstructions = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/exams/${examId}`);
-        setMainInstructions(res.data?.mainInstructions || "<p>No instructions found.</p>");
+        const res = await axios.get(`http://localhost:8000/api/exams/byProduct/${examId}`);
+        setSampleInstructions(res.data?.sampleInstructions || "<p>No instructions available.</p>");
       } catch (err) {
-        setError("❌ Failed to fetch instructions.");
         console.error(err);
+        setError("Failed to load instructions.");
       } finally {
         setLoading(false);
       }
@@ -39,7 +39,7 @@ const InstructionsPage = () => {
   return (
     <div className="instructions-container">
       <div className="instructions-card">
-        <h1 className="title">📝 Test Instructions</h1>
+        <h1 className="title">🧪 Sample Test Instructions</h1>
 
         {loading ? (
           <p>Loading instructions...</p>
@@ -48,7 +48,7 @@ const InstructionsPage = () => {
         ) : (
           <div
             className="instructions-content"
-            dangerouslySetInnerHTML={{ __html: mainInstructions }}
+            dangerouslySetInnerHTML={{ __html: sampleInstructions }}
           />
         )}
 
@@ -60,16 +60,16 @@ const InstructionsPage = () => {
             onChange={(e) => setAgreed(e.target.checked)}
           />
           <label htmlFor="agree">
-            To proceed, kindly confirm that you agree to the terms and conditions.
+            I have read and agree to the above instructions.
           </label>
         </div>
 
         <button className="start-button" onClick={handleStart} disabled={loading || !!error}>
-          Start Test
+          Start Sample Test
         </button>
       </div>
     </div>
   );
 };
 
-export default InstructionsPage;
+export default SampleInstructionsPage;
