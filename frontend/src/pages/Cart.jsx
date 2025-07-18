@@ -8,25 +8,44 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 const Cart = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPayPal, setShowPayPal] = useState(false);
+  const [couponCode, setCouponCode] = useState(""); // State for coupon code input
+  const [couponError, setCouponError] = useState(""); // State for coupon error messages
+  const [discount, setDiscount] = useState(0); // State for applied discount
   const cartItems = useCartStore((state) => state.cartItems);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const getCartTotal = useCartStore((state) => state.getCartTotal);
 
   const subtotal = getCartTotal();
-  const discount = 0;
   const grandTotal = subtotal - discount;
 
-  const handleDelete = (id) => {
-    removeFromCart(id);
+  const handleDelete = (id, type) => {
+    console.log('handleDelete called with:', { id, type });
+    removeFromCart(id, type);
   };
 
-  const handleQuantityChange = (id, type) => {
-    updateQuantity(id, type);
+  const handleQuantityChange = (id, type, operation) => {
+    console.log('handleQuantityChange called with:', { id, type, operation });
+    updateQuantity(id, type, operation);
   };
 
-  const handleCoupon = () => {
-    alert("Coupon applied");
+  const handleCoupon = async () => {
+    if (!couponCode) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    try {
+      const response = await instance.post("/api/coupons/validate", {
+        code: couponCode,
+      });
+      setDiscount(response.data.coupon.discount);
+      setCouponError("");
+      alert("Coupon applied successfully!");
+    } catch (error) {
+      setCouponError(error.response?.data?.message || "Failed to apply coupon");
+      setDiscount(0);
+    }
   };
 
   const handleRazorpayPayment = async () => {
@@ -89,21 +108,27 @@ const Cart = () => {
           ) : (
             <div className="space-y-4 w-full max-h-[565px] overflow-y-auto pr-2">
               {cartItems.map((item) => (
-                <div key={item._id} className="flex items-center justify-between bg-white border p-4 rounded-lg shadow-sm">
+                <div key={`${item._id}-${item.type}`} className="flex items-center justify-between bg-white border p-4 rounded-lg shadow-sm">
                   <div className="flex items-center gap-4">
                     <img
-                      src={item.imageUrls?.[0] || "https://via.placeholder.com/100"}
+                      src={item.imageUrl || "https://via.placeholder.com/100"}
                       alt={item.title}
                       className="w-16 h-16 object-cover rounded-lg border"
                     />
                     <div>
                       <h4 className="text-lg font-semibold">{item.title}</h4>
                       <div className="flex items-center gap-2 mt-2">
-                        <button onClick={() => handleQuantityChange(item._id, "dec")} className="px-3 py-1 bg-gray-200 rounded">
+                        <button
+                          onClick={() => handleQuantityChange(item._id, item.type, "dec")}
+                          className="px-3 py-1 bg-gray-200 rounded"
+                        >
                           −
                         </button>
                         <span className="px-3 py-1 border rounded bg-white">{item.quantity}</span>
-                        <button onClick={() => handleQuantityChange(item._id, "inc")} className="px-3 py-1 bg-gray-200 rounded">
+                        <button
+                          onClick={() => handleQuantityChange(item._id, item.type, "inc")}
+                          className="px-3 py-1 bg-gray-200 rounded"
+                        >
                           +
                         </button>
                       </div>
@@ -111,7 +136,10 @@ const Cart = () => {
                   </div>
                   <div className="text-right space-y-2">
                     <p className="text-lg font-semibold">₹{item.price * item.quantity}</p>
-                    <button onClick={() => handleDelete(item._id)} className="text-red-500 text-sm hover:underline">
+                    <button
+                      onClick={() => handleDelete(item._id, item.type)}
+                      className="text-red-500 text-sm hover:underline"
+                    >
                       Delete
                     </button>
                   </div>
@@ -137,12 +165,15 @@ const Cart = () => {
             <input
               type="text"
               placeholder="Enter coupon code"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
             />
             <Button variant="blue" onClick={handleCoupon}>
               Apply
             </Button>
           </div>
+          {couponError && <p className="text-red-500 text-sm mt-2">{couponError}</p>}
 
           <hr className="my-4" />
 
@@ -161,94 +192,93 @@ const Cart = () => {
       </div>
 
       {/* Payment Gateway Modal */}
-    {showPaymentModal && (
-<div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4 shadow-xl">
-      <h3 className="text-xl font-semibold text-center">Select Payment Method</h3>
+      {showPaymentModal && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4 shadow-xl">
+            <h3 className="text-xl font-semibold text-center">Select Payment Method</h3>
 
-      {/* Razorpay Button */}
-      <button
-        onClick={handleRazorpayPayment}
-        className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition"
-      >
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg"
-          alt="Razorpay"
-          className="w-20 h-10"
-        />
-        Pay with Razorpay
-      </button>
+            {/* Razorpay Button */}
+            <button
+              onClick={handleRazorpayPayment}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition"
+            >
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg"
+                alt="Razorpay"
+                className="w-20 h-10"
+              />
+              Pay with Razorpay
+            </button>
 
-      {/* PayPal Button */}
-      {!showPayPal && (
-        <button
-          onClick={() => setShowPayPal(true)}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold rounded-lg shadow transition"
-        >
-          <img
-            src="https://www.paypalobjects.com/webstatic/icon/pp258.png"
-            alt="PayPal"
-            className="w-6 h-6"
-          />
-          Pay with PayPal
-        </button>
-      )}
+            {/* PayPal Button */}
+            {!showPayPal && (
+              <button
+                onClick={() => setShowPayPal(true)}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold rounded-lg shadow transition"
+              >
+                <img
+                  src="https://www.paypalobjects.com/webstatic/icon/pp258.png"
+                  alt="PayPal"
+                  className="w-6 h-6"
+                />
+                Pay with PayPal
+              </button>
+            )}
 
-      {/* PayPal Component */}
-      {showPayPal && (
-        <div className="mt-4">
-          <PayPalButtons
-            style={{ layout: "vertical" }}
-            createOrder={(data, actions) => {
-              return actions.order.create({
-                purchase_units: [
-                  {
-                    amount: {
-                      value: grandTotal.toString(),
-                    },
-                  },
-                ],
-              });
-            }}
-            onApprove={async (data, actions) => {
-              const details = await actions.order.capture();
-              await instance.post(
-                "/api/payments/paypal/process",
-                {
-                  orderID: data.orderID,
-                  amount: grandTotal,
-                },
-                {
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                }
-              );
-              alert(`Payment completed by ${details.payer.name.given_name}`);
-              window.location.href = "/student/dashboard";
-            }}
-            onError={(err) => {
-              console.error("PayPal Error:", err);
-              alert("Payment failed");
-            }}
-          />
+            {/* PayPal Component */}
+            {showPayPal && (
+              <div className="mt-4">
+                <PayPalButtons
+                  style={{ layout: "vertical" }}
+                  createOrder={(data, actions) => {
+                    return actions.order.create({
+                      purchase_units: [
+                        {
+                          amount: {
+                            value: (grandTotal / 83).toFixed(2), // Convert INR to USD (approx. rate)
+                          },
+                        },
+                      ],
+                    });
+                  }}
+                  onApprove={async (data, actions) => {
+                    const details = await actions.order.capture();
+                    await instance.post(
+                      "/api/payments/paypal/process",
+                      {
+                        orderID: data.orderID,
+                        amount: grandTotal,
+                      },
+                      {
+                        headers: {
+                          Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                      }
+                    );
+                    alert(`Payment completed by ${details.payer.name.given_name}`);
+                    window.location.href = "/student/dashboard";
+                  }}
+                  onError={(err) => {
+                    console.error("PayPal Error:", err);
+                    alert("Payment failed");
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Cancel */}
+            <button
+              onClick={() => {
+                setShowPaymentModal(false);
+                setShowPayPal(false);
+              }}
+              className="block mx-auto mt-2 text-sm text-gray-500 hover:underline"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
-
-      {/* Cancel */}
-      <button
-        onClick={() => {
-          setShowPaymentModal(false);
-          setShowPayPal(false);
-        }}
-        className="block mx-auto mt-2 text-sm text-gray-500 hover:underline"
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
-)}
-
     </div>
   );
 };

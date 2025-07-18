@@ -80,3 +80,33 @@ exports.deleteCoupon = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
+// Validate a coupon by code
+exports.validateCoupon = async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ message: "Coupon code is required" });
+
+    const coupon = await Coupon.findOne({ code: code.toUpperCase().trim() });
+    if (!coupon) return res.status(404).json({ message: "Coupon not found" });
+
+    const currentDate = new Date();
+    if (currentDate < coupon.startDate || currentDate > coupon.endDate) {
+      return res.status(400).json({ message: "Coupon is expired or not yet active" });
+    }
+
+    res.json({
+      message: "Coupon is valid",
+      coupon: {
+        id: coupon._id,
+        code: coupon.code,
+        discount: coupon.discount,
+        name: coupon.name,
+      },
+    });
+  } catch (error) {
+    console.error("Error validating coupon:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
