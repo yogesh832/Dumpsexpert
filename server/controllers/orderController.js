@@ -110,7 +110,7 @@ exports.getAllOrders = async (req, res) => {
       page = 1,
       limit = 10,
       sortBy = 'createdAt',
-      sortOrder = 'desc'
+      sortOrder = 'desc',
     } = req.query;
 
     const query = {};
@@ -130,11 +130,14 @@ exports.getAllOrders = async (req, res) => {
     const orders = await Order.find(query)
       .populate('user', 'name email')
       .populate('items.product', 'name')
+      .populate('paymentId', 'paymentId status amount currency paymentMethod') // Populate payment details
+      .populate('coupon.couponId', 'code type value')
       .sort(sort)
       .skip(skip)
       .limit(parseInt(limit));
 
     const total = await Order.countDocuments(query);
+    console.log('Retrieved orders:', orders.length, 'Total:', total); // Debug log
 
     res.status(200).json({
       message: 'Orders retrieved successfully',
@@ -143,15 +146,16 @@ exports.getAllOrders = async (req, res) => {
         total,
         page: parseInt(page),
         limit: parseInt(limit),
-        pages: Math.ceil(total / parseInt(limit))
-      }
+        pages: Math.ceil(total / parseInt(limit)),
+      },
     });
   } catch (error) {
+    console.error('Error retrieving orders:', error);
     res.status(500).json({ message: 'Error retrieving orders', error: error.message });
   }
 };
 
-// 👤 Get user-specific orders (for now, userId from query or body)
+// 👤 Get user-specific orders
 exports.getUserOrders = async (req, res) => {
   try {
     const userId = req.query.user || req.body.user;
@@ -164,6 +168,8 @@ exports.getUserOrders = async (req, res) => {
 
     const orders = await Order.find({ user: userId })
       .populate('items.product', 'name')
+      .populate('paymentId', 'paymentId status amount currency paymentMethod') // Populate payment details
+      .populate('coupon.couponId', 'code type value')
       .sort(sort)
       .skip(skip)
       .limit(parseInt(limit));
@@ -177,8 +183,8 @@ exports.getUserOrders = async (req, res) => {
         total,
         page: parseInt(page),
         limit: parseInt(limit),
-        pages: Math.ceil(total / parseInt(limit))
-      }
+        pages: Math.ceil(total / parseInt(limit)),
+      },
     });
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving user orders', error: error.message });
@@ -193,19 +199,86 @@ exports.getOrderById = async (req, res) => {
     const order = await Order.findById(id)
       .populate('user', 'name email')
       .populate('items.product', 'name')
+      .populate('paymentId', 'paymentId status amount currency paymentMethod') // Populate payment details
       .populate('coupon.couponId', 'code type value');
 
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
     res.status(200).json({
       message: 'Order retrieved successfully',
-      data: order
+      data: order,
     });
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving order', error: error.message });
   }
 };
 
+// 📊 Order statistics
+exports.getOrderStatistics = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    const dateQuery = {};
+    if (startDate || endDate) {
+      dateQuery.createdAt = {};
+      if (startDate) dateQuery.createdAt.$gte = new Date(startDate);
+      if (endDate) dateQuery.createdAt.$lte = new Date(endDate);
+    }
+
+    const totalOrders = await Order.countDocuments(dateQuery);
+
+    const ordersByStatus = await Order.aggregate([
+      { $match: dateQuery },
+      { $group: { _id: '$status', count: { $sum: 1 }, total: { $sum: '$total' } } },
+    ]);
+
+    const ordersByPaymentStatus = await Order.aggregate([
+      { $match: dateQuery },
+      {
+        $lookup: {
+          from: 'payments',
+          localField: 'paymentId',
+          foreignField: '_id',
+          as: 'payment',
+        },
+      },
+      { $unwind: { path: '$payment', preserveNullAndEmptyArrays: true } },
+      {
+        $group: {
+          _id: '$payment.status',
+          count: { $sum: 1 },
+          total: { $sum: '$total' },
+        },
+      },
+    ]);
+
+    const revenue = await Order.aggregate([
+      { $match: { ...dateQuery, status: { $nin: ['cancelled', 'refunded'] } } },
+      { $group: { _id: null, total: { $sum: '$total' }, subtotal: { $sum: '$subtotal' }, discount: { $sum: '$discount' }, tax: { $sum: '$tax' } } },
+    ]);
+
+    const ordersByDate = await Order.aggregate([
+      { $match: dateQuery },
+      { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, count: { $sum: 1 }, total: { $sum: '$total' } } },
+    ]);
+
+    console.log('Order statistics:', { totalOrders, ordersByStatus, ordersByPaymentStatus }); // Debug log
+
+    res.status(200).json({
+      message: 'Statistics retrieved',
+      data: {
+        totalOrders,
+        ordersByStatus,
+        ordersByPaymentStatus,
+        revenue: revenue[0] || {},
+        ordersByDate,
+      },
+    });
+  } catch (error) {
+    console.error('Error getting statistics:', error);
+    res.status(500).json({ message: 'Error getting statistics', error: error.message });
+  }
+};
 // 🛑 Cancel order
 exports.cancelOrder = async (req, res) => {
   try {
@@ -279,54 +352,5 @@ exports.updatePaymentDetails = async (req, res) => {
     res.status(200).json({ message: 'Payment details updated', data: order });
   } catch (error) {
     res.status(500).json({ message: 'Error updating payment', error: error.message });
-  }
-};
-
-// 📊 Order statistics
-exports.getOrderStatistics = async (req, res) => {
-  try {
-    const { startDate, endDate } = req.query;
-
-    const dateQuery = {};
-    if (startDate || endDate) {
-      dateQuery.createdAt = {};
-      if (startDate) dateQuery.createdAt.$gte = new Date(startDate);
-      if (endDate) dateQuery.createdAt.$lte = new Date(endDate);
-    }
-
-    const totalOrders = await Order.countDocuments(dateQuery);
-
-    const ordersByStatus = await Order.aggregate([
-      { $match: dateQuery },
-      { $group: { _id: '$status', count: { $sum: 1 }, total: { $sum: '$total' } } }
-    ]);
-
-    const ordersByPaymentStatus = await Order.aggregate([
-      { $match: dateQuery },
-      { $group: { _id: '$paymentStatus', count: { $sum: 1 }, total: { $sum: '$total' } } }
-    ]);
-
-    const revenue = await Order.aggregate([
-      { $match: { ...dateQuery, status: { $nin: ['cancelled', 'refunded'] } } },
-      { $group: { _id: null, total: { $sum: '$total' }, subtotal: { $sum: '$subtotal' }, discount: { $sum: '$discount' }, tax: { $sum: '$tax' } } }
-    ]);
-
-    const ordersByDate = await Order.aggregate([
-      { $match: dateQuery },
-      { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, count: { $sum: 1 }, total: { $sum: '$total' } } }
-    ]);
-
-    res.status(200).json({
-      message: 'Statistics retrieved',
-      data: {
-        totalOrders,
-        ordersByStatus,
-        ordersByPaymentStatus,
-        revenue: revenue[0] || {},
-        ordersByDate
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error getting statistics', error: error.message });
   }
 };
