@@ -158,6 +158,7 @@ import AddBlogCategory from "./features/admin/pages/AddBlogCategory";
 import ScriptManager from "./components/Scripts/ScriptManager";
 import InstructionsPage from "./pages/onlineExam/InstructionsPage";
 import TestPage from "./pages/onlineExam/TestPage";
+import SampleTestPage from "./pages/onlineExam/SampleTestPage.jsx";
 import ResultPage from "./pages/onlineExam/ResultPage";
 import DetailedResultPage from "./pages/onlineExam/DetailedResultPage";
 import AddProductCategory from "./features/admin/pages/AddProductCategory.jsx";
@@ -170,8 +171,12 @@ import BlogDetail from "./pages/BlogDetail.jsx";
 import ManageFaq from "./pages/ManageFaq.jsx";
 import AdminGeneralFAQs from "./features/admin/components/AdminGeneralFAQs.jsx";
 import SampleInstructionsPage from "./pages/onlineExam/SampleInstructionsPage.jsx";
-const EditBlogCategory = lazy(() => import("./features/admin/pages/EditBlogCategory"));
-const ManageBlogsByCategory = lazy(() => import("./features/admin/pages/ManageBlogsByCategory"));
+const EditBlogCategory = lazy(() =>
+  import("./features/admin/pages/EditBlogCategory")
+);
+const ManageBlogsByCategory = lazy(() =>
+  import("./features/admin/pages/ManageBlogsByCategory")
+);
 
 const App = () => {
   return (
@@ -184,9 +189,17 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/blogs" element={<BlogPage />} />
-{/* <Route path="/blogs/:id" element={<BlogDetail />} /> */}
-<Route path="/blogs/:slug" element={<BlogDetail />} />
+            {/* <Route path="/blogs/:id" element={<BlogDetail />} /> */}
+            <Route path="/blogs/:slug" element={<BlogDetail />} />
+ <Route
+                path="/sample-instructions/:slug"
+                element={<SampleInstructionsPage />}
+              />
 
+              <Route
+                path="/courses-exam/sample-test/:slug"
+                element={<SampleTestPage />}
+              />
             <Route path="/dumps" element={<ITDumps />} />
             <Route
               path="/courses/:categoryName"
@@ -196,7 +209,7 @@ const App = () => {
               path="/blogs/category/:categoryName"
               element={<CategoryBlogProducts />}
             />
-<Route path="/product/:slug" element={<ProductDetails />} />
+            <Route path="/product/:slug" element={<ProductDetails />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Login />} />
@@ -283,8 +296,11 @@ const App = () => {
                   <Route path="add" element={<CouponForm />} />
                   <Route path="edit/:id" element={<CouponForm />} />
                 </Route>
-<Route path="/admin/products/:id/faq" element={<ManageFaq />} />
-<Route path="/admin/general-faqs" element={<AdminGeneralFAQs />} />
+                <Route path="/admin/products/:id/faq" element={<ManageFaq />} />
+                <Route
+                  path="/admin/general-faqs"
+                  element={<AdminGeneralFAQs />}
+                />
 
                 <Route path="orders">
                   <Route index element={<OrdersManagement />} />
@@ -312,21 +328,26 @@ const App = () => {
                   <Route path="list" element={<MediaManagement />} />
                 </Route>
 
-{/* Outside the blog route */}
-<Route path="/admin/blog/edit/:id" element={<EditBlog />} />
+                {/* Outside the blog route */}
+                <Route path="/admin/blog/edit/:id" element={<EditBlog />} />
 
                 <Route path="blog">
                   <Route index element={<BlogManagement />} />
                   <Route path="category" element={<BlogCategory />} />
                   <Route path="category/add" element={<AddBlogCategory />} />
-                  <Route path="category/edit/:id" element={<EditBlogCategory />} />
+                  <Route
+                    path="category/edit/:id"
+                    element={<EditBlogCategory />}
+                  />
                   <Route path="archive" element={<BlogArchive />} />
                   <Route path="posts" element={<BlogPosts />} />
                   <Route path="list" element={<BlogList />} />
                   <Route path="add" element={<EditBlog />} />
 
-
-                  <Route path="manage/:categoryId" element={<ManageBlogsByCategory />} />
+                  <Route
+                    path="manage/:categoryId"
+                    element={<ManageBlogsByCategory />}
+                  />
                 </Route>
 
                 <Route path="subscribers">
@@ -359,26 +380,22 @@ const App = () => {
               <Route path="/student/dashboard" element={<StudentDashboard />} />
               <Route path="/student/orders" element={<StudentOrders />} />
               <Route path="/student/courses-pdf" element={<PdfCoursesPage />} />
-<Route path="/student/test/:examId" element={<TestPage />} />
+              <Route path="/student/test/:examId" element={<TestPage />} />
 
               <Route
                 path="/student/courses-exam/list"
                 element={<ExamCoursesPage />}
               />
               <Route
-                path="/student/courses-exam/instructions/:examId"
+                path="/student/courses-exam/instructions/:slug"
                 element={<InstructionsPage />}
               />
-              <Route
-                path="/student/courses-exam/sample-instructions/:examId"
-                element={<SampleInstructionsPage />}
-              />
+             
 
               <Route
-                path="/student/courses-exam/test/:examId"
+                path="/student/courses-exam/test/:slug"
                 element={<TestPage />}
               />
-
               {/* <Route path="/student/courses-exam/test" element={<TestPage />} /> */}
               <Route
                 path="/student/courses-exam/result"

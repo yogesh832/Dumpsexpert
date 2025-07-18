@@ -101,8 +101,6 @@ exports.createProduct = async (req, res) => {
       schema,
     } = req.body;
 
-    const hardcodedAdminId = "664c1234567890abcdef1234";
-
     let imageUrl = "";
     if (req.files?.image?.[0]) {
       const result = await cloudinary.uploader.upload(req.files.image[0].path, {
@@ -167,23 +165,22 @@ exports.createProduct = async (req, res) => {
       metaKeywords,
       metaDescription,
       schema,
-      lastUpdatedBy: hardcodedAdminId,
     });
 
     await newProduct.save();
 
-    res
-      .status(201)
-      .json({ message: "Product created successfully", data: newProduct });
+    res.status(201).json({
+      message: "Product created successfully",
+      data: newProduct,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Server error during product creation",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Server error during product creation",
+      error: error.message,
+    });
   }
 };
+
 
 // PUT: Update Product
 exports.updateProduct = async (req, res) => {

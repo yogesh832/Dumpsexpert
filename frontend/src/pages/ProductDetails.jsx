@@ -343,7 +343,7 @@ console.log(product);
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => navigate(`/student/test/${exams._id}`)}
+          onClick={() => navigate(`/sample-instructions/${slug}`)}
                     className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
                   >
                     Try Online Exam
