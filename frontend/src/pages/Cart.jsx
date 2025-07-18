@@ -8,10 +8,9 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 const Cart = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPayPal, setShowPayPal] = useState(false);
-  const [couponCode, setCouponCode] = useState(""); // State for coupon code input
-  const [couponError, setCouponError] = useState(""); // State for coupon error messages
-  const [discount, setDiscount] = useState(0); // State for applied discount
-  const [couponApplied, setCouponApplied] = useState(false); // State to track if coupon is applied
+  const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
+  const [discount, setDiscount] = useState(0);
   const cartItems = useCartStore((state) => state.cartItems);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
@@ -40,16 +39,12 @@ const Cart = () => {
       const response = await instance.post("/api/coupons/validate", {
         code: couponCode,
       });
-      const { discount } = response.data.coupon;
-      setDiscount(discount); // Assumes discount is a fixed amount in INR
+      setDiscount(response.data.coupon.discount);
       setCouponError("");
-      setCouponApplied(true);
-      setCouponCode(""); // Clear input after successful application
-      alert(`Coupon applied successfully! You saved ₹${discount}`);
+      alert("Coupon applied successfully!");
     } catch (error) {
       setCouponError(error.response?.data?.message || "Failed to apply coupon");
       setDiscount(0);
-      setCouponApplied(false);
     }
   };
 
@@ -58,9 +53,24 @@ const Cart = () => {
       const orderData = {
         amount: grandTotal,
         currency: "INR",
+        items: cartItems.map(item => ({
+          product: item._id,
+          quantity: item.quantity,
+        })),
+        user: localStorage.getItem("userId"), // Assuming userId is stored after login
       };
-      const response = await instance.post("/api/payments/razorpay/create-order", orderData);
-      const { id, amount, currency } = response.data;
+      console.log('Sending Razorpay order data:', orderData); // Debug log
+
+      const response = await instance.post("/api/orders/razorpay/create", orderData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const { id, amount, currency, orderId } = response.data;
+
+      if (!orderId) {
+        throw new Error("Order ID not returned from server");
+      }
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_7kAotmP1o8JR8V",
@@ -71,16 +81,26 @@ const Cart = () => {
         description: "Purchase Exam Dumps",
         handler: async (response) => {
           try {
-            await instance.post("/api/payments/razorpay/verify", {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-              amount: orderData.amount,
-            });
+            await instance.post(
+              "/api/orders/razorpay/verify",
+              {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                amount: orderData.amount,
+                orderId, // Include orderId
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            );
+            alert("Payment successful!");
             window.location.href = "/student/dashboard";
           } catch (error) {
             console.error("Verification failed:", error);
-            alert("Payment verification failed.");
+            alert("Payment verification failed: " + error.message);
           }
         },
         theme: {
@@ -92,7 +112,7 @@ const Cart = () => {
       setShowPaymentModal(false);
     } catch (error) {
       console.error("Payment initiation failed:", error);
-      alert("Payment initiation failed");
+      alert("Payment initiation failed: " + error.message);
     }
   };
 
@@ -162,9 +182,6 @@ const Cart = () => {
             <p>Total (MRP): <span className="float-right">₹{subtotal}</span></p>
             <p>Subtotal: <span className="float-right">₹{subtotal}</span></p>
             <p>Discount: <span className="float-right text-green-600">₹{discount}</span></p>
-            {couponApplied && (
-              <p className="text-green-600 text-sm">Coupon applied! You saved ₹{discount}</p>
-            )}
           </div>
 
           <hr className="my-4" />
@@ -243,28 +260,38 @@ const Cart = () => {
                       purchase_units: [
                         {
                           amount: {
-                            value: (grandTotal / 83).toFixed(2), // Convert INR to USD (approx. rate)
+                            value: (grandTotal / 83).toFixed(2), // Convert INR to USD
                           },
                         },
                       ],
                     });
                   }}
                   onApprove={async (data, actions) => {
-                    const details = await actions.order.capture();
-                    await instance.post(
-                      "/api/payments/paypal/process",
-                      {
-                        orderID: data.orderID,
-                        amount: grandTotal,
-                      },
-                      {
-                        headers: {
-                          Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    try {
+                      const details = await actions.order.capture();
+                      await instance.post(
+                        "/api/orders/paypal/process",
+                        {
+                          orderID: data.orderID,
+                          amount: grandTotal,
+                          items: cartItems.map(item => ({
+                            product: item._id,
+                            quantity: item.quantity,
+                          })),
+                          user: localStorage.getItem("userId"),
                         },
-                      }
-                    );
-                    alert(`Payment completed by ${details.payer.name.given_name}`);
-                    window.location.href = "/student/dashboard";
+                        {
+                          headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                          },
+                        }
+                      );
+                      alert(`Payment completed by ${details.payer.name.given_name}`);
+                      window.location.href = "/student/dashboard";
+                    } catch (error) {
+                      console.error("PayPal payment failed:", error);
+                      alert("Payment failed: " + error.message);
+                    }
                   }}
                   onError={(err) => {
                     console.error("PayPal Error:", err);

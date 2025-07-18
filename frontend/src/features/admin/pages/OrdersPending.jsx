@@ -1,17 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const OrdersPending = () => {
-  const orders = Array.from({ length: 21 }, (_, i) => ({
-    id: i + 1,
-    customer: `PendingUser ${i + 1}`,
-    date: `2025-06-${(i % 28) + 1}`.padStart(10, "0"),
-    total: `$${(80 + i * 7).toFixed(2)}`
-  }));
-
+  const [orders, setOrders] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(orders.length / itemsPerPage);
-  const currentOrders = orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  useEffect(() => {
+    fetchOrders(currentPage);
+  }, [currentPage]);
+
+  const fetchOrders = async (page) => {
+    try {
+      const res = await axios.get("http://localhost:8000/api/orders", {
+        params: {
+          status: "pending",
+          page,
+          limit: itemsPerPage,
+        },
+      });
+
+      const { data, pagination } = res.data;
+      setOrders(data);
+      setTotalPages(pagination.pages);
+    } catch (error) {
+      console.error("Failed to fetch pending orders:", error);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -26,29 +42,53 @@ const OrdersPending = () => {
           </tr>
         </thead>
         <tbody>
-          {currentOrders.map(order => (
-            <tr key={order.id}>
-              <td className="px-4 py-2 border">{order.id}</td>
-              <td className="px-4 py-2 border">{order.customer}</td>
-              <td className="px-4 py-2 border">{order.date}</td>
-              <td className="px-4 py-2 border">{order.total}</td>
+          {orders.length > 0 ? (
+            orders.map((order) => (
+              <tr key={order._id}>
+                <td className="px-4 py-2 border">{order.orderNumber}</td>
+                <td className="px-4 py-2 border">{order.user?.name || "N/A"}</td>
+                <td className="px-4 py-2 border">
+                  {new Date(order.createdAt).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-2 border">₹{order.total.toFixed(2)}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="text-center py-4 text-gray-500">
+                No pending orders found
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
       <div className="mt-4 flex justify-center space-x-2">
-        <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="px-3 py-1 bg-gray-200 rounded">Prev</button>
-        {[...Array(totalPages)].map((_, idx) => (
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          disabled={currentPage === 1}
+        >
+          Prev
+        </button>
+        {Array.from({ length: totalPages }, (_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentPage(idx + 1)}
-            className={`px-3 py-1 rounded ${currentPage === idx + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            className={`px-3 py-1 rounded ${
+              currentPage === idx + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+            } hover:bg-gray-300`}
           >
             {idx + 1}
           </button>
         ))}
-        <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="px-3 py-1 bg-gray-200 rounded">Next</button>
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
