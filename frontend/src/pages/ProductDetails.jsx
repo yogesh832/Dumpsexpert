@@ -220,7 +220,7 @@ console.log(product);
           </p>
 
   {/* Online Exam */}
-  {exams && exams._id && (
+  {/* {exams && exams._id && (
     <div className="flex justify-between items-center">
       <div>
         <p className="font-semibold">Online Exam Questions</p>
@@ -261,7 +261,7 @@ console.log(product);
         </button>
       </div>
     </div>
-  )}
+  )} */}
           {/* Pricing & buttons */}
           <div className="mt-4 space-y-4">
             {/* Regular PDF */}
