@@ -18,15 +18,19 @@ exports.createRazorpayOrder = async (req, res) => {
 
     // Fallback userId if authMiddleware is not used
     const userId = req.user?._id || user || '663000000000000000000000';
+    console.log('Resolved userId:', userId); // Debug log
     if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log('Invalid user ID:', userId);
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
     // Validate inputs
     if (!items || !Array.isArray(items) || items.length === 0) {
+      console.log('Invalid items:', items);
       return res.status(400).json({ message: 'Order items are required' });
     }
     if (!amount || isNaN(amount) || amount <= 0) {
+      console.log('Invalid amount:', amount);
       return res.status(400).json({ message: 'Valid amount is required' });
     }
 
@@ -36,11 +40,14 @@ exports.createRazorpayOrder = async (req, res) => {
     const productIds = [];
 
     for (const item of items) {
+      console.log('Processing item:', item); // Debug log
       if (!mongoose.Types.ObjectId.isValid(item.product)) {
+        console.log('Invalid product ID:', item.product);
         return res.status(400).json({ message: `Invalid product ID: ${item.product}` });
       }
       const product = await mongoose.model('Product').findById(item.product);
       if (!product) {
+        console.log('Product not found:', item.product);
         return res.status(404).json({ message: `Product not found: ${item.product}` });
       }
       const itemPrice = product.price;
@@ -69,6 +76,7 @@ exports.createRazorpayOrder = async (req, res) => {
       userAgent: req.headers['user-agent'],
     });
 
+    console.log('Saving order:', newOrder); // Debug log
     await newOrder.save();
     console.log('Order created:', { id: newOrder._id, user: userId, total }); // Debug log
 
@@ -78,12 +86,13 @@ exports.createRazorpayOrder = async (req, res) => {
       receipt: `order_${newOrder._id}`,
     };
 
+    console.log('Creating Razorpay order with options:', options); // Debug log
     const razorpayOrder = await razorpay.orders.create(options);
     console.log('Razorpay order created:', { id: razorpayOrder.id, receipt: options.receipt }); // Debug log
 
     res.json({ ...razorpayOrder, orderId: newOrder._id.toString() });
   } catch (error) {
-    console.error('Razorpay order creation failed:', error);
+    console.error('Razorpay order creation failed:', error.message, error.stack); // Enhanced error logging
     res.status(500).json({ error: 'Payment initiation failed', details: error.message });
   }
 };
@@ -95,16 +104,19 @@ exports.verifyRazorpayPayment = async (req, res) => {
     console.log('Verifying payment with:', { razorpay_payment_id, razorpay_order_id, orderId }); // Debug log
 
     if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+      console.log('Invalid orderId:', orderId);
       return res.status(400).json({ message: 'Valid orderId is required' });
     }
 
     const order = await Order.findById(orderId);
     if (!order) {
+      console.log('Order not found:', orderId);
       return res.status(404).json({ message: `Order not found: ${orderId}` });
     }
 
     const userId = req.user?._id;
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      console.log('Invalid user ID from token:', userId);
       return res.status(400).json({ message: 'Invalid user ID from token' });
     }
 
@@ -161,7 +173,7 @@ exports.verifyRazorpayPayment = async (req, res) => {
       res.status(400).json({ error: 'Invalid signature' });
     }
   } catch (error) {
-    console.error('Payment verification failed:', error);
+    console.error('Payment verification failed:', error.message, error.stack); // Enhanced error logging
     res.status(500).json({ error: 'Payment verification failed', details: error.message });
   }
 };
@@ -173,14 +185,18 @@ exports.processPayPalPayment = async (req, res) => {
     console.log('Processing PayPal payment with:', { orderID, amount, items, user }); // Debug log
 
     const userId = req.user?._id || user || '663000000000000000000000';
+    console.log('Resolved userId:', userId); // Debug log
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      console.log('Invalid user ID:', userId);
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
     if (!items || !Array.isArray(items) || items.length === 0) {
+      console.log('Invalid items:', items);
       return res.status(400).json({ message: 'Order items are required' });
     }
     if (!amount || isNaN(amount) || amount <= 0) {
+      console.log('Invalid amount:', amount);
       return res.status(400).json({ message: 'Valid amount is required' });
     }
 
@@ -188,11 +204,14 @@ exports.processPayPalPayment = async (req, res) => {
     let subtotal = 0;
     const populatedItems = [];
     for (const item of items) {
+      console.log('Processing item:', item); // Debug log
       if (!mongoose.Types.ObjectId.isValid(item.product)) {
+        console.log('Invalid product ID:', item.product);
         return res.status(400).json({ message: `Invalid product ID: ${item.product}` });
       }
       const product = await mongoose.model('Product').findById(item.product);
       if (!product) {
+        console.log('Product not found:', item.product);
         return res.status(404).json({ message: `Product not found: ${item.product}` });
       }
       const itemPrice = product.price;
@@ -220,6 +239,7 @@ exports.processPayPalPayment = async (req, res) => {
       userAgent: req.headers['user-agent'],
     });
 
+    console.log('Saving order:', newOrder); // Debug log
     await newOrder.save();
     console.log('PayPal order created:', { id: newOrder._id, user: userId }); // Debug log
 
@@ -249,7 +269,7 @@ exports.processPayPalPayment = async (req, res) => {
 
     res.json({ success: true, orderId: newOrder._id.toString() });
   } catch (error) {
-    console.error('PayPal payment processing failed:', error);
+    console.error('PayPal payment processing failed:', error.message, error.stack); // Enhanced error logging
     res.status(500).json({ error: 'Payment processing failed', details: error.message });
   }
 };

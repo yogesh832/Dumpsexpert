@@ -61,7 +61,7 @@ const Cart = () => {
       };
       console.log('Sending Razorpay order data:', orderData); // Debug log
 
-      const response = await instance.post("/api/orders/razorpay/create", orderData, {
+      const response = await instance.post("/api/payments/orders/razorpay/create", orderData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -82,7 +82,7 @@ const Cart = () => {
         handler: async (response) => {
           try {
             await instance.post(
-              "/api/orders/razorpay/verify",
+              "/api/payments/orders/razorpay/verify",
               {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
@@ -270,7 +270,7 @@ const Cart = () => {
                     try {
                       const details = await actions.order.capture();
                       await instance.post(
-                        "/api/orders/paypal/process",
+                        "/api/payments/orders/paypal/process",
                         {
                           orderID: data.orderID,
                           amount: grandTotal,
