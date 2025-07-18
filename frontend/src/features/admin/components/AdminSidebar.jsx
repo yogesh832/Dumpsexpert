@@ -451,6 +451,11 @@ const sidebarItems = [
           { label: "Posts", to: "/admin/blog/posts" },
         ],
       },
+      {
+  label: "Manage General FAQs",
+  to: "/admin/general-faqs",
+},
+
     ],
   },
 ];

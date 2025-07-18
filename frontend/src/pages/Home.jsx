@@ -4,15 +4,12 @@ import PopularDumps from "../components/shared/PopularDumps";
 import UnlockGoals from "../components/shared/UnlockGoals";
 import AllOtherDumps from "../components/shared/AllOtherDumps";
 import Testimonials from "../components/shared/Testimonials";
-import AdminSidebar from "../features/admin/components/AdminSidebar";
-import BlogSection from "../components/shared/BlogSection";
-import SEOTester from "../components/SEOTester";
-
+// import BlogSection from "../components/shared/BlogSection";
+import GeneralFAQs from "../components/shared/GeneralFAQs"; // ✅ New FAQ component
 
 const Home = () => {
   return (
     <div>
-      {/* <SEOTester /> */}
       <HeroSection />
       <AllOtherDumps />
       {/* <BlogSection /> */}
@@ -20,6 +17,7 @@ const Home = () => {
       <PopularDumps />
       <UnlockGoals />
       <Testimonials />
+      <GeneralFAQs /> {/* ✅ Append here */}
     </div>
   );
 };

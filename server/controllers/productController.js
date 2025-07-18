@@ -39,7 +39,31 @@ exports.getProductById = async (req, res) => {
     );
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    res.status(200).json({ message: "Product retrieved successfully", data: product });
+    res
+      .status(200)
+      .json({ message: "Product retrieved successfully", data: product });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+// GET: Product by Slug
+exports.getProductBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const product = await Product.findOne({ slug }).populate(
+      "lastUpdatedBy",
+      "name email"
+    );
+
+    if (!product)
+      return res
+        .status(404)
+        .json({ message: "Product not found with this slug" });
+
+    res.status(200).json({
+      message: "Product retrieved successfully by slug",
+      data: product,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -91,19 +115,25 @@ exports.createProduct = async (req, res) => {
 
     let samplePdfUrl = "";
     if (req.files?.samplePdf?.[0]) {
-      const result = await cloudinary.uploader.upload(req.files.samplePdf[0].path, {
-        resource_type: "raw",
-        folder: "product_pdfs",
-      });
+      const result = await cloudinary.uploader.upload(
+        req.files.samplePdf[0].path,
+        {
+          resource_type: "raw",
+          folder: "product_pdfs",
+        }
+      );
       samplePdfUrl = result.secure_url;
     }
 
     let mainPdfUrl = "";
     if (req.files?.mainPdf?.[0]) {
-      const result = await cloudinary.uploader.upload(req.files.mainPdf[0].path, {
-        resource_type: "raw",
-        folder: "product_pdfs",
-      });
+      const result = await cloudinary.uploader.upload(
+        req.files.mainPdf[0].path,
+        {
+          resource_type: "raw",
+          folder: "product_pdfs",
+        }
+      );
       mainPdfUrl = result.secure_url;
     }
 
@@ -142,9 +172,16 @@ exports.createProduct = async (req, res) => {
 
     await newProduct.save();
 
-    res.status(201).json({ message: "Product created successfully", data: newProduct });
+    res
+      .status(201)
+      .json({ message: "Product created successfully", data: newProduct });
   } catch (error) {
-    res.status(500).json({ message: "Server error during product creation", error: error.message });
+    res
+      .status(500)
+      .json({
+        message: "Server error during product creation",
+        error: error.message,
+      });
   }
 };
 
@@ -221,18 +258,24 @@ exports.updateProduct = async (req, res) => {
     }
 
     if (req.files?.samplePdf?.[0]) {
-      const result = await cloudinary.uploader.upload(req.files.samplePdf[0].path, {
-        resource_type: "raw",
-        folder: "product_pdfs",
-      });
+      const result = await cloudinary.uploader.upload(
+        req.files.samplePdf[0].path,
+        {
+          resource_type: "raw",
+          folder: "product_pdfs",
+        }
+      );
       updates.samplePdfUrl = result.secure_url;
     }
 
     if (req.files?.mainPdf?.[0]) {
-      const result = await cloudinary.uploader.upload(req.files.mainPdf[0].path, {
-        resource_type: "raw",
-        folder: "product_pdfs",
-      });
+      const result = await cloudinary.uploader.upload(
+        req.files.mainPdf[0].path,
+        {
+          resource_type: "raw",
+          folder: "product_pdfs",
+        }
+      );
       updates.mainPdfUrl = result.secure_url;
     }
 
@@ -241,9 +284,13 @@ exports.updateProduct = async (req, res) => {
       runValidators: true,
     }).populate("lastUpdatedBy", "name email");
 
-    res.status(200).json({ message: "Product updated successfully", data: updatedProduct });
+    res
+      .status(200)
+      .json({ message: "Product updated successfully", data: updatedProduct });
   } catch (error) {
-    res.status(500).json({ message: "Server error during update", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Server error during update", error: error.message });
   }
 };
 
@@ -257,8 +304,50 @@ exports.deleteProduct = async (req, res) => {
 
     await Product.findByIdAndDelete(id);
 
-    res.status(200).json({ message: "Product deleted successfully", deletedId: id });
+    res
+      .status(200)
+      .json({ message: "Product deleted successfully", deletedId: id });
   } catch (error) {
-    res.status(500).json({ message: "Server error during deletion", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Server error during deletion", error: error.message });
+  }
+};
+
+// 🔹 Get FAQs for a product
+exports.getProductFaqs = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    res.status(200).json({ faqs: product.faqs || [] });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch FAQs", error: err.message });
+  }
+};
+
+// 🔹 Add FAQ to a product
+exports.addProductFaq = async (req, res) => {
+  const { question, answer } = req.body;
+
+  if (!question || !answer) {
+    return res
+      .status(400)
+      .json({ message: "Question and answer are required" });
+  }
+
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    const newFaq = { question, answer };
+    product.faqs.push(newFaq);
+    await product.save();
+
+    res.status(201).json({ message: "FAQ added successfully", faq: newFaq });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to add FAQ", error: err.message });
   }
 };

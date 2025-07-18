@@ -12,14 +12,13 @@ const CategoryProducts = () => {
 
   useEffect(() => {
     instance
-      .get("/api/products")
+      .get("http://localhost:8000/api/products")
       .then((res) => {
         const filtered = res.data.data.filter(
           (item) => item.category.toLowerCase() === categoryName.toLowerCase()
         );
         setProducts(filtered);
         setLoading(false);
-        console.log(res.data.data);
       })
       .catch((err) => {
         console.error("Failed to fetch products:", err);
@@ -41,7 +40,6 @@ const CategoryProducts = () => {
         </div>
       ) : (
         <div className="w-full max-w-[1280px] mx-auto">
-          {/* Heading & Subheading */}
           <h1 className="text-3xl sm:text-4xl font-semibold text-gray-800 mb-2">
             Latest {categoryName.toUpperCase()} Exam Questions and Answers
             [Updated for 2025]: {categoryName.toUpperCase()} Certification Dumps
@@ -60,7 +58,6 @@ const CategoryProducts = () => {
             {showFullText ? "Read Less" : "Read More"}
           </button>
 
-          {/* Search & Count */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <p className="text-sm font-medium text-gray-700">
               Showing all {filteredProducts.length} results
@@ -77,7 +74,6 @@ const CategoryProducts = () => {
             </div>
           </div>
 
-          {/* Table */}
           {filteredProducts.length > 0 ? (
             <div className="overflow-x-auto bg-white shadow text-2xl rounded-lg border border-gray-200">
               <table className="min-w-full text-xl text-left">
@@ -104,12 +100,13 @@ const CategoryProducts = () => {
                           Starting at:
                         </span>
                         <span className="text-black font-semibold">
-                          ₹{product.dumpsPriceInr} (${product.dumpsPriceUsd}  )
+                          ₹{product.dumpsPriceInr} (${product.dumpsPriceUsd})
                         </span>
                       </td>
                       <td className="px-4 py-3">
+                        {/* ✅ Link using product.slug instead of _id */}
                         <Link
-                          to={`/product/${product._id}`}
+                          to={`/product/${product.slug}`}
                           className="bg-orange-500 hover:bg-orange-600 text-white text-xl px-4 py-2 rounded-md shadow-sm"
                         >
                           See Details

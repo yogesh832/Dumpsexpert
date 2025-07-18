@@ -147,7 +147,7 @@ const ProductForm = ({ mode }) => {
           name="sapExamCode"
           value={form.sapExamCode}
           onChange={handleChange}
-          placeholder="SAP Exam Code"
+          placeholder="Exam Code"
           className="w-full border px-4 py-2 rounded"
           required
         />
@@ -159,6 +159,14 @@ const ProductForm = ({ mode }) => {
           placeholder="Title"
           className="w-full border px-4 py-2 rounded"
           required
+        />
+        <input
+          name="slug"
+          placeholder="Slug"
+          value={form.slug}
+          onChange={handleChange}
+          required
+          className="border w-full px-3 py-2 rounded"
         />
 
         <h3 className="font-semibold mt-4">Dumps Pricing</h3>
@@ -344,14 +352,7 @@ const ProductForm = ({ mode }) => {
         </div>
 
         {/* SEO Fields */}
-        <input
-          name="slug"
-          placeholder="Slug"
-          value={form.slug}
-          onChange={handleChange}
-          required
-          className="border w-full px-3 py-2 rounded"
-        />
+        
         <input
           name="metaTitle"
           placeholder="Meta Title"

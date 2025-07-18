@@ -29,11 +29,23 @@ const productListSchema = new mongoose.Schema({
   sku: String,
   longDescription: String,
   Description: String,
-  slug: String,
-  metaTitle: String,
+slug: {
+  type: String,
+  unique: true,
+  lowercase: true,
+  trim: true
+},
+taTitle: String,
   metaKeywords: String,
   metaDescription: String,
   schema: String,
+  faqs: [
+  {
+    question: { type: String, required: true },
+    answer: { type: String, required: true },
+  },
+],
+
 
   lastUpdatedBy: {
     type: mongoose.Schema.Types.ObjectId,

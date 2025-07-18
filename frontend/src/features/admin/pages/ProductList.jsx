@@ -102,22 +102,27 @@ const ProductList = () => {
                     {product.status}
                   </span>
                 </td>
-                <td className="p-2 border space-x-1">
-                  <button
-                    onClick={() =>
-                      navigate(`/admin/products/edit/${product._id}`)
-                    }
-                    className="bg-green-500 text-white px-2 py-1 rounded text-xs"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(product._id)}
-                    className="bg-pink-500 text-white px-2 py-1 rounded text-xs"
-                  >
-                    Delete
-                  </button>
-                </td>
+              <td className="p-2 border space-x-1">
+  <button
+    onClick={() => navigate(`/admin/products/edit/${product._id}`)}
+    className="bg-green-500 text-white px-2 py-1 rounded text-xs"
+  >
+    Edit
+  </button>
+  <button
+    onClick={() => handleDelete(product._id)}
+    className="bg-pink-500 text-white px-2 py-1 rounded text-xs"
+  >
+    Delete
+  </button>
+  <button
+    onClick={() => navigate(`/admin/products/${product._id}/faq`)}
+    className="bg-indigo-500 text-white px-2 py-1 rounded text-xs"
+  >
+    Manage FAQ
+  </button>
+</td>
+
               </tr>
             ))}
           </tbody>
