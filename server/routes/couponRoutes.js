@@ -5,14 +5,15 @@ const {
   getCouponById,
   createCoupon,
   updateCoupon,
-  deleteCoupon
+  deleteCoupon,
+  validateCoupon 
 } = require('../controllers/couponController');
 
-
-router.get('/',  getAllCoupons);
-router.get('/:id',  getCouponById);
-router.post('/',  createCoupon);
-router.put('/:id',  updateCoupon);
-router.delete('/:id',  deleteCoupon);
+router.get('/', getAllCoupons);
+router.get('/:id', getCouponById);
+router.post('/', createCoupon);
+router.put('/:id', updateCoupon);
+router.delete('/:id', deleteCoupon);
+router.post('/validate', validateCoupon); 
 
 module.exports = router;
