@@ -11,6 +11,7 @@ const Cart = () => {
   const [couponCode, setCouponCode] = useState(""); // State for coupon code input
   const [couponError, setCouponError] = useState(""); // State for coupon error messages
   const [discount, setDiscount] = useState(0); // State for applied discount
+  const [couponApplied, setCouponApplied] = useState(false); // State to track if coupon is applied
   const cartItems = useCartStore((state) => state.cartItems);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
@@ -39,12 +40,16 @@ const Cart = () => {
       const response = await instance.post("/api/coupons/validate", {
         code: couponCode,
       });
-      setDiscount(response.data.coupon.discount);
+      const { discount } = response.data.coupon;
+      setDiscount(discount); // Assumes discount is a fixed amount in INR
       setCouponError("");
-      alert("Coupon applied successfully!");
+      setCouponApplied(true);
+      setCouponCode(""); // Clear input after successful application
+      alert(`Coupon applied successfully! You saved ₹${discount}`);
     } catch (error) {
       setCouponError(error.response?.data?.message || "Failed to apply coupon");
       setDiscount(0);
+      setCouponApplied(false);
     }
   };
 
@@ -157,6 +162,9 @@ const Cart = () => {
             <p>Total (MRP): <span className="float-right">₹{subtotal}</span></p>
             <p>Subtotal: <span className="float-right">₹{subtotal}</span></p>
             <p>Discount: <span className="float-right text-green-600">₹{discount}</span></p>
+            {couponApplied && (
+              <p className="text-green-600 text-sm">Coupon applied! You saved ₹{discount}</p>
+            )}
           </div>
 
           <hr className="my-4" />
