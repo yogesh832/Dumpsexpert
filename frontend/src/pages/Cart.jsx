@@ -47,48 +47,47 @@ const Cart = () => {
   };
 
 const handleRazorpayPayment = async () => {
-    try {
-      const orderData = {
-        amount: grandTotal,
-        currency: "INR",
-      };
-      const response = await instance.post("/api/payments/razorpay/create-order", orderData);
-      const { id, amount, currency } = response.data;
+  try {
+    const orderData = {
+      amount: grandTotal,
+      currency: "INR",
+    };
+    const response = await instance.post("/api/payments/razorpay/create-order", orderData);
+    const { id, amount, currency } = response.data;
 
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_7kAotmP1o8JR8V",
-        amount: amount,
-        currency: currency,
-        order_id: id,
-        name: "DumpsExpert",
-        description: "Purchase Exam Dumps",
-        handler: async (response) => {
-          try {
-            await instance.post("/api/payments/razorpay/verify", {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-              amount: orderData.amount,
-            });
-            window.location.href = "/student/dashboard";
-          } catch (error) {
-            console.error("Verification failed:", error);
-            alert("Payment verification failed.");
-          }
-        },
-        theme: {
-          color: "#3B82F6",
-        },
-      };
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-      setShowPaymentModal(false);
-    } catch (error) {
-      console.error("Payment initiation failed:", error);
-      alert("Payment initiation failed");
-    }
-  };
-
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_7kAotmP1o8JR8V",
+      amount: amount,
+      currency: currency,
+      order_id: id,
+      name: "DumpsExpert",
+      description: "Purchase Exam Dumps",
+      handler: async (razorpayResponse) => {
+        try {
+          await instance.post("/api/payments/razorpay/verify", {
+            razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+            razorpay_order_id: razorpayResponse.razorpay_order_id,
+            razorpay_signature: razorpayResponse.razorpay_signature,
+            amount: orderData.amount,
+          });
+          window.location.href = "/student/dashboard";
+        } catch (error) {
+          console.error("Verification failed:", error);
+          alert("Payment verification failed.");
+        }
+      },
+      theme: {
+        color: "#3B82F6",
+      },
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+    setShowPaymentModal(false);
+  } catch (error) {
+    console.error("Payment initiation failed:", error);
+    alert("Payment initiation failed");
+  }
+};
 
   return (
     <div className="min-h-[80vh] bg-[#f9f9f9] px-4 py-10">

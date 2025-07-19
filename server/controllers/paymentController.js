@@ -29,7 +29,8 @@ exports.createRazorpayOrder = async (req, res) => {
 // RAZORPAY VERIFY PAYMENT
 exports.verifyRazorpayPayment = async (req, res) => {
   try {
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount } = req.body;
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount, userId } = req.body;
+    console.log("Verifying payment:", { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount });
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
@@ -38,26 +39,34 @@ exports.verifyRazorpayPayment = async (req, res) => {
       .digest("hex");
 
     if (razorpay_signature === expectedSign) {
-      await User.findByIdAndUpdate(req.user._id, {
-        subscription: 'yes',
-        role: 'student'
-      });
+      console.log("Signature verified successfully");
+      
+      // Only update user if userId is provided
+      if (userId) {
+        await User.findByIdAndUpdate(userId, {
+          subscription: 'yes',
+          role: 'student'
+        });
+      }
 
+      // Create payment record
       await Payment.create({
-        user: req.user._id,
+        user: userId || '663000000000000000000000', // Use default ID if no user
         amount,
         currency: 'INR',
         paymentMethod: 'razorpay',
         paymentId: razorpay_payment_id,
+        orderId: razorpay_order_id,
         status: 'completed'
       });
 
       res.json({ success: true });
     } else {
+      console.log("Signature verification failed");
       res.status(400).json({ error: 'Invalid signature' });
     }
   } catch (error) {
-    console.error('Payment verification failed:', error);
+    console.error('Payment verification failed:', error.stack);
     res.status(500).json({ error: 'Payment verification failed' });
   }
 };
