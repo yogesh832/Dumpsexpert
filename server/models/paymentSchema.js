@@ -20,10 +20,13 @@ const paymentSchema = new mongoose.Schema({
     enum: ["paypal", "razorpay"],
     required: true,
   },
-
   paymentId: {
     type: String,
     required: true,
+  },
+  orderId: {
+    type: String, // Add orderId field for Razorpay
+    required: false, // Optional, as PayPal may not use it
   },
   status: {
     type: String,

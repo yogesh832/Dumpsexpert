@@ -12,23 +12,24 @@ const razorpay = new Razorpay({
 exports.createRazorpayOrder = async (req, res) => {
   try {
     const { amount, currency } = req.body;
+    console.log('Creating order with:', { amount, currency });
     const options = {
-      amount: Math.round(amount * 100), // amount in smallest currency unit
-      currency: currency || "INR",
-      receipt: `order_${Date.now()}`
+      amount: Math.round(amount * 100), // Convert to paise
+      currency: currency || 'INR',
+      receipt: `order_${Date.now()}`,
     };
 
     const order = await razorpay.orders.create(options);
-    
-    // Send the complete order object
+    console.log('Order created:', order);
+
     res.json({
-      id: order.id,            // This is the order_id
+      id: order.id,
       amount: order.amount,
-      currency: order.currency
+      currency: order.currency,
     });
   } catch (error) {
     console.error('Razorpay order creation failed:', error);
-    res.status(500).json({ error: 'Payment initiation failed' });
+    res.status(500).json({ error: 'Payment initiation failed', details: error.message });
   }
 };
 
@@ -47,47 +48,59 @@ exports.verifyRazorpayPayment = async (req, res) => {
       return res.status(400).json({ error: 'Missing payment details' });
     }
 
-    // Generate the signature verification string
+    // Check RAZORPAY_KEY_SECRET
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      console.error('RAZORPAY_KEY_SECRET is not defined');
+      return res.status(500).json({ error: 'Server configuration error: Missing RAZORPAY_KEY_SECRET' });
+    }
+
+    // Generate signature
     const sign = `${razorpay_order_id}|${razorpay_payment_id}`;
-
-    // Log the values for debugging
-    console.log('Verification Data:', {
-      orderId: razorpay_order_id,
-      paymentId: razorpay_payment_id,
-      signature: razorpay_signature,
-      secret: process.env.RAZORPAY_KEY_SECRET?.slice(0, 4) + '***',
-    });
-
     const expectedSign = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
       .update(sign)
       .digest('hex');
 
-    console.log('Generated Signature:', expectedSign);
-    console.log('Received Signature:', razorpay_signature);
+    console.log('Verification Data:', {
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      receivedSignature: razorpay_signature,
+      expectedSignature: expectedSign,
+      signString: sign,
+      keySecret: process.env.RAZORPAY_KEY_SECRET.slice(0, 4) + '***',
+    });
 
     if (razorpay_signature === expectedSign) {
-      await Payment.create({
-        amount,
-        currency: 'INR',
-        paymentMethod: 'razorpay',
-        paymentId: razorpay_payment_id,
-        orderId: razorpay_order_id, // Optionally store orderId
-        status: 'completed',
-      });
-
-      res.json({ success: true });
+      try {
+        const payment = await Payment.create({
+          user: req.user?._id, // Ensure user is authenticated and ID is available
+          amount,
+          currency: 'INR',
+          paymentMethod: 'razorpay',
+          paymentId: razorpay_payment_id,
+          orderId: razorpay_order_id,
+          status: 'completed',
+        });
+        console.log('Payment saved:', payment);
+        return res.json({ success: true });
+      } catch (dbError) {
+        console.error('Database error:', dbError);
+        return res.status(500).json({ error: 'Failed to save payment', details: dbError.message });
+      }
     } else {
-      console.log('Signature Mismatch');
-      res.status(400).json({
-        error: 'Invalid signature',
-        expected: expectedSign,
+      console.error('Signature mismatch:', {
         received: razorpay_signature,
+        expected: expectedSign,
+      });
+      return res.status(400).json({
+        error: 'Invalid signature',
+        received: razorpay_signature,
+        expected: expectedSign,
       });
     }
   } catch (error) {
-    console.error('Payment verification failed:', error);
-    res.status(500).json({ error: 'Payment verification failed', details: error.message });
+    console.error('Payment verification failed:', error.stack);
+    return res.status(500).json({ error: 'Payment verification failed', details: error.message });
   }
 };
 

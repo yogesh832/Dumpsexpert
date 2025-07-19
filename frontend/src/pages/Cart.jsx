@@ -54,7 +54,8 @@ const handleRazorpayPayment = async () => {
       items: cartItems,
     };
     const response = await instance.post('/api/payments/razorpay/create-order', orderData);
-    const { id: order_id, amount, currency } = response.data; // Use 'id' as per Razorpay API response
+    console.log('Create Order Response:', response.data);
+    const { id: order_id, amount, currency } = response.data;
 
     if (!order_id || !amount || !currency) {
       console.error('Invalid order response:', response.data);
@@ -66,39 +67,34 @@ const handleRazorpayPayment = async () => {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_7kAotmP1o8JR8V',
       amount: amount,
       currency: currency,
-      order_id: order_id, // Use order_id from response
+      order_id: order_id,
       name: 'DumpsExpert',
       description: 'Purchase Exam Dumps',
       handler: async (response) => {
         try {
           console.log('Razorpay Response:', response);
-
-          // Validate response
           if (!response.razorpay_payment_id || !response.razorpay_order_id || !response.razorpay_signature) {
             console.error('Incomplete Razorpay response:', response);
             alert('Payment response incomplete');
             return;
           }
-
           const verificationData = {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_order_id: response.razorpay_order_id,
             razorpay_signature: response.razorpay_signature,
             amount: orderData.amount,
           };
-
           console.log('Sending verification data:', verificationData);
-
           const verificationResponse = await instance.post('/api/payments/razorpay/verify', verificationData);
           if (verificationResponse.data.success) {
             window.location.href = '/student/dashboard';
           } else {
             console.error('Verification response:', verificationResponse.data);
-            alert('Payment verification failed');
+            alert(`Payment verification failed: ${verificationResponse.data.error || 'Unknown error'}`);
           }
         } catch (error) {
           console.error('Verification failed:', error.response?.data || error);
-          alert('Payment verification failed');
+          alert(`Payment verification failed: ${error.response?.data?.error || error.message}`);
         }
       },
       theme: {
