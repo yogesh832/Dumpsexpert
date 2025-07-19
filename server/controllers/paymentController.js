@@ -1,55 +1,25 @@
 const Payment = require('../models/paymentSchema');
-const Order = require('../models/orderSchema');
+const User = require('../models/userSchema');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_7kAotmP1o8JR8V',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'your_razorpay_key_secret', // Replace with actual secret or ensure env variable
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
 // RAZORPAY CREATE ORDER
 exports.createRazorpayOrder = async (req, res) => {
   try {
-    const { amount, currency = 'INR', items = [], userId = '663000000000000000000000' } = req.body;
-
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Invalid amount' });
-    }
-
-    // Create Razorpay order
+    const { amount, currency } = req.body;
     const options = {
-      amount: Math.round(amount * 100), // Convert to paise
-      currency,
-      receipt: `order_${Date.now()}`,
+      amount: Math.round(amount * 100),
+      currency: currency || "INR",
+      receipt: `order_${Date.now()}`
     };
 
-    const razorpayOrder = await razorpay.orders.create(options);
-
-    // Create order in database with default userId if not provided
-    const order = new Order({
-      user: userId,
-      items: items.map(item => ({
-        product: item.product || item._id,
-        name: item.title || 'Unknown Product',
-        price: item.price || 0,
-        quantity: item.quantity || 1,
-      })),
-      subtotal: amount,
-      total: amount,
-      paymentMethod: 'razorpay',
-      status: 'pending',
-      paymentStatus: 'pending',
-    });
-
-    await order.save();
-
-    res.json({
-      id: razorpayOrder.id,
-      amount: razorpayOrder.amount,
-      currency: razorpayOrder.currency,
-      orderId: order._id,
-    });
+    const order = await razorpay.orders.create(options);
+    res.json(order);
   } catch (error) {
     console.error('Razorpay order creation failed:', error);
     res.status(500).json({ error: 'Payment initiation failed' });
@@ -59,34 +29,27 @@ exports.createRazorpayOrder = async (req, res) => {
 // RAZORPAY VERIFY PAYMENT
 exports.verifyRazorpayPayment = async (req, res) => {
   try {
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount, orderId } = req.body;
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount } = req.body;
 
-    if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature || !orderId) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const sign = razorpay_order_id + '|' + razorpay_payment_id;
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || 'your_razorpay_key_secret')
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(sign.toString())
-      .digest('hex');
+      .digest("hex");
 
     if (razorpay_signature === expectedSign) {
-      // Create payment record
-      const payment = await Payment.create({
-        user: '663000000000000000000000', // Default userId
+      await User.findByIdAndUpdate(req.user._id, {
+        subscription: 'yes',
+        role: 'student'
+      });
+
+      await Payment.create({
+        user: req.user._id,
         amount,
         currency: 'INR',
         paymentMethod: 'razorpay',
         paymentId: razorpay_payment_id,
-        status: 'completed',
-      });
-
-      // Update order
-      await Order.findByIdAndUpdate(orderId, {
-        paymentId: payment._id,
-        status: 'completed',
-        paymentStatus: 'completed',
+        status: 'completed'
       });
 
       res.json({ success: true });
@@ -99,23 +62,23 @@ exports.verifyRazorpayPayment = async (req, res) => {
   }
 };
 
-// PAYPAL PAYMENT PROCESS
+// PAYPAL PAYMENT SUCCESS (Frontend should call this after PayPal approval)
 exports.processPayPalPayment = async (req, res) => {
   try {
     const { orderID, amount } = req.body;
 
-    if (!orderID || !amount) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
+    await User.findByIdAndUpdate(req.user._id, {
+      subscription: 'yes',
+      role: 'student'
+    });
 
-    // Create payment record
     await Payment.create({
-      user: '663000000000000000000000', // Default userId
+      user: req.user._id,
       amount,
       currency: 'INR',
       paymentMethod: 'paypal',
       paymentId: orderID,
-      status: 'completed',
+      status: 'completed'
     });
 
     res.json({ success: true });
