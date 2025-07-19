@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Question = require("../models/QuestionSchema");
-
+const Product = require("../models/productListSchema");
+const ExamCodeSchema = require("../models/ExamCodeSchema");
 // 🔢 Generate unique question code
 const generateQuestionCode = async () => {
   const count = await Question.countDocuments();
@@ -87,3 +88,28 @@ exports.getQuestionsByExam = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Get only sample questions for an exam
+
+
+
+
+
+// controller
+exports.getQuestionsByProductSlug = async (req, res) => {
+  const { slug } = req.params;
+
+  try {
+    const product = await Product.findOne({ slug });
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    const questions = await Question.find({ product: product._id });
+
+    res.json({ success: true, data: questions });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+

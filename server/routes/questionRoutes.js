@@ -16,6 +16,7 @@ router.get("/", questionCtrl.getAllQuestions);
 
 // ✅ Get questions by examId
 router.get("/byExam/:examId", questionCtrl.getQuestionsByExam);
+router.get("/byProductSlug/:slug", questionCtrl.getQuestionsByProductSlug);
 
 // ✅ Get single question by ID
 router.get("/:id", questionCtrl.getQuestionById);

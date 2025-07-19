@@ -10,13 +10,23 @@ const SampleInstructionsPage = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const { examId } = useParams();
+  const { slug } = useParams(); // use slug now
 
   useEffect(() => {
     const fetchInstructions = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/exams/byProduct/${examId}`);
-        setSampleInstructions(res.data?.sampleInstructions || "<p>No instructions available.</p>");
+        const res = await axios.get(
+          `http://localhost:8000/api/exams/byslug/${slug}`
+        );
+        const exam = res.data[0];
+
+        if (!exam?.sampleInstructions) {
+          setSampleInstructions("<p>No instructions available.</p>");
+        } else {
+          setSampleInstructions(exam.sampleInstructions); 
+        }
+
+        console.log("🔥 sampleInstructions from API:", exam.sampleInstructions);
       } catch (err) {
         console.error(err);
         setError("Failed to load instructions.");
@@ -26,14 +36,14 @@ const SampleInstructionsPage = () => {
     };
 
     fetchInstructions();
-  }, [examId]);
+  }, [slug]);
 
   const handleStart = () => {
     if (!agreed) {
       alert("Please agree to the terms and conditions before starting.");
       return;
     }
-    navigate(`/student/courses-exam/test/${examId}`);
+    navigate(`/courses-exam/sample-test/${slug}`);
   };
 
   return (
@@ -64,7 +74,11 @@ const SampleInstructionsPage = () => {
           </label>
         </div>
 
-        <button className="start-button" onClick={handleStart} disabled={loading || !!error}>
+        <button
+          className="start-button"
+          onClick={handleStart}
+          disabled={loading || !!error}
+        >
           Start Sample Test
         </button>
       </div>

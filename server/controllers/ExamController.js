@@ -1,5 +1,5 @@
 const Exam = require("../models/ExamCodeSchema");
-
+const Product = require("../models/productListSchema");
 // ✅ Create Exam
 exports.createExam = async (req, res) => {
   try {
@@ -45,6 +45,25 @@ exports.getExamsByProduct = async (req, res) => {
     res.status(200).json(exams);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch exams for product' });
+  }
+};
+
+
+
+exports.getExamsByProductSlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    const product = await Product.findOne({ slug });
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const exams = await Exam.find({ productId: product._id });
+    res.status(200).json(exams);
+  } catch (err) {
+    console.error("Error in getExamsByProductSlug:", err);
+    res.status(500).json({ error: 'Failed to fetch exams for product slug' });
   }
 };
 // ✅ Get All Exams
