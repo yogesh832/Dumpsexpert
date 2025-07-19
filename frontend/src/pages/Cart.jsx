@@ -52,7 +52,6 @@ const Cart = () => {
         amount: grandTotal,
         currency: 'INR',
         items: cartItems,
-        userId: '663000000000000000000000', // Default userId
       };
       const response = await instance.post('/api/payments/razorpay/create-order', orderData);
       const { id, amount, currency, orderId } = response.data;
