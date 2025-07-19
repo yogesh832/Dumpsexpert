@@ -54,6 +54,12 @@ exports.verifyRazorpayPayment = async (req, res) => {
       return res.status(500).json({ error: 'Server configuration error: Missing RAZORPAY_KEY_SECRET' });
     }
 
+    // Validate user authentication
+    if (!req.user?._id) {
+      console.error('User not authenticated:', { user: req.user });
+      return res.status(401).json({ error: 'User not authenticated, please log in' });
+    }
+
     // Generate signature
     const sign = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSign = crypto
@@ -68,12 +74,13 @@ exports.verifyRazorpayPayment = async (req, res) => {
       expectedSignature: expectedSign,
       signString: sign,
       keySecret: process.env.RAZORPAY_KEY_SECRET.slice(0, 4) + '***',
+      userId: req.user._id,
     });
 
     if (razorpay_signature === expectedSign) {
       try {
         const payment = await Payment.create({
-          user: req.user?._id, // Ensure user is authenticated and ID is available
+          user: req.user._id,
           amount,
           currency: 'INR',
           paymentMethod: 'razorpay',
