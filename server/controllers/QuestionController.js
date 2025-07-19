@@ -93,9 +93,6 @@ exports.getQuestionsByExam = async (req, res) => {
 
 
 
-
-
-// controller
 exports.getQuestionsByProductSlug = async (req, res) => {
   const { slug } = req.params;
 
@@ -104,10 +101,17 @@ exports.getQuestionsByProductSlug = async (req, res) => {
     if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
+console.log("product._id:", product._id);
+console.log("typeof product._id:", typeof product._id);
 
-    const questions = await Question.find({ product: product._id });
+const question = await Question.findOne();
+console.log("sample examId:", question.examId);
 
-    res.json({ success: true, data: questions });
+    const questions = await Question.find({ examId: question.examId });
+
+    res.json({ success: true, data: questions },
+      console.log("Fetched questions for product:", slug, questions)
+    );
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

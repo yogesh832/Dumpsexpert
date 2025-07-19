@@ -49,6 +49,7 @@
 /* From Uiverse.io by adamgiebl */ 
 .dots-container {
   display: flex;
+  margin-top: 50px;
   align-items: center;
   justify-content: center;
   height: 100vh; 

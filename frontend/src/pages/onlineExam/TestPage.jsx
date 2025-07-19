@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 import "./TestPage.css";
 
-// Utility to clean HTML
 const stripHtml = (html) => {
   const div = document.createElement("div");
   div.innerHTML = html;
@@ -18,30 +17,72 @@ const TestPage = () => {
   const [userAnswers, setUserAnswers] = useState({});
   const [startTime] = useState(new Date());
   const [autoSubmitTriggered, setAutoSubmitTriggered] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(3600);
+  const [timeLeft, setTimeLeft] = useState("");
+  const [exam, setExam] = useState({}); // to store exam info like time
 
   const navigate = useNavigate();
-  const { examId } = useParams();
-  console.log("🧪 examId:", examId);
+  const { slug } = useParams();
+
+  // console.log("🧪 slug:", slug);
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/questions/byExam/${examId}`
+          `http://localhost:8000/api/questions/byProductSlug/${slug}`
         );
-        setQuestions(res.data);
-        console.log("📥 Questions Fetched:", res.data);
+        const data = res.data;
+        console.log("📦 Fetched question data:", data);
 
-        const initialStatus = {};
-        res.data.forEach((q) => (initialStatus[q._id] = "Not Visited"));
-        setStatusMap(initialStatus);
+        if (!data.success || !Array.isArray(data.data)) {
+          throw new Error("Invalid question format");
+        }
+
+        setQuestions(data.data);
       } catch (err) {
-        console.error("❌ Failed to load questions:", err);
+        console.error("❌ Failed to fetch questions:", err);
+        setQuestions([]); // Prevent crashing
       }
     };
-    if (examId) fetchQuestions();
-  }, [examId]);
+
+    if (slug) fetchQuestions();
+  }, [slug]);
+
+useEffect(() => {
+  const fetchExam = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/exams/byslug/${slug}`);
+      
+      const fetchedExam = res.data;
+      // if (fetchedExam) {
+        console.log("✅ Exam fetched:", fetchedExam);
+        setExam(fetchedExam[0]);
+      // } else {
+      //   console.warn("⚠️ No exam found for the provided slug.");
+      // }
+
+    } catch (error) {
+      console.error("❌ Failed to fetch exam:", error);
+    }
+  };
+
+  if (slug) {
+    console.log("🧪 slug:", slug);
+    fetchExam();
+  }
+}, [slug]);
+
+
+useEffect(() => {
+  if (exam && Object.keys(exam).length > 0) {
+    console.log("✅ Updated exam state:", exam);
+    // set timer here if needed
+    console.log("timer", exam.sampleDuration)
+    setTimeLeft(exam.sampleDuration * 60); // set time in seconds
+  }
+}, [exam,slug]);
+
+
 
   useEffect(() => {
     if (autoSubmitTriggered && questions.length > 0) {
@@ -158,7 +199,7 @@ const TestPage = () => {
     let wrongAnswers = 0;
 
     questions.forEach((q) => {
-      const correct = q.correctAnswers.sort().join(",");
+      const correct = q.correctAnswers?.sort().join(",") || "";
       const user = (
         Array.isArray(userAnswers[q._id])
           ? userAnswers[q._id]
@@ -173,7 +214,7 @@ const TestPage = () => {
 
     const resultData = {
       studentId,
-      examCode: examId,
+      examCode: slug,
       totalQuestions: questions.length,
       attempted: Object.keys(userAnswers).length,
       wrong: wrongAnswers,
@@ -204,7 +245,7 @@ const TestPage = () => {
     }
   };
 
-  if (!questions.length) {
+  if (!questions?.length) {
     return <div className="text-center p-6">Loading questions...</div>;
   }
 
@@ -212,7 +253,7 @@ const TestPage = () => {
   const selected = answers[currentQuestion._id];
 
   return (
-    <div className="app-container">
+    <div className="app-container ">
       <div className="question-area">
         <h3 className="heading">Question</h3>
         <div className="mb-2">
@@ -283,6 +324,7 @@ const TestPage = () => {
       </div>
 
       <div className="sidebar">
+        <div className="">
         <h2 className="font-semibold mb-2">All Questions</h2>
         <div className="questions-grid grid grid-cols-5 gap-2">
           {questions.map((q, i) => (
@@ -297,9 +339,8 @@ const TestPage = () => {
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="bottom-bar fixed bottom-0 left-0 right-0 bg-white border-t py-3 px-6 flex justify-between items-center shadow-lg">
+        </div>
+         <div className="bottom-bar  bg-white border-t py-3 px-6 flex justify-between items-center shadow-lg">
         <span className="font-semibold">Time Left: {formatTime(timeLeft)}</span>
         <button
           onClick={handleSubmit}
@@ -308,6 +349,9 @@ const TestPage = () => {
           Submit Test
         </button>
       </div>
+      </div>
+
+     
     </div>
   );
 };

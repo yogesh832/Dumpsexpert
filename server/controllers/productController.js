@@ -134,6 +134,9 @@ exports.createProduct = async (req, res) => {
       );
       mainPdfUrl = result.secure_url;
     }
+console.log("User:", req.user);
+console.log("Body:", req.body);
+console.log("Files:", req.files);
 
     const newProduct = new Product({
       sapExamCode,
@@ -165,6 +168,7 @@ exports.createProduct = async (req, res) => {
       metaKeywords,
       metaDescription,
       schema,
+lastUpdatedBy: req.user ? req.user._id : null,
     });
 
     await newProduct.save();
@@ -178,6 +182,8 @@ exports.createProduct = async (req, res) => {
       message: "Server error during product creation",
       error: error.message,
     });
+      console.log(error)
+
   }
 };
 
