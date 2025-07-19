@@ -72,6 +72,10 @@ exports.getProductBySlug = async (req, res) => {
 // POST: Create Product
 exports.createProduct = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized: User not authenticated" });
+    }
+
     const {
       sapExamCode,
       title,
@@ -134,9 +138,6 @@ exports.createProduct = async (req, res) => {
       );
       mainPdfUrl = result.secure_url;
     }
-console.log("User:", req.user);
-console.log("Body:", req.body);
-console.log("Files:", req.files);
 
     const newProduct = new Product({
       sapExamCode,
@@ -168,7 +169,7 @@ console.log("Files:", req.files);
       metaKeywords,
       metaDescription,
       schema,
-lastUpdatedBy: req.user ? req.user._id : null,
+      lastUpdatedBy: req.user._id, // Use req.user._id directly since we checked req.user
     });
 
     await newProduct.save();
@@ -178,12 +179,11 @@ lastUpdatedBy: req.user ? req.user._id : null,
       data: newProduct,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       message: "Server error during product creation",
       error: error.message,
     });
-      console.log(error)
-
   }
 };
 
