@@ -219,49 +219,7 @@ console.log(product);
               : "N/A"}
           </p>
 
-  {/* Online Exam */}
-  {/* {exams && exams._id && (
-    <div className="flex justify-between items-center">
-      <div>
-        <p className="font-semibold">Online Exam Questions</p>
-        <p className="text-blue-600 font-bold">
-          ₹ <span>{exams.priceINR ?? "N/A"}</span>{" "}
-          <span className="text-red-600 font-bold line-through">
-            ₹{exams.mrpINR ?? "N/A"}
-          </span>{" "}
-          <span className="text-gray-600 font-bold text-sm">
-            ({calculateDiscount(exams.mrpINR, exams.priceINR)}% off)
-          </span>
-        </p>
-        <p>
-          ${" "}
-          <span className="text-blue-400 font-bold">
-            {exams.priceUSD ?? "N/A"}
-          </span>{" "}
-          <span className="text-red-400 font-bold line-through">
-            ${exams.mrpUSD ?? "N/A"}
-          </span>{" "}
-          <span className="text-gray-400 font-bold text-sm">
-            ({calculateDiscount(exams.mrpUSD, exams.priceUSD)}% off)
-          </span>
-        </p>
-      </div>
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => navigate(`/student/courses-exam/sample-instructions/${exams._id}`)}
-          className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
-        >
-          Try Online Exam
-        </button>
-        <button
-          onClick={() => handleAddToCart("regular")}
-          className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold px-4 py-2 rounded"
-        >
-          🛒 Add to Cart
-        </button>
-      </div>
-    </div>
-  )} */}
+ 
           {/* Pricing & buttons */}
           <div className="mt-4 space-y-4">
             {/* Regular PDF */}

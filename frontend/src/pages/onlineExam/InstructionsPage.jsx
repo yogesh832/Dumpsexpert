@@ -6,38 +6,50 @@ import "./InstructionsPage.css";
 const InstructionsPage = () => {
   const [agreed, setAgreed] = useState(false);
   const [mainInstructions, setMainInstructions] = useState("");
+  const [exam, setExam] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const { examId } = useParams();
+  const { slug } = useParams();
 
   useEffect(() => {
     const fetchInstructions = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/exams/${examId}`);
-        setMainInstructions(res.data?.mainInstructions || "<p>No instructions found.</p>");
+        const res = await axios.get(
+          `http://localhost:8000/api/exams/byslug/${slug}`
+        );
+        const exam = res.data[0];
+
+        if (!exam?.mainInstructions) {
+          setMainInstructions("<p>No instructions available.</p>");
+        } else {
+          setMainInstructions(exam.mainInstructions);
+        }
+
+        setExam(exam);
+        console.log("🔥 exam from API:", exam);
       } catch (err) {
-        setError("❌ Failed to fetch instructions.");
         console.error(err);
+        setError("Failed to load instructions.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchInstructions();
-  }, [examId]);
+  }, [slug]);
 
   const handleStart = () => {
     if (!agreed) {
       alert("Please agree to the terms and conditions before starting.");
       return;
     }
-    navigate(`/student/courses-exam/test/${examId}`);
+    navigate(`/student/courses-exam/test/${slug}`);
   };
 
   return (
-    <div className="instructions-container">
+    <div className="instructions-container my-16">
       <div className="instructions-card">
         <h1 className="title">📝 Test Instructions</h1>
 
@@ -52,6 +64,49 @@ const InstructionsPage = () => {
           />
         )}
 
+        {!loading && !error && (
+          <ul className="instructions-list">
+            <p className="intro-text">
+              📋 Please read the following test instructions carefully:
+            </p>
+
+            <li>
+              ⏱️ <strong>Duration:</strong> {exam.duration} minutes
+            </li>
+            <li>
+              ✍️ <strong>Marks per Question:</strong> {exam.eachQuestionMark} marks
+            </li>
+            <li>
+              📉 <strong>Negative Marking:</strong> -1 mark per wrong answer
+            </li>
+            <li>
+              🔢 <strong>Total Questions:</strong> {exam.numberOfQuestions}
+            </li>
+            <li>
+              🎯 <strong>Passing Score:</strong> {exam.passingScore}%
+            </li>
+            <li>
+              ✅ You can mark questions for review if unsure (shown in{" "}
+              <span className="color purple">purple</span>).
+            </li>
+            <li>
+              ❌ Skipped questions will appear in{" "}
+              <span className="color red">red</span>.
+            </li>
+            <li>
+              ✔️ Answered questions will appear in{" "}
+              <span className="color green">green</span>.
+            </li>
+            <li>
+              🚨 Switching tabs more than 5 times will{" "}
+              <strong>automatically submit</strong> your test.
+            </li>
+            <li>
+              🚫 Copy-paste and tab switching are restricted to ensure fairness.
+            </li>
+          </ul>
+        )}
+
         <div className="checkbox-container">
           <input
             type="checkbox"
@@ -60,11 +115,15 @@ const InstructionsPage = () => {
             onChange={(e) => setAgreed(e.target.checked)}
           />
           <label htmlFor="agree">
-            To proceed, kindly confirm that you agree to the terms and conditions.
+            I have read and agree to the above instructions.
           </label>
         </div>
 
-        <button className="start-button" onClick={handleStart} disabled={loading || !!error}>
+        <button
+          className="start-button"
+          onClick={handleStart}
+          disabled={loading || !!error}
+        >
           Start Test
         </button>
       </div>

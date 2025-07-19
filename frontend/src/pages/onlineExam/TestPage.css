@@ -4,6 +4,7 @@
   height: 100vh;
   padding: 1.5rem;
   gap: 1.5rem;
+  padding-top: 100px;
   background-color: #f9fafb;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
@@ -167,7 +168,7 @@
 
 /* ===== Bottom Timer Bar ===== */
 .bottom-bar {
-  position: fixed;
+  /* position: fixed; */
   bottom: 0rem;
   left: 20rem;
   right: 1rem;
