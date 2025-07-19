@@ -1,50 +1,48 @@
-import React, { useState } from "react";
-import emptycartimg from "../assets/landingassets/emptycart.webp";
-import Button from "../components/ui/Button";
-import useCartStore from "../store/useCartStore";
-import { instance } from "../lib/axios";
-import { PayPalButtons } from "@paypal/react-paypal-js";
+import React, { useState } from 'react';
+import emptycartimg from '../assets/landingassets/emptycart.webp';
+import Button from '../components/ui/Button';
+import useCartStore from '../store/useCartStore';
+import { instance } from '../lib/axios';
+import { PayPalButtons } from '@paypal/react-paypal-js';
 
 const Cart = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPayPal, setShowPayPal] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
-  const [couponError, setCouponError] = useState("");
+  const [couponCode, setCouponCode] = useState('');
+  const [couponError, setCouponError] = useState('');
   const [discount, setDiscount] = useState(0);
-  const cartItems = useCartStore((state) => state.cartItems);
-  const removeFromCart = useCartStore((state) => state.removeFromCart);
-  const updateQuantity = useCartStore((state) => state.updateQuantity);
-  const getCartTotal = useCartStore((state) => state.getCartTotal);
+  const [couponApplied, setCouponApplied] = useState(false);
+  const { cartItems, removeFromCart, updateQuantity, getCartTotal } = useCartStore();
 
   const subtotal = getCartTotal();
   const grandTotal = subtotal - discount;
 
   const handleDelete = (id, type) => {
-    console.log('handleDelete called with:', { id, type });
     removeFromCart(id, type);
   };
 
   const handleQuantityChange = (id, type, operation) => {
-    console.log('handleQuantityChange called with:', { id, type, operation });
     updateQuantity(id, type, operation);
   };
 
   const handleCoupon = async () => {
     if (!couponCode) {
-      setCouponError("Please enter a coupon code");
+      setCouponError('Please enter a coupon code');
       return;
     }
 
     try {
-      const response = await instance.post("/api/coupons/validate", {
-        code: couponCode,
-      });
-      setDiscount(response.data.coupon.discount);
-      setCouponError("");
-      alert("Coupon applied successfully!");
+      const response = await instance.post('/api/coupons/validate', { code: couponCode });
+      const { discount } = response.data.coupon;
+      setDiscount(discount);
+      setCouponError('');
+      setCouponApplied(true);
+      setCouponCode('');
+      alert(`Coupon applied successfully! You saved ₹${discount}`);
     } catch (error) {
-      setCouponError(error.response?.data?.message || "Failed to apply coupon");
+      setCouponError(error.response?.data?.message || 'Failed to apply coupon');
       setDiscount(0);
+      setCouponApplied(false);
     }
   };
 
@@ -52,67 +50,45 @@ const Cart = () => {
     try {
       const orderData = {
         amount: grandTotal,
-        currency: "INR",
-        items: cartItems.map(item => ({
-          product: item._id,
-          quantity: item.quantity,
-        })),
-        user: localStorage.getItem("userId"), // Assuming userId is stored after login
+        currency: 'INR',
+        items: cartItems,
+        userId: '663000000000000000000000', // Default userId
       };
-      console.log('Sending Razorpay order data:', orderData); // Debug log
-
-      const response = await instance.post("/api/payments/orders/razorpay/create", orderData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await instance.post('/api/payments/razorpay/create-order', orderData);
       const { id, amount, currency, orderId } = response.data;
 
-      if (!orderId) {
-        throw new Error("Order ID not returned from server");
-      }
-
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_7kAotmP1o8JR8V",
-        amount: amount,
-        currency: currency,
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_7kAotmP1o8JR8V',
+        amount,
+        currency,
         order_id: id,
-        name: "DumpsExpert",
-        description: "Purchase Exam Dumps",
+        name: 'DumpsExpert',
+        description: 'Purchase Exam Dumps',
         handler: async (response) => {
           try {
-            await instance.post(
-              "/api/payments/orders/razorpay/verify",
-              {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                amount: orderData.amount,
-                orderId, // Include orderId
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-              }
-            );
-            alert("Payment successful!");
-            window.location.href = "/student/dashboard";
+            await instance.post('/api/payments/razorpay/verify', {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              amount: orderData.amount,
+              orderId,
+            });
+            window.location.href = '/student/dashboard';
           } catch (error) {
-            console.error("Verification failed:", error);
-            alert("Payment verification failed: " + error.message);
+            console.error('Verification failed:', error);
+            alert('Payment verification failed.');
           }
         },
         theme: {
-          color: "#3B82F6",
+          color: '#3B82F6',
         },
       };
       const rzp = new window.Razorpay(options);
       rzp.open();
       setShowPaymentModal(false);
     } catch (error) {
-      console.error("Payment initiation failed:", error);
-      alert("Payment initiation failed: " + error.message);
+      console.error('Payment initiation failed:', error);
+      alert('Payment initiation failed');
     }
   };
 
@@ -136,22 +112,23 @@ const Cart = () => {
                 <div key={`${item._id}-${item.type}`} className="flex items-center justify-between bg-white border p-4 rounded-lg shadow-sm">
                   <div className="flex items-center gap-4">
                     <img
-                      src={item.imageUrl || "https://via.placeholder.com/100"}
-                      alt={item.title}
+                      src={item.imageUrl || 'https://via.placeholder.com/100'}
+                      alt={item.title || 'Product Image'}
                       className="w-16 h-16 object-cover rounded-lg border"
                     />
                     <div>
-                      <h4 className="text-lg font-semibold">{item.title}</h4>
+                      <h4 className="text-lg font-semibold">{item.title || 'Unknown Product'}</h4>
                       <div className="flex items-center gap-2 mt-2">
                         <button
-                          onClick={() => handleQuantityChange(item._id, item.type, "dec")}
+                          onClick={() => handleQuantityChange(item._id, item.type, 'dec')}
                           className="px-3 py-1 bg-gray-200 rounded"
+                          disabled={item.quantity <= 1}
                         >
                           −
                         </button>
-                        <span className="px-3 py-1 border rounded bg-white">{item.quantity}</span>
+                        <span className="px-3 py-1 border rounded bg-white">{item.quantity || 1}</span>
                         <button
-                          onClick={() => handleQuantityChange(item._id, item.type, "inc")}
+                          onClick={() => handleQuantityChange(item._id, item.type, 'inc')}
                           className="px-3 py-1 bg-gray-200 rounded"
                         >
                           +
@@ -160,7 +137,7 @@ const Cart = () => {
                     </div>
                   </div>
                   <div className="text-right space-y-2">
-                    <p className="text-lg font-semibold">₹{item.price * item.quantity}</p>
+                    <p className="text-lg font-semibold">₹{(item.price || 0) * (item.quantity || 1)}</p>
                     <button
                       onClick={() => handleDelete(item._id, item.type)}
                       className="text-red-500 text-sm hover:underline"
@@ -179,9 +156,12 @@ const Cart = () => {
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Order Summary</h2>
 
           <div className="text-gray-700 space-y-2 text-sm">
-            <p>Total (MRP): <span className="float-right">₹{subtotal}</span></p>
-            <p>Subtotal: <span className="float-right">₹{subtotal}</span></p>
-            <p>Discount: <span className="float-right text-green-600">₹{discount}</span></p>
+            <p>Total (MRP): <span className="float-right">₹{subtotal || 0}</span></p>
+            <p>Subtotal: <span className="float-right">₹{subtotal || 0}</span></p>
+            <p>Discount: <span className="float-right text-green-600">₹{discount || 0}</span></p>
+            {couponApplied && (
+              <p className="text-green-600 text-sm">Coupon applied! You saved ₹{discount}</p>
+            )}
           </div>
 
           <hr className="my-4" />
@@ -203,7 +183,7 @@ const Cart = () => {
           <hr className="my-4" />
 
           <p className="font-medium text-lg">
-            Grand Total: <span className="float-right text-green-600">₹{grandTotal}</span>
+            Grand Total: <span className="float-right text-green-600">₹{grandTotal || 0}</span>
           </p>
 
           {cartItems.length > 0 && (
@@ -222,7 +202,6 @@ const Cart = () => {
           <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4 shadow-xl">
             <h3 className="text-xl font-semibold text-center">Select Payment Method</h3>
 
-            {/* Razorpay Button */}
             <button
               onClick={handleRazorpayPayment}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition"
@@ -235,7 +214,6 @@ const Cart = () => {
               Pay with Razorpay
             </button>
 
-            {/* PayPal Button */}
             {!showPayPal && (
               <button
                 onClick={() => setShowPayPal(true)}
@@ -250,11 +228,10 @@ const Cart = () => {
               </button>
             )}
 
-            {/* PayPal Component */}
             {showPayPal && (
               <div className="mt-4">
                 <PayPalButtons
-                  style={{ layout: "vertical" }}
+                  style={{ layout: 'vertical' }}
                   createOrder={(data, actions) => {
                     return actions.order.create({
                       purchase_units: [
@@ -269,39 +246,25 @@ const Cart = () => {
                   onApprove={async (data, actions) => {
                     try {
                       const details = await actions.order.capture();
-                      await instance.post(
-                        "/api/payments/orders/paypal/process",
-                        {
-                          orderID: data.orderID,
-                          amount: grandTotal,
-                          items: cartItems.map(item => ({
-                            product: item._id,
-                            quantity: item.quantity,
-                          })),
-                          user: localStorage.getItem("userId"),
-                        },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`,
-                          },
-                        }
-                      );
+                      await instance.post('/api/payments/paypal/process', {
+                        orderID: data.orderID,
+                        amount: grandTotal,
+                      });
                       alert(`Payment completed by ${details.payer.name.given_name}`);
-                      window.location.href = "/student/dashboard";
+                      window.location.href = '/student/dashboard';
                     } catch (error) {
-                      console.error("PayPal payment failed:", error);
-                      alert("Payment failed: " + error.message);
+                      console.error('PayPal Error:', error);
+                      alert('Payment failed');
                     }
                   }}
                   onError={(err) => {
-                    console.error("PayPal Error:", err);
-                    alert("Payment failed");
+                    console.error('PayPal Error:', err);
+                    alert('Payment failed');
                   }}
                 />
               </div>
             )}
 
-            {/* Cancel */}
             <button
               onClick={() => {
                 setShowPaymentModal(false);

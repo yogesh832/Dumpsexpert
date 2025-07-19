@@ -1,17 +1,17 @@
+// paymentRoutes.js
 const express = require('express');
 const router = express.Router();
-const { authMiddleware } = require('../middlewares/authMiddleware');
 const {
   createRazorpayOrder,
   verifyRazorpayPayment,
   processPayPalPayment,
 } = require('../controllers/paymentController');
 
-// Razorpay routes
-router.post('/orders/razorpay/create', createRazorpayOrder); // Updated path
-router.post('/orders/razorpay/verify', authMiddleware, verifyRazorpayPayment); // Updated path
+// Razorpay routes - no auth middleware
+router.post('/razorpay/create-order', createRazorpayOrder);
+router.post('/razorpay/verify', verifyRazorpayPayment);
 
-// PayPal route
-router.post('/orders/paypal/process', authMiddleware, processPayPalPayment); // Updated path
+// PayPal route - no auth middleware
+router.post('/paypal/process', processPayPalPayment);
 
 module.exports = router;
