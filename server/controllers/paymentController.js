@@ -13,13 +13,19 @@ exports.createRazorpayOrder = async (req, res) => {
   try {
     const { amount, currency } = req.body;
     const options = {
-      amount: Math.round(amount * 100),
+      amount: Math.round(amount * 100), // amount in smallest currency unit
       currency: currency || "INR",
       receipt: `order_${Date.now()}`
     };
 
     const order = await razorpay.orders.create(options);
-    res.json(order);
+    
+    // Send the complete order object
+    res.json({
+      id: order.id,            // This is the order_id
+      amount: order.amount,
+      currency: order.currency
+    });
   } catch (error) {
     console.error('Razorpay order creation failed:', error);
     res.status(500).json({ error: 'Payment initiation failed' });
@@ -31,34 +37,57 @@ exports.verifyRazorpayPayment = async (req, res) => {
   try {
     const { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount } = req.body;
 
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    // Validate required fields
+    if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
+      console.error('Missing required fields:', {
+        razorpay_payment_id,
+        razorpay_order_id,
+        razorpay_signature,
+      });
+      return res.status(400).json({ error: 'Missing payment details' });
+    }
+
+    // Generate the signature verification string
+    const sign = `${razorpay_order_id}|${razorpay_payment_id}`;
+
+    // Log the values for debugging
+    console.log('Verification Data:', {
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      signature: razorpay_signature,
+      secret: process.env.RAZORPAY_KEY_SECRET?.slice(0, 4) + '***',
+    });
+
     const expectedSign = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(sign.toString())
-      .digest("hex");
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(sign)
+      .digest('hex');
+
+    console.log('Generated Signature:', expectedSign);
+    console.log('Received Signature:', razorpay_signature);
 
     if (razorpay_signature === expectedSign) {
-      await User.findByIdAndUpdate(req.user._id, {
-        subscription: 'yes',
-        role: 'student'
-      });
-
       await Payment.create({
-        user: req.user._id,
         amount,
         currency: 'INR',
         paymentMethod: 'razorpay',
         paymentId: razorpay_payment_id,
-        status: 'completed'
+        orderId: razorpay_order_id, // Optionally store orderId
+        status: 'completed',
       });
 
       res.json({ success: true });
     } else {
-      res.status(400).json({ error: 'Invalid signature' });
+      console.log('Signature Mismatch');
+      res.status(400).json({
+        error: 'Invalid signature',
+        expected: expectedSign,
+        received: razorpay_signature,
+      });
     }
   } catch (error) {
     console.error('Payment verification failed:', error);
-    res.status(500).json({ error: 'Payment verification failed' });
+    res.status(500).json({ error: 'Payment verification failed', details: error.message });
   }
 };
 
