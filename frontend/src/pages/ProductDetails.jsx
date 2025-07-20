@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+    import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import axios from "axios";
@@ -489,55 +489,13 @@ console.log(product);
             </span>
           </div>
 
+          <button
+            type="submit"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          >
+            Submit Review
+          </button>
 
-      {/* Review */}
-       <div className="mt-16 ">
-      <h2 className="text-xl  font-semibold mb-4">Write a Review</h2>
-      <form className="grid gap-3 max-w-xl" onSubmit={handleSubmitReview}>
-        <input
-          name="name"
-          value={reviewForm.name}
-          onChange={(e) =>
-            setReviewForm({ ...reviewForm, name: e.target.value })
-          }
-          placeholder="Your name"
-          className="border p-3 rounded"
-        />
-        <textarea
-          name="comment"
-          value={reviewForm.comment}
-          onChange={(e) =>
-            setReviewForm({ ...reviewForm, comment: e.target.value })
-          }
-          placeholder="Your comment"
-          rows="4"
-          className="border p-3 rounded"
-        />
-
-        {/* Star Rating UI */}
-        <div className="flex items-center gap-2">
-          {[1, 2, 3, 4, 5].map((value) => (
-            <FaStar
-              key={value}
-              onClick={() => handleRating(value)}
-              className={`cursor-pointer text-2xl ${
-                value <= reviewForm.rating ? "text-yellow-400" : "text-gray-300"
-              }`}
-            />
-          ))}
-          <span className="text-sm text-gray-600">
-            {reviewForm.rating > 0 ? `${reviewForm.rating} Star(s)` : "Rate us"}
-          </span>
-        </div>
-
-        <button
-          type="submit"
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-        >
-          Submit Review
-        </button>
-      </form>
-    </div>
 {/* FAQ Section */}
 {product.faqs && product.faqs.length > 0 && (
   <div className="max-w-4xl mx-auto mt-12">
@@ -582,12 +540,6 @@ console.log(product);
 
 
 
-          <button
-            type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-          >
-            Submit Review
-          </button>
         </form>
       </div>
     </div>

@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const multer = require('multer');
+const multer = require("multer");
 const {
   getAllProducts,
   getProductById,
@@ -9,40 +9,41 @@ const {
   deleteProduct,
   getProductFaqs,
   addProductFaq,
-  getProductBySlug
-} = require('../controllers/productController');
+  getProductBySlug,
+} = require("../controllers/productController");
+const { authMiddleware } = require("../middlewares/authMiddleware");
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: "uploads/" });
 
 // 🟢 Product Routes
-router.get('/:id', getProductById);
-router.get('/', getAllProducts);
-router.get('/slug/:slug', getProductBySlug); // 👈 Add this BEFORE '/:id'
-
+router.get("/:id", getProductById);
+router.get("/", getAllProducts);
+router.get("/slug/:slug", getProductBySlug); // 👈 Add this BEFORE '/:id'
 router.post(
-  '/',
+  "/",
   upload.fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'samplePdf', maxCount: 1 },
-    { name: 'mainPdf', maxCount: 1 }
+    { name: "image", maxCount: 1 },
+    { name: "samplePdf", maxCount: 1 },
+    { name: "mainPdf", maxCount: 1 },
   ]),
   createProduct
 );
 
+
 router.put(
-  '/:id',
+  "/:id",
   upload.fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'samplePdf', maxCount: 1 },
-    { name: 'mainPdf', maxCount: 1 }
+    { name: "image", maxCount: 1 },
+    { name: "samplePdf", maxCount: 1 },
+    { name: "mainPdf", maxCount: 1 },
   ]),
   updateProduct
 );
 
-router.delete('/:id', deleteProduct);
+router.delete("/:id", deleteProduct);
 
 // 🟡 FAQ Routes using Controller
-router.get('/:id/faqs', getProductFaqs);
-router.post('/:id/faqs', addProductFaq);
+router.get("/:id/faqs", getProductFaqs);
+router.post("/:id/faqs", addProductFaq);
 
 module.exports = router;
