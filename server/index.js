@@ -79,6 +79,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true })); // <- If using form data
+
 app.use(passport.initialize());
 
 // Test route

@@ -94,15 +94,18 @@ const ProductForm = ({ mode }) => {
     });
 
     try {
-      const res = await fetch(
-        mode === "add"
-          ? "http://localhost:8000/api/products"
-          : `http://localhost:8000/api/products/${id}`,
-        {
-          method: mode === "add" ? "POST" : "PUT",
-          body: formData,
-        }
-      );
+   const res = await fetch(
+  mode === "add"
+    ? "http://localhost:8000/api/products"
+    : `http://localhost:8000/api/products/${id}`,
+  {
+    method: mode === "add" ? "POST" : "PUT",
+    body: formData,
+    credentials: "include", // ✅ This is required!
+  }
+);
+
+
 
       if (!res.ok) {
         const errData = await res.json();
