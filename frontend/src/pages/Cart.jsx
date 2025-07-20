@@ -73,8 +73,8 @@ const Cart = () => {
               razorpay_payment_id: razorpayResponse.razorpay_payment_id,
               razorpay_order_id: razorpayResponse.razorpay_order_id,
               razorpay_signature: razorpayResponse.razorpay_signature,
-              // amount: orderData.amount,
-              // userId: userId
+              amount: orderData.amount,
+              userId: userId
             });
             clearCart();
             navigate('/student/dashboard');
