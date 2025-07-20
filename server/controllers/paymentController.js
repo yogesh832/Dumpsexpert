@@ -1,5 +1,6 @@
 const Payment = require('../models/paymentSchema');
 const User = require('../models/userSchema');
+const Order = require('../models/orderSchema'); // Add this line
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
@@ -29,7 +30,7 @@ exports.createRazorpayOrder = async (req, res) => {
 // RAZORPAY VERIFY PAYMENT
 exports.verifyRazorpayPayment = async (req, res) => {
   try {
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount, userId } = req.body;
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount, orderId } = req.body;
     console.log("Verifying payment:", { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount });
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
@@ -41,24 +42,45 @@ exports.verifyRazorpayPayment = async (req, res) => {
     if (razorpay_signature === expectedSign) {
       console.log("Signature verified successfully");
       
-      // Only update user if userId is provided
-      if (userId) {
-        await User.findByIdAndUpdate(userId, {
-          subscription: 'yes',
-          role: 'student'
-        });
-      }
-
       // Create payment record
-      await Payment.create({
-        user: userId || '663000000000000000000000', // Use default ID if no user
-        amount,
-        currency: 'INR',
-        paymentMethod: 'razorpay',
+      const payment = await Payment.create({
+        userId,
         paymentId: razorpay_payment_id,
         orderId: razorpay_order_id,
+        amount: amount,
         status: 'completed'
       });
+
+      // Update order status using the orderId from the request
+      const order = await Order.findByIdAndUpdate(
+        orderId,
+        { 
+          status: 'completed',
+          paymentStatus: 'completed',
+          paymentId: payment._id
+        },
+        { new: true }
+      );
+
+      if (!order) {
+        console.error('Order not found:', orderId);
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      // Update user if userId exists
+      if (order.user) {
+        const user = await User.findByIdAndUpdate(
+          order.user,
+          {
+            subscription: 'yes',
+            role: 'student'
+          },
+          { new: true }
+        );
+        
+        const token = user.generateJWT();
+        return res.json({ success: true, token });
+      }
 
       res.json({ success: true });
     } else {
@@ -81,15 +103,22 @@ exports.processPayPalPayment = async (req, res) => {
       role: 'student'
     });
 
-    await Payment.create({
-      user: req.user._id,
-      amount,
-      currency: 'INR',
-      paymentMethod: 'paypal',
-      paymentId: orderID,
+    const payment = await Payment.create({
+      userId,
+      paymentId: paypalPaymentId,
+      orderId: orderId,
+      amount: amount,
       status: 'completed'
     });
 
+    // Update order status
+    await Order.findOneAndUpdate(
+        { paymentId: payment._id },
+        { 
+            status: 'completed',
+            paymentStatus: 'completed'
+        }
+    );
     res.json({ success: true });
   } catch (error) {
     console.error('PayPal payment processing failed:', error);

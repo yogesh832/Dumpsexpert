@@ -10,14 +10,10 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await instance.get("/api/auth/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await instance.get("/api/auth/me");
         setUser(res.data.user);
       } catch (err) {
-        console.log("Session expired or not logged in",err);
+        console.log("Session expired or not logged in", err);
       } finally {
         setLoading(false);
       }
