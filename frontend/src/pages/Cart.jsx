@@ -51,6 +51,7 @@ const Cart = () => {
     }
   };
 
+  // Modify the Razorpay handler
   const handleRazorpayPayment = async () => {
     try {
       const orderData = {
@@ -59,7 +60,7 @@ const Cart = () => {
       };
       const response = await instance.post('/api/payments/razorpay/create-order', orderData);
       const { id, amount, currency } = response.data;
-
+  
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_7kAotmP1o8JR8V',
         amount: amount,
@@ -69,15 +70,27 @@ const Cart = () => {
         description: 'Purchase Exam Dumps',
         handler: async (razorpayResponse) => {
           try {
-            await instance.post('/api/payments/razorpay/verify', {
+            const paymentVerification = await instance.post('/api/payments/razorpay/verify', {
               razorpay_payment_id: razorpayResponse.razorpay_payment_id,
               razorpay_order_id: razorpayResponse.razorpay_order_id,
               razorpay_signature: razorpayResponse.razorpay_signature,
               amount: orderData.amount,
               userId: userId
             });
-            clearCart();
-            navigate('/student/dashboard');
+  
+            if (paymentVerification.data.success) {
+              // Create order after successful payment
+              await instance.post('/api/orders', {
+                userId,
+                items: cartItems,
+                totalAmount: grandTotal,
+                paymentMethod: 'razorpay',
+                paymentId: paymentVerification.data.paymentId
+              });
+  
+              clearCart();
+              navigate('/student/dashboard');
+            }
           } catch (error) {
             console.error('Verification failed:', error);
             alert('Payment verification failed.');
@@ -96,17 +109,30 @@ const Cart = () => {
     }
   };
 
+  // Modify the PayPal handler
   const handlePayPalPayment = async (data, actions) => {
     try {
       const details = await actions.order.capture();
-      await instance.post('/api/payments/paypal/process', {
+      const paymentResponse = await instance.post('/api/payments/paypal/process', {
         orderID: data.orderID,
         amount: grandTotal,
-        userId: userId, // Pass userId for PayPal as well
+        userId: userId
       });
-      alert(`Payment completed by ${details.payer.name.given_name}`);
-      clearCart();
-      navigate('/student/dashboard');
+  
+      if (paymentResponse.data.success) {
+        // Create order after successful payment
+        await instance.post('/api/orders', {
+          userId,
+          items: cartItems,
+          totalAmount: grandTotal,
+          paymentMethod: 'paypal',
+          paymentId: paymentResponse.data.paymentId
+        });
+  
+        alert(`Payment completed by ${details.payer.name.given_name}`);
+        clearCart();
+        navigate('/student/dashboard');
+      }
     } catch (error) {
       console.error('PayPal Error:', error);
       alert('Payment failed');
