@@ -74,54 +74,99 @@ const CategoryProducts = () => {
             </div>
           </div>
 
-          {filteredProducts.length > 0 ? (
-            <div className="overflow-x-auto bg-white shadow text-2xl rounded-lg border border-gray-200">
-              <table className="min-w-full text-xl text-left">
-                <thead className="bg-gray-100 text-gray-700 uppercase text-xl border-b">
-                  <tr>
-                    <th className="px-4 py-3">{categoryName} Exam. Code</th>
-                    <th className="px-4 py-3">Name</th>
-                    <th className="px-4 py-3">Price</th>
-                    <th className="px-4 py-3">{categoryName} Details</th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-800">
-                  {filteredProducts.map((product) => (
-                    <tr
-                      key={product._id}
-                      className="border-t border-gray-100 hover:bg-gray-50"
-                    >
-                      <td className="px-4 py-3 font-semibold text-blue-900 whitespace-nowrap">
-                        {product.sapExamCode}
-                      </td>
-                      <td className="px-4 py-3">{product.title}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="block text-xs text-gray-600">
-                          Starting at:
-                        </span>
-                        <span className="text-black font-semibold">
-                          ₹{product.dumpsPriceInr} (${product.dumpsPriceUsd})
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        {/* ✅ Link using product.slug instead of _id */}
-                        <Link
-                          to={`/product/${product.slug}`}
-                          className="bg-orange-500 hover:bg-orange-600 text-white text-xl px-4 py-2 rounded-md shadow-sm"
-                        >
-                          See Details
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-center text-gray-500 mt-10">
-              No products available for this category.
-            </p>
-          )}
+   {filteredProducts.length > 0 ? (
+  <>
+    {/* Table view for medium and up */}
+    <div className="hidden md:block overflow-x-auto bg-white shadow text-2xl rounded-lg border border-gray-200">
+      <table className="min-w-full text-xl text-left">
+        <thead className="bg-gray-100 text-gray-700 uppercase text-xl border-b">
+          <tr>
+            <th className="px-4 py-3">{categoryName} Exam. Code</th>
+            <th className="px-4 py-3">Name</th>
+            <th className="px-4 py-3">Price</th>
+            <th className="px-4 py-3">{categoryName} Details</th>
+          </tr>
+        </thead>
+        <tbody className="text-gray-800">
+          {filteredProducts.map((product) => (
+            <tr
+              key={product._id}
+              className="border-t border-gray-100 hover:bg-gray-50"
+            >
+              <td className="px-4 py-3 font-semibold text-blue-900 whitespace-nowrap">
+                {product.sapExamCode}
+              </td>
+              <td className="px-4 py-3">{product.title}</td>
+              <td className="px-4 py-3 whitespace-nowrap">
+                <span className="block text-xs text-gray-600">
+                  Starting at:
+                </span>
+                <span className="text-black font-semibold">
+                  ₹{product.dumpsPriceInr} (${product.dumpsPriceUsd})
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                <Link
+                  to={`/product/${product.slug}`}
+                  className="bg-orange-500 hover:bg-orange-600 text-white text-xl px-4 py-2 rounded-md shadow-sm"
+                >
+                  See Details
+                </Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    {/* Card view for mobile */}
+  {/* Card view for mobile */}
+<div className="md:hidden flex flex-col items-center justify-center space-y-6">
+  {filteredProducts.map((product) => (
+    <div
+      key={product._id}
+      className="relative w-full max-w-sm bg-white rounded-xl shadow border border-gray-200 p-5"
+    >
+      <div className="mb-1 text-center">
+        <p className="text-sm text-gray-600">Exam Code</p>
+        <p className="text-lg font-semibold text-blue-900">
+          {product.sapExamCode}
+        </p>
+      </div>
+      <div className="mb-1 text-center">
+        <p className="text-sm text-gray-600">Name</p>
+        <p className="text-base font-medium">{product.title}</p>
+      </div>
+      <div className="mb-1 text-center">
+        <p className="text-sm text-gray-600">Price</p>
+        <p className="text-black font-semibold">
+          ₹{product.dumpsPriceInr} (${product.dumpsPriceUsd})
+        </p>
+      </div>
+
+      {/* Fixed bottom button inside card */}
+      <div className="absolute bottom-4 left-4 right-4">
+        <Link
+          to={`/product/${product.slug}`}
+          className="block w-full bg-orange-500 hover:bg-orange-600 text-white text-sm text-center py-2 rounded-md shadow-md"
+        >
+          See Details
+        </Link>
+      </div>
+
+      {/* Spacer to make room for fixed button */}
+      <div className="h-12" />
+    </div>
+  ))}
+</div>
+
+  </>
+) : (
+  <p className="text-center text-gray-500 mt-10">
+    No products available for this category.
+  </p>
+)}
+
         </div>
       )}
     </div>

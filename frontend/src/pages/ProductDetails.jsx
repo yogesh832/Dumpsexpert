@@ -22,6 +22,7 @@ const ProductDetails = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState({ name: "", comment: "", rating: 0 });
+const [avgRating, setAvgRating] = useState(null);
 
   const addToCart = useCartStore((state) => state.addToCart);
 
@@ -34,7 +35,16 @@ const ProductDetails = () => {
         setProduct(productRes.data);
 console.log(product);
         const reviewsRes = await axios.get(`http://localhost:8000/api/reviews/${productRes.data._id}`);
-        setReviews(reviewsRes.data);
+setReviews(reviewsRes.data);
+
+// Calculate average rating
+if (reviewsRes.data.length > 0) {
+  const total = reviewsRes.data.reduce((sum, r) => sum + r.rating, 0);
+  const avg = total / reviewsRes.data.length;
+  setAvgRating(avg.toFixed(1)); // Round to 1 decimal place
+} else {
+  setAvgRating(null);
+}
 
         const [examsRes, allProductsRes] = await Promise.all([
           axios.get(
@@ -128,6 +138,8 @@ console.log(product);
     }
   };
 
+
+  
   const handleRating = (value) => {
     setReviewForm({ ...reviewForm, rating: value });
   };
@@ -202,10 +214,23 @@ console.log(product);
               <p className="text-sm">
                 Total Questions: <strong>{exams?.numberOfQuestions ?? "N/A"}</strong>
               </p>
-
-              <p className="text-sm">
-                Passing Score: <strong>{exams?.passingScore ?? "N/A"}</strong>%
-              </p>
+              <p className="text-sm flex gap-2">
+                Rating: <>
+                {avgRating && (
+  <div className="flex items-center gap-2 ">
+    {[1, 2, 3, 4, 5].map((value) => (
+      <FaStar
+        key={value}
+        className={`text-xl ${
+          value <= Math.round(avgRating) ? "text-yellow-400" : "text-gray-300"
+        }`}
+      />
+    ))}
+    <span className="text-sm text-gray-600">({avgRating} out of 5)</span>
+  </div>
+)}
+</>
+              </p> 
             </>
           )}
           <p className="text-sm">
@@ -424,124 +449,130 @@ console.log(product);
           </Swiper>
         </div>
       )}
+<div className="container mx-auto px-4">
+  <div className="grid md:grid-cols-2 gap-10">
 
-      {/* User Reviews */}
-      {reviews.length > 0 && (
-        <div className="mt-10 max-w-xl">
-          <h3 className="text-lg font-semibold mb-4">User Reviews</h3>
-          <ul className="space-y-4">
-            {reviews.map((r, i) => (
-              <li key={i} className="border rounded p-4 shadow-sm">
-                <div className="flex items-center gap-2 mb-1">
-                  {[...Array(5)].map((_, idx) => (
-                    <FaStar
-                      key={idx}
-                      className={`text-sm ${idx < r.rating ? "text-yellow-400" : "text-gray-300"}`}
-                    />
-                  ))}
-                </div>
-                <p className="font-medium">{r.name}</p>
-                <p className="text-gray-600 text-sm">{r.comment}</p>
-                <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString()}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+    {/* Left: User Reviews */}
+  <div>
+  {reviews.length > 0 && (
+    <div className="mt-6">
+      <h3 className="text-lg font-semibold mb-4">User Reviews</h3>
+      <div className="max-h-72 overflow-y-auto p-2">
+        <ul className="space-y-4">
+          {reviews.map((r, i) => (
+            <li key={i} className="border rounded p-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-1">
+                {[...Array(5)].map((_, idx) => (
+                  <FaStar
+                    key={idx}
+                    className={`text-sm ${idx < r.rating ? "text-yellow-400" : "text-gray-300"}`}
+                  />
+                ))}
+              </div>
+              <p className="font-medium">{r.name}</p>
+              <p className="text-gray-600 text-sm">{r.comment}</p>
+              <p className="text-xs text-gray-400">
+                {new Date(r.createdAt).toLocaleDateString()}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )}
+</div>
 
-      {/* Review Form */}
-      <div className="mt-16">
-        <h2 className="text-xl font-semibold mb-4">Write a Review</h2>
-        <form className="grid gap-3 max-w-xl" onSubmit={handleSubmitReview}>
-          <input
-            name="name"
-            value={reviewForm.name}
-            onChange={(e) =>
-              setReviewForm({ ...reviewForm, name: e.target.value })
-            }
-            placeholder="Your name"
-            className="border p-3 rounded"
-          />
-          <textarea
-            name="comment"
-            value={reviewForm.comment}
-            onChange={(e) =>
-              setReviewForm({ ...reviewForm, comment: e.target.value })
-            }
-            placeholder="Your comment"
-            rows="4"
-            className="border p-3 rounded"
-          />
 
-          {/* Star Rating UI */}
-          <div className="flex items-center gap-2">
-            {[1, 2, 3, 4, 5].map((value) => (
-              <FaStar
-                key={value}
-                onClick={() => handleRating(value)}
-                className={`cursor-pointer text-2xl ${
-                  value <= reviewForm.rating ? "text-yellow-400" : "text-gray-300"
-                }`}
-              />
-            ))}
-            <span className="text-sm text-gray-600">
-              {reviewForm.rating > 0 ? `${reviewForm.rating} Star(s)` : "Rate us"}
-            </span>
-          </div>
+    {/* Right: Review Form */}
+    <div className="mt-6">
+      <h2 className="text-xl font-semibold mb-4">Write a Review</h2>
+      <form className="grid gap-3" onSubmit={handleSubmitReview}>
+        <input
+          name="name"
+          value={reviewForm.name}
+          onChange={(e) =>
+            setReviewForm({ ...reviewForm, name: e.target.value })
+          }
+          placeholder="Your name"
+          className="border p-3 rounded w-full"
+        />
+        <textarea
+          name="comment"
+          value={reviewForm.comment}
+          onChange={(e) =>
+            setReviewForm({ ...reviewForm, comment: e.target.value })
+          }
+          placeholder="Your comment"
+          rows="4"
+          className="border p-3 rounded w-full"
+        />
 
-          <button
-            type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-          >
-            Submit Review
-          </button>
-
-{/* FAQ Section */}
-{product.faqs && product.faqs.length > 0 && (
-  <div className="max-w-4xl mx-auto mt-12">
-    <h2 className="text-3xl font-bold mb-8 text-center text-gray-800 flex items-center justify-center gap-2">
-      <FaUser className="text-blue-600" /> Frequently Asked Questions (FAQs)
-    </h2>
-
-    <div className="space-y-4">
-      {product.faqs.map((faq, index) => {
-        const isOpen = activeIndex === index;
-
-        return (
-          <div
-            key={index}
-            className="border border-gray-200 rounded-xl shadow-sm transition-all duration-300 bg-white"
-          >
-            <button
-              onClick={() => toggleAccordion(index)}
-              className="w-full flex justify-between items-center px-6 py-4 text-left group hover:bg-gray-50 transition-colors"
-            >
-              <span className="font-medium text-gray-800 text-base">{faq.question}</span>
-              <FaChevronRight
-                className={`text-gray-600 transition-transform duration-300 transform ${
-                  isOpen ? "rotate-90" : ""
-                }`}
-              />
-            </button>
-
-            <div
-              className={`px-6 overflow-hidden text-gray-600 text-sm transition-all duration-300 ease-in-out ${
-                isOpen ? "max-h-96 py-2" : "max-h-0 py-0"
+        <div className="flex items-center gap-2">
+          {[1, 2, 3, 4, 5].map((value) => (
+            <FaStar
+              key={value}
+              onClick={() => handleRating(value)}
+              className={`cursor-pointer text-2xl ${
+                value <= reviewForm.rating ? "text-yellow-400" : "text-gray-300"
               }`}
-            >
-              <p>{faq.answer}</p>
-            </div>
-          </div>
-        );
-      })}
+            />
+          ))}
+          <span className="text-sm text-gray-600">
+            {reviewForm.rating > 0 ? `${reviewForm.rating} Star(s)` : "Rate us"}
+          </span>
+        </div>
+
+        <button
+          type="submit"
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+        >
+          Submit Review
+        </button>
+      </form>
     </div>
   </div>
-)}
 
+  {/* FAQ Section */}
+  {product.faqs && product.faqs.length > 0 && (
+    <div className="mt-12">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 flex items-center justify-center gap-2">
+        <FaUser className="text-blue-600" /> Frequently Asked Questions (FAQs)
+      </h2>
 
-
-        </form>
+      <div className="space-y-4">
+        {product.faqs.map((faq, index) => {
+          const isOpen = activeIndex === index;
+          return (
+            <div
+              key={index}
+              className="border border-gray-200 rounded-xl shadow-sm bg-white transition-all duration-300"
+            >
+              <button
+                onClick={() => toggleAccordion(index)}
+                className="w-full flex justify-between items-center px-6 py-4 text-left group hover:bg-gray-50"
+              >
+                <span className="font-medium text-gray-800">{faq.question}</span>
+                <FaChevronRight
+                  className={`text-gray-600 transform transition-transform duration-300 ${
+                    isOpen ? "rotate-90" : ""
+                  }`}
+                />
+              </button>
+              <div
+                className={`px-6 overflow-hidden text-gray-600 text-sm transition-all duration-300 ease-in-out ${
+                  isOpen ? "max-h-96 py-2" : "max-h-0 py-0"
+                }`}
+              >
+                <p>{faq.answer}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
+    </div>
+  )}
+</div>
+
     </div>
   );
 };
