@@ -14,8 +14,14 @@ exports.createOrder = async (req, res) => {
 
     const courseDetails = items.map(item => ({
       courseId: item._id,
-      name: item.title || item.name, // Handle both title and name
-      price: item.price
+      name: item.title || item.name,
+      price: item.price,
+      sapExamCode: item.sapExamCode,
+      category: item.category,
+      sku: item.sku,
+      samplePdfUrl: item.samplePdfUrl,
+      mainPdfUrl: item.mainPdfUrl,
+      slug: item.slug
     }));
 
     const newOrder = new Order({
@@ -23,8 +29,9 @@ exports.createOrder = async (req, res) => {
       courseDetails,
       totalAmount,
       paymentMethod,
-      paymentId, // This should be a MongoDB ObjectId from the payment record
-      status: 'completed'
+      paymentId,
+      status: 'completed',
+      currency: 'INR'
     });
 
     await newOrder.save();

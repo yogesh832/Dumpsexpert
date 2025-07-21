@@ -19,15 +19,21 @@ const orderSchema = new mongoose.Schema({
     price: { 
       type: Number, 
       required: true 
-    }
+    },
+    sapExamCode: String,
+    category: String,
+    sku: String,
+    samplePdfUrl: String,
+    mainPdfUrl: String,
+    slug: String
   }],
   totalAmount: {
     type: Number,
     required: true
   },
   paymentId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Payment' 
+    type: String,
+    required: true
   },
   paymentMethod: {
     type: String,
@@ -42,6 +48,11 @@ const orderSchema = new mongoose.Schema({
   purchaseDate: {
     type: Date,
     default: Date.now
+  },
+  currency: {
+    type: String,
+    required: true,
+    default: 'INR'
   }
 });
 
