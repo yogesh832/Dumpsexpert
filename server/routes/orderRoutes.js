@@ -7,7 +7,8 @@ const {
   getAllOrders
 } = require('../controllers/orderController');
 
-router.post('/create', createOrder);
+// Changed from /create to / to match frontend call
+router.post('/', createOrder);
 router.get('/user/:userId', getUserOrders);
 router.get('/all', getAllOrders);
 
