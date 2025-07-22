@@ -1,38 +1,67 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import OrderDetailsModal from "./OrderDetailsModal";
 
-const orders = [
-  { id: 1, date: "2025-06-01", number: "#ORD123", total: 500, quantity: 2, status: "Paid" },
-  { id: 2, date: "2025-06-02", number: "#ORD124", total: 300, quantity: 1, status: "Fail" },
-  { id: 3, date: "2025-06-03", number: "#ORD125", total: 450, quantity: 3, status: "Paid" },
-  { id: 4, date: "2025-06-04", number: "#ORD126", total: 250, quantity: 1, status: "Paid" },
-  { id: 5, date: "2025-06-05", number: "#ORD127", total: 350, quantity: 2, status: "Fail" },
-  { id: 6, date: "2025-06-06", number: "#ORD128", total: 300, quantity: 1, status: "Paid" },
-  { id: 7, date: "2025-06-07", number: "#ORD129", total: 600, quantity: 4, status: "Paid" },
-  { id: 8, date: "2025-06-08", number: "#ORD130", total: 700, quantity: 5, status: "Fail" },
-  { id: 9, date: "2025-06-09", number: "#ORD131", total: 500, quantity: 3, status: "Paid" },
-  { id: 10, date: "2025-06-10", number: "#ORD132", total: 200, quantity: 1, status: "Fail" },
-  { id: 11, date: "2025-06-11", number: "#ORD133", total: 650, quantity: 4, status: "Paid" },
-  { id: 12, date: "2025-06-12", number: "#ORD134", total: 450, quantity: 2, status: "Fail" },
-];
 const OrdersTable = () => {
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const totalPages = Math.ceil(orders.length / itemsPerPage);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 10;
 
-  const paginatedOrders = orders.slice(
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const userId = localStorage.getItem("studentId");
+        if (!userId) {
+          console.error("No user ID found in localStorage");
+          return;
+        }
+
+        const res = await axios.get(`http://localhost:8000/api/orders/user/${userId}`, {
+          withCredentials: true,
+        });
+
+        setOrders(res.data.data);
+        setFilteredOrders(res.data.data);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredOrders(orders);
+    } else {
+      const filtered = orders.filter(order =>
+        (order.orderNumber || "")
+          .toString()
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      );
+      setFilteredOrders(filtered);
+    }
+
+    setCurrentPage(1); // Reset to first page on search
+  }, [searchQuery, orders]);
+
+  const paginatedOrders = filteredOrders.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+
   const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+    if (currentPage > 1) setCurrentPage(prev => prev - 1);
   };
 
   const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
   };
 
   return (
@@ -41,8 +70,10 @@ const OrdersTable = () => {
         <h3 className="text-2xl font-bold">My Orders</h3>
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Search Order Number..."
           className="border px-3 py-2 rounded-md w-64 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
         />
       </div>
 
@@ -59,41 +90,52 @@ const OrdersTable = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedOrders.map((order, index) => (
-            <tr key={order.id} className="hover:bg-gray-50">
-              <td className="p-2 border">
-                {(currentPage - 1) * itemsPerPage + index + 1}
-              </td>
-              <td className="p-2 border">{order.date}</td>
-              <td className="p-2 border">{order.number}</td>
-              <td className="p-2 border">₹{order.total}</td>
-              <td className="p-2 border">{order.quantity}</td>
-              <td className="p-2 border">
-                <span
-                  className={`px-2 py-1 rounded text-white text-xs ${
-                    order.status === "Paid" ? "bg-green-500" : "bg-red-500"
-                  }`}
-                >
-                  {order.status}
-                </span>
-              </td>
-              <td className="p-2 border">
-                <button
-                  onClick={() => setSelectedOrder(order)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs"
-                >
-                  Details
-                </button>
+          {paginatedOrders.length === 0 ? (
+            <tr>
+              <td colSpan="7" className="text-center py-4 text-gray-500">
+                No orders found.
               </td>
             </tr>
-          ))}
+          ) : (
+            paginatedOrders.map((order, index) => (
+              <tr key={order._id} className="hover:bg-gray-50">
+                <td className="p-2 border">
+                  {(currentPage - 1) * itemsPerPage + index + 1}
+                </td>
+                <td className="p-2 border">
+                  {new Date(order.purchaseDate || order.createdAt).toLocaleDateString()}
+                </td>
+                <td className="p-2 border">{order.orderNumber || "-"}</td>
+                <td className="p-2 border">₹{order.totalAmount}</td>
+                <td className="p-2 border">{order.courseDetails.length}</td>
+                <td className="p-2 border">
+                  <span
+                    className={`px-2 py-1 rounded text-white text-xs ${
+                      order.status === "completed" ? "bg-green-500" : "bg-red-500"
+                    }`}
+                  >
+                    {order.status}
+                  </span>
+                </td>
+                <td className="p-2 border">
+                  <button
+                    onClick={() => setSelectedOrder(order)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs"
+                  >
+                    Details
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
       <div className="mt-4 flex justify-between items-center text-sm">
         <span>
           Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-          {Math.min(currentPage * itemsPerPage, orders.length)} of {orders.length} entries
+          {Math.min(currentPage * itemsPerPage, filteredOrders.length)} of{" "}
+          {filteredOrders.length} entries
         </span>
         <div className="space-x-2">
           <button

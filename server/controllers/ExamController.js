@@ -1,5 +1,6 @@
 const Exam = require("../models/ExamCodeSchema");
 const Product = require("../models/productListSchema");
+const mongoose = require("mongoose")
 // ✅ Create Exam
 exports.createExam = async (req, res) => {
   try {
@@ -25,17 +26,32 @@ exports.createExam = async (req, res) => {
     });
   }
 };
+exports.gerExamByCourseId =  async (req, res) => {
+  try {
+    const courseId = new mongoose.Types.ObjectId(req.params.courseId);
+    const exam = await Exam.findOne({ courseId });
 
+    if (!exam) {
+      return res.status(404).json({ message: "Exam not found" });
+    }
+
+    res.json(exam);
+  } catch (err) {
+    console.error("Error fetching exam:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
 // ✅ Get Exam by ID
 exports.getExamById = async (req, res) => {
+  const { id } = req.params;
   try {
-    const exam = await Exam.findById(req.params.id);
+    const exam = await Exam.findById(id);
     if (!exam) {
-      return res.status(404).json({ error: "Exam not found" });
+      return res.status(404).json({ message: "Exam not found" });
     }
     res.status(200).json(exam);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch exam" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 

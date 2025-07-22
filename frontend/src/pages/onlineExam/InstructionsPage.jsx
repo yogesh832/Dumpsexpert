@@ -11,15 +11,13 @@ const InstructionsPage = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const { slug } = useParams();
+  const { id } = useParams(); // ✅ now expecting exam ID
 
   useEffect(() => {
     const fetchInstructions = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:8000/api/exams/byslug/${slug}`
-        );
-        const exam = res.data[0];
+        const res = await axios.get(`http://localhost:8000/api/exams/byId/${id}`);
+        const exam = res.data;
 
         if (!exam?.mainInstructions) {
           setMainInstructions("<p>No instructions available.</p>");
@@ -38,14 +36,14 @@ const InstructionsPage = () => {
     };
 
     fetchInstructions();
-  }, [slug]);
+  }, [id]);
 
   const handleStart = () => {
     if (!agreed) {
       alert("Please agree to the terms and conditions before starting.");
       return;
     }
-    navigate(`/student/courses-exam/test/${slug}`);
+    navigate(`/student/courses-exam/test/${id}`);
   };
 
   return (
@@ -70,40 +68,16 @@ const InstructionsPage = () => {
               📋 Please read the following test instructions carefully:
             </p>
 
-            <li>
-              ⏱️ <strong>Duration:</strong> {exam.duration} minutes
-            </li>
-            <li>
-              ✍️ <strong>Marks per Question:</strong> {exam.eachQuestionMark} marks
-            </li>
-            <li>
-              📉 <strong>Negative Marking:</strong> -1 mark per wrong answer
-            </li>
-            <li>
-              🔢 <strong>Total Questions:</strong> {exam.numberOfQuestions}
-            </li>
-            <li>
-              🎯 <strong>Passing Score:</strong> {exam.passingScore}%
-            </li>
-            <li>
-              ✅ You can mark questions for review if unsure (shown in{" "}
-              <span className="color purple">purple</span>).
-            </li>
-            <li>
-              ❌ Skipped questions will appear in{" "}
-              <span className="color red">red</span>.
-            </li>
-            <li>
-              ✔️ Answered questions will appear in{" "}
-              <span className="color green">green</span>.
-            </li>
-            <li>
-              🚨 Switching tabs more than 5 times will{" "}
-              <strong>automatically submit</strong> your test.
-            </li>
-            <li>
-              🚫 Copy-paste and tab switching are restricted to ensure fairness.
-            </li>
+            <li>⏱️ <strong>Duration:</strong> {exam.duration} minutes</li>
+            <li>✍️ <strong>Marks per Question:</strong> {exam.eachQuestionMark} marks</li>
+            <li>📉 <strong>Negative Marking:</strong> -1 mark per wrong answer</li>
+            <li>🔢 <strong>Total Questions:</strong> {exam.numberOfQuestions}</li>
+            <li>🎯 <strong>Passing Score:</strong> {exam.passingScore}%</li>
+            <li>✅ You can mark questions for review if unsure (<span className="color purple">purple</span>).</li>
+            <li>❌ Skipped questions will appear in <span className="color red">red</span>.</li>
+            <li>✔️ Answered questions will appear in <span className="color green">green</span>.</li>
+            <li>🚨 Switching tabs more than 5 times will <strong>automatically submit</strong> your test.</li>
+            <li>🚫 Copy-paste and tab switching are restricted to ensure fairness.</li>
           </ul>
         )}
 

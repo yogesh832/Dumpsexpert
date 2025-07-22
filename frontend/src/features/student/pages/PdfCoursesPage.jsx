@@ -1,54 +1,109 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast"; // ✅ Optional: for showing errors
 
 const PdfCoursesPage = () => {
-const courseData = [
-  {
-    date: "25/05/2025",
-    title: "C_S4PM_2504 - SAP Certified Associate - Managing SAP S/4HANA Cloud Public Edition Projects"
-  },
-  {
-    date: "12/04/2025",
-    title: "AZ-104 - Microsoft Azure Administrator Associate"
-  },
-  {
-    date: "30/03/2025",
-    title: "AWS Certified Solutions Architect – Associate (SAA-C03)"
-  },
-  {
-    date: "15/06/2025",
-    title: "Google Cloud Digital Leader Certification"
-  },
-  {
-    date: "22/07/2025",
-    title: "Certified Kubernetes Administrator (CKA)"
-  },
-  {
-    date: "09/08/2025",
-    title: "Oracle Cloud Infrastructure Foundations 2023 Certified Associate"
-  }
-];
+  const [pdfCourses, setPdfCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const userId = localStorage.getItem("studentId");
+        if (!userId) {
+          console.error("No user ID found in localStorage");
+          return;
+        }
+
+        const res = await axios.get(
+          `http://localhost:8000/api/orders/user/${userId}`,
+          { withCredentials: true }
+        );
+
+        const { pdfCourses } = separateCoursesByType(res.data.data); // ✅ fixed here
+        setPdfCourses(pdfCourses);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        toast.error("Failed to fetch courses");
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  const handleDownload = async (url, filename) => {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error("Download error:", err);
+      toast.error("Failed to download file.");
+    }
+  };
 
   return (
     <div className="bg-white text-black p-6 rounded-xl shadow-lg max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">My Courses</h1>
+      <h1 className="text-2xl font-bold mb-4">My PDF Courses</h1>
       <div className="space-y-4">
-        {courseData.map((course, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between border p-4 rounded-lg shadow-sm"
-          >
-            <span className="text-sm font-medium">{course.date}</span>
-            <span className="text-blue-700 font-semibold text-center mx-4">
-              {course.title}
-            </span>
-            <button className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-              Download File
-            </button>
-          </div>
-        ))}
+        {pdfCourses.length === 0 ? (
+          <p className="text-gray-600">No PDF courses found.</p>
+        ) : (
+          pdfCourses.map((course, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between border p-4 rounded-lg shadow-sm"
+            >
+              <span className="text-sm font-medium">{course.date}</span>
+              <span className="text-blue-700 font-semibold text-center mx-4">
+                {course.name}
+              </span>
+              <button
+                onClick={() =>
+                  handleDownload(course.downloadUrl, `${course.name}-Main.pdf`)
+                }
+                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+              >
+                Download File
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
 };
 
 export default PdfCoursesPage;
+
+// ✅ Helper
+function separateCoursesByType(orders = []) {
+  const pdfCourses = [];
+  const examCourses = [];
+
+  orders.forEach(order => {
+    order.courseDetails.forEach(course => {
+      if (course.name?.toLowerCase().includes("[pdf]")) {
+        pdfCourses.push({
+          name: course.name,
+          code: course.sapExamCode,
+          date: new Date(order.purchaseDate).toLocaleDateString("en-GB"),
+          downloadUrl: course.mainPdfUrl || course.samplePdfUrl,
+        });
+      } else if (course.name?.toLowerCase().includes("[online exam]")) {
+        examCourses.push({
+          _id: course._id,
+          name: course.name,
+          code: course.sapExamCode,
+          createdAt: order.purchaseDate,
+        });
+      }
+    });
+  });
+
+  return { pdfCourses, examCourses };
+}

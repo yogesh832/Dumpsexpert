@@ -386,10 +386,9 @@ const App = () => {
                 path="/student/courses-exam/list"
                 element={<ExamCoursesPage />}
               />
-              <Route
-                path="/student/courses-exam/instructions/:slug"
-                element={<InstructionsPage />}
-              />
+            <Route path="/student/courses-exam/instructions/:id"
+             element={<InstructionsPage />} />
+
              
 
               <Route

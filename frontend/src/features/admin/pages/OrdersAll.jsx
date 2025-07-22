@@ -13,16 +13,16 @@ const OrdersAll = () => {
 
   const fetchOrders = async (page) => {
     try {
-      const res = await axios.get("http://localhost:8000/api/orders", {
+      const res = await axios.get("http://localhost:8000/api/orders/all", {
         params: {
           page,
           limit: itemsPerPage,
         },
       });
 
-      const { data, pagination } = res.data;
-      setOrders(data);
-      setTotalPages(pagination.pages);
+      const { data, pagination } = res.data || {};
+      setOrders(data || []);
+      setTotalPages(pagination?.pages || 1);
     } catch (error) {
       console.error("Failed to fetch orders:", error);
     }
@@ -37,11 +37,14 @@ const OrdersAll = () => {
   return (
     <div className="p-6">
       <h2 className="text-xl font-semibold mb-4">All Orders</h2>
+
       <table className="w-full table-auto border">
         <thead>
           <tr className="bg-gray-100">
-            <th className="px-4 py-2 border">Order ID</th>
+            <th className="px-4 py-2 border">Order #</th>
             <th className="px-4 py-2 border">Customer</th>
+            <th className="px-4 py-2 border">Email</th>
+            <th className="px-4 py-2 border">Courses</th>
             <th className="px-4 py-2 border">Date</th>
             <th className="px-4 py-2 border">Status</th>
             <th className="px-4 py-2 border">Total</th>
@@ -55,16 +58,26 @@ const OrdersAll = () => {
                 <td className="px-4 py-2 border">
                   {order.user?.name || "N/A"}
                 </td>
+                <td className="px-4 py-2 border">{order.user?.email}</td>
                 <td className="px-4 py-2 border">
-                  {new Date(order.createdAt).toLocaleDateString()}
+                  {order.courseDetails?.map((c, idx) => (
+                    <div key={c._id || idx}>
+                      {c.name} - ₹{c.price?.toFixed(2)}
+                    </div>
+                  ))}
+                </td>
+                <td className="px-4 py-2 border">
+                  {new Date(order.purchaseDate).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-2 border capitalize">{order.status}</td>
-                <td className="px-4 py-2 border">₹{order.total.toFixed(2)}</td>
+                <td className="px-4 py-2 border">
+                  ₹{order.totalAmount?.toFixed(2) || "0.00"}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5" className="text-center py-4 text-gray-500">
+              <td colSpan="7" className="text-center py-4 text-gray-500">
                 No orders found
               </td>
             </tr>
