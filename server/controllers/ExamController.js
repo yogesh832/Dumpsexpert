@@ -26,21 +26,34 @@ exports.createExam = async (req, res) => {
     });
   }
 };
-exports.gerExamByCourseId =  async (req, res) => {
-  try {
-    const courseId = new mongoose.Types.ObjectId(req.params.courseId);
-    const exam = await Exam.findOne({ courseId });
 
-    if (!exam) {
-      return res.status(404).json({ message: "Exam not found" });
+exports.getExamsByCourseId = async (req, res) => {
+  try {
+  const { courseId } = req.params;
+const exams = await Exam.find({
+  courseId: new mongoose.Types.ObjectId(courseId)
+});
+    if (!exams || exams.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No exams found for this courseId"
+      });
     }
 
-    res.json(exam);
-  } catch (err) {
-    console.error("Error fetching exam:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(200).json({
+      success: true,
+      data: exams
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
-}
+};
+
+
 // ✅ Get Exam by ID
 exports.getExamById = async (req, res) => {
   const { id } = req.params;

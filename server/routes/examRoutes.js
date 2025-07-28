@@ -10,7 +10,7 @@ router.get("/byId/:id", examController.getExamById);
 router.get('/byProduct/:productId', examController.getExamsByProduct);
 router.get("/byslug/:slug", examController.getExamsByProductSlug);
 // GET exam by courseId
-router.get("/byCourseId/:courseId",examController.gerExamByCourseId);
+router.get("/byCourseId/:courseId", examController.getExamsByCourseId);
 router.get("/:id", examController.getExamById); // still supports direct id fetch
 router.put("/:id", examController.updateExam);
 router.delete("/:id", examController.deleteExam);

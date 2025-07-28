@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ExamCoursesPage = () => {
   const [examCourses, setExamCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -34,11 +36,22 @@ const orders = res.data?.data || []; // ✅ FIXED HERE
   }, []);
 
 
-  const handleAttemptClick = async (courseId) => {
-  const res = await axios.get(`http://localhost:8000/api/exams/byCourseId/${courseId}`);
-  const examId = res.data._id;
-  Navigate(`/student/courses-exam/instructions/${examId}`);
+const handleAttemptClick = async (courseId) => {
+  try {
+    const res = await axios.get(`http://localhost:8000/api/exams/byCourseId/${courseId}`);
+    const exam = res.data?.data?.[0];
+
+    if (exam?._id) {
+      navigate(`/student/courses-exam/instructions/${exam._id}`);
+    } else {
+      alert("No exam found for this course");
+    }
+  } catch (err) {
+    console.error("Error fetching exam:", err);
+    alert("Failed to get exam. Try again later.");
+  }
 };
+
   return (
     <div className="bg-white text-black p-6 rounded-xl shadow-lg max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">My Exam Courses</h1>

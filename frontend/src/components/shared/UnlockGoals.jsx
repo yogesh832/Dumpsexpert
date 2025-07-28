@@ -10,7 +10,7 @@ import specialdiscount from "../../assets/landingassets/specialDiscount.webp";
 import freeupdates from "../../assets/landingassets/freeUpdate.webp";
 
 const UnlockGoals = () => {
-  const cardData = [
+  const cardData = [  
     {
       icon: downloadable,
       title: "Downloadable PDF with Questions & Answers",
