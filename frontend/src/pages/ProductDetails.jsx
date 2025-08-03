@@ -102,7 +102,7 @@ if (reviewsRes.data.length > 0) {
         break;
       case "online":
         item.title = `${product.title} [Online Exam]`;
-        item.price = exams.priceINR || exams.priceUSD;
+      item.price = exams.priceINR || exams.priceUSD;
         break;
       case "combo":
         item.title = `${product.title} [Combo]`;
