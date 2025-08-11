@@ -24,6 +24,7 @@ const InstructionsPage = () => {
         } else {
           setMainInstructions(exam.mainInstructions);
         }
+      
 
         setExam(exam);
         console.log("🔥 exam from API:", exam);

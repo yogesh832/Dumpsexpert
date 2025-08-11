@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { toast } from "react-hot-toast"; // ✅ Optional: for showing errors
 
 const PdfCoursesPage = () => {
@@ -14,12 +14,12 @@ const PdfCoursesPage = () => {
           return;
         }
 
-        const res = await axios.get(
-          `http://localhost:8000/api/orders/user/${userId}`,
-          { withCredentials: true }
-        );
+        // const res = await axios.get(
+        //   `http://localhost:8000/api/orders/user/${userId}`,
+        //   { withCredentials: true }
+        // );
 
-        const { pdfCourses } = separateCoursesByType(res.data.data); // ✅ fixed here
+        // const { pdfCourses } = separateCoursesByType(res.data.data); // ✅ fixed here
         setPdfCourses(pdfCourses);
       } catch (err) {
         console.error("Error fetching orders:", err);
@@ -80,30 +80,30 @@ const PdfCoursesPage = () => {
 
 export default PdfCoursesPage;
 
-// ✅ Helper
-function separateCoursesByType(orders = []) {
-  const pdfCourses = [];
-  const examCourses = [];
+// // ✅ Helper
+// function separateCoursesByType(orders = []) {
+//   const pdfCourses = [];
+//   const examCourses = [];
 
-  orders.forEach(order => {
-    order.courseDetails.forEach(course => {
-      if (course.name?.toLowerCase().includes("[pdf]")) {
-        pdfCourses.push({
-          name: course.name,
-          code: course.sapExamCode,
-          date: new Date(order.purchaseDate).toLocaleDateString("en-GB"),
-          downloadUrl: course.mainPdfUrl || course.samplePdfUrl,
-        });
-      } else if (course.name?.toLowerCase().includes("[online exam]")) {
-        examCourses.push({
-          _id: course._id,
-          name: course.name,
-          code: course.sapExamCode,
-          createdAt: order.purchaseDate,
-        });
-      }
-    });
-  });
+//   orders.forEach(order => {
+//     order.courseDetails.forEach(course => {
+//       if (course.name?.toLowerCase().includes("[pdf]")) {
+//         pdfCourses.push({
+//           name: course.name,
+//           code: course.sapExamCode,
+//           date: new Date(order.purchaseDate).toLocaleDateString("en-GB"),
+//           downloadUrl: course.mainPdfUrl || course.samplePdfUrl,
+//         });
+//       } else if (course.name?.toLowerCase().includes("[online exam]")) {
+//         examCourses.push({
+//           _id: course._id,
+//           name: course.name,
+//           code: course.sapExamCode,
+//           createdAt: order.purchaseDate,
+//         });
+//       }
+//     });
+//   });
 
-  return { pdfCourses, examCourses };
-}
+// }
+  // return { pdfCourses };

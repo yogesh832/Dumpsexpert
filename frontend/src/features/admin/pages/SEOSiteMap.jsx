@@ -1,5 +1,10 @@
-import { useState } from 'react';
-import { FaDownload, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useState } from "react";
+import {
+  FaDownload,
+  FaTrash,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 
 const SEOSiteMap = () => {
   const [entries, setEntries] = useState(10);
@@ -75,7 +80,9 @@ const SEOSiteMap = () => {
           <FaChevronLeft className="mr-2" />
           Previous
         </button>
-        <span className="px-4 py-2 bg-blue-500 text-white rounded">{currentPage}</span>
+        <span className="px-4 py-2 bg-blue-500 text-white rounded">
+          {currentPage}
+        </span>
         <button
           onClick={() => setCurrentPage((prev) => prev + 1)}
           className="flex items-center px-4 py-2 text-gray-700"

@@ -191,15 +191,15 @@ const App = () => {
             <Route path="/blogs" element={<BlogPage />} />
             {/* <Route path="/blogs/:id" element={<BlogDetail />} /> */}
             <Route path="/blogs/:slug" element={<BlogDetail />} />
- <Route
-                path="/sample-instructions/:slug"
-                element={<SampleInstructionsPage />}
-              />
+            <Route
+              path="/sample-instructions/:slug"
+              element={<SampleInstructionsPage />}
+            />
 
-              <Route
-                path="/courses-exam/sample-test/:slug"
-                element={<SampleTestPage />}
-              />
+            <Route
+              path="/courses-exam/sample-test/:slug"
+              element={<SampleTestPage />}
+            />
             <Route path="/dumps" element={<ITDumps />} />
             <Route
               path="/courses/:categoryName"
@@ -386,10 +386,10 @@ const App = () => {
                 path="/student/courses-exam/list"
                 element={<ExamCoursesPage />}
               />
-            <Route path="/student/courses-exam/instructions/:id"
-             element={<InstructionsPage />} />
-
-             
+              <Route
+                path="/student/courses-exam/instructions/:id"
+                element={<InstructionsPage />}
+              />
 
               <Route
                 path="/student/courses-exam/test/:slug"
